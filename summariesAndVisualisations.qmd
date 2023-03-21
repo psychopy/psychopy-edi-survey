@@ -409,9 +409,9 @@ With respect to the `r length(which(!is.na(visMain$engagement)))` participants w
 
 #### [some remarks]
 
-- almost 88% of the people who responded are users, not contributors\
+- just over 88% of the people who responded are users, not contributors\
 - almost all of the others were *occasional contributors*
-- but about 2.5% were *frequent contributors* or *senior developers*
+- but about 2.2% were *frequent contributors* or *senior developers*
 
 ---
 
@@ -1021,8 +1021,8 @@ visMain |>
 
 #### [some remarks]
 
--   This is a pretty small group, but something that stands out so far is that only one of them agreed with a most of the statements, and there was only one statement were two agreed with it (*islolation*)\
-- Of course, the other surprising thing was that none of the  participants who indicated that their gender was *not listed* indicated that they felt that their gender had affected their interactions in the *PsychoPy*<sup>&reg;</sup> community. Yet two people who identified as men and three who identified as women did. Note that we don't really have a way of determining what proportion of those four were transgender.
+-   This is a pretty small group, but something that stands out so far is that only one of them agreed with most of the statements, and there was only one statement where two of them agreed with it (*isolation*)\
+- Of course, the other surprising thing was that none of the participants who indicated that their gender was *not listed* indicated that they felt that their gender had affected their interactions in the *PsychoPy*<sup>&reg;</sup> community. Yet two people who identified as men and three who identified as women did. Note that we don't really have a way of determining what proportion of those four were transgender.
 
 ---
 
@@ -1234,9 +1234,7 @@ visMain |>
 
 #### [some remarks]
 
-
-
--   Of the 35 people who indicated that they were associated with non-heterosexuality, only one thought it had affected their interactions with the *PsychoPy*<sup>&reg;</sup> community, and they mostly disagreed with negative treatment by others and disagreed with statements expressing low self-regard. They were neutral-ish on whether they'd like to see others more like them in the community.
+-   Of the 36 people who indicated that they were associated with non-heterosexuality, only one thought it had affected their interactions with the *PsychoPy*<sup>&reg;</sup> community, and they mostly disagreed with negative treatment by others and disagreed with statements expressing low self-regard. They were neutral-ish on whether they'd like to see others more like them in the community.
 
 ---
 
@@ -1447,8 +1445,8 @@ visMain |>
 
 #### [some remarks]
 
-- Out of the 40 people who indicated that they were of a race and/or culture that is potentially discriminated against, only 3 indicated that they had felt that their interactions within the *PsychoPy*<sup>&reg;</sup> community had been affected because of it. That seems fairly low (though still a problem).\
-- Those three seemed evenly split on most of the *treatment* category (with the exception of intentionally derisive comments, where there was strictly disagreement). And all of them expressed some sort of agreement with the self-regard and isolation items.
+- Out of the 42 people who indicated that they were of a race and/or culture that is potentially discriminated against, only 3 indicated that they had felt that their interactions within the *PsychoPy*<sup>&reg;</sup> community had been affected because of it. That seems fairly low (though still a problem).\
+- Those three seemed evenly split on most of the *treatment* category (with the exception of intentionally derisive comments, where there was strictly disagreement). And all of them expressed some sort of agreement with the *self-regard* and *isolation* items.
 
 ---
 
@@ -1659,7 +1657,7 @@ visMain |>
 
 #### [some remarks]
 
-- Of the 27 participants who indicated some sort of disability and/or neurodivergence, six indicated that they thought that status had affected their interactions in the *PsychoPy*<sup>&reg;</sup> community. I think this is the highest percentage of all the groups.\
+- Of the 28 participants who indicated some sort of disability and/or neurodivergence, six indicated that they thought that status had affected their interactions in the *PsychoPy*<sup>&reg;</sup> community. I think this is the highest percentage of all the groups.\
 - Interestingly, among those six, there was fairly widespread disagreement with the notion that they had been treated poorly by others. Rather, there is much more agreement with the self-regard issues. That is, 4-5 of those six seem to indicate lack of confidence.\
 - A slight majority of them also feel isolated.
 
@@ -2010,7 +2008,7 @@ visMain |>
 
 - About two-thirds of the participants were aware of the *Code of Conduct*. I suppose that's to be expected, but it's kinda disappointing, no?\
 - Most of them felt that the documentation was *easily findable, searchable, and accessible*. But there were a few (just under 20%) who disagreed with this in general.\
-- In terms of trust that the *Code of Conduct* would be enforced, there was general agreement here, though about 5% expressed mild disagreement here. About 2% expressed somewhat stronger disagreement. No one expressed the strongest level of disagreement (i.e., *Strongly disagree*).
+- In terms of trust that the *Code of Conduct* would be enforced, there was general agreement here, though about 5% expressed mild disagreement here. About 2% expressed somewhat stronger disagreement. One person expressed the strongest level of disagreement (i.e., *Strongly disagree*).
 
 # [some final remarks]
 
@@ -2032,11 +2030,11 @@ But looking at the issues of *treatment*, *self-regard*, and *isolation*, this g
 
 ### sexual orientation
 
-The next category was *sexual orientation*. Here, only $\frac{1}{35}$ indicated that their sexual orientation might have been a problem in the *PsychoPy*<sup>&reg;</sup> community. Still, that one person indicated disagreement with all of the *treatment* and *self-regard* questions. The only question that they weren't in disagreement about was the *isolation* statement, and even there, they were neutral (having selected `4` on the `1`-`7` scale).
+The next category was *sexual orientation*. Here, only $\frac{1}{36}$ indicated that their sexual orientation might have been a problem in the *PsychoPy*<sup>&reg;</sup> community. Still, that one person indicated disagreement with all of the *treatment* and *self-regard* questions. The only question that they weren't in disagreement about was the *isolation* statement, and even there, they were neutral (having selected `4` on the `1`-`7` scale).
 
 ### race and/or culture
 
-Next we come to *race* and/or *culture*. Here, only $\frac{3}{40}$ felt that their identity had affected their interactions with the *PsychoPy*<sup>&reg;</sup> community.
+Next we come to *race* and/or *culture*. Here, only $\frac{3}{42}$ felt that their identity had affected their interactions with the *PsychoPy*<sup>&reg;</sup> community.
 
 In general however, they were fairly split across the board in terms of how others had treated them. Two exceptions were *negative perception by others*, where two of the three expressed that they had experienced that, and *intentially derisive comments*, where no one expressed agreement with having experienced that.
 
@@ -2046,7 +2044,7 @@ They seem to lack confidence, more than anything.
 
 ### disability and/or neurodivergence
 
-With respect to *disability* and/or *neurodivergence*, the highest percentage ($\frac{6}{27}$) who went on to evaluate the subsequent EDI statements.
+With respect to *disability* and/or *neurodivergence*, the highest percentage of all the groups ($\frac{6}{28}$) went on to evaluate the subsequent EDI statements.
 
 This group disagreed more unanimously with the *treatment* statements, with only one of them indicating that (1) there had some any negative perception of them, and (2) that they felt they needed to hide their identity in this regard.
 
