@@ -1,0 +1,77 @@
+---
+title: "Codebook"
+subtitle: "Equity, diversity, and inclusion in the PsychoPy community"
+author: "Patrick Bolger"
+date: now
+date-format: "D MMM YYYY, h:mm a"
+echo: false
+format: 
+  html:
+    toc: true
+    toc-depth: 2
+    toc-float: true
+    embed-resources: true
+    theme: minty
+    mainfont: arvo
+    page-layout: full
+    self-contained: true
+editor: source
+bibliography: grateful-refs-codebook.bib
+csl: apa.csl
+---
+
+```{r getPackages}
+
+#| include: false
+
+# Install these packages as you need them
+#
+# install.packages("codebook")
+# install.packages("knitr")
+# install.packages("remotes"); remotes::install_github("Pakillo/grateful")
+
+#Attach them
+library(codebook)
+library(grateful)
+library(knitr)
+
+```
+
+```{r readTidiedLabeledData}
+#| include: false
+
+data <- readRDS("tidyLabeledSurveyData.rds")
+              
+```
+
+# Codebook
+
+```{r generateCodebook}
+
+codebook_items(data)
+
+```
+
+# Major *R* packages used
+
+```{r citePackages}
+    #| results: asis
+
+
+    pkgs <- cite_packages(
+      pkgs = c(
+        "codebook",
+        "grateful",
+        "knitr",
+        "remotes"
+        ),
+      output = "table", 
+      citation.style = apa.csl,
+      cite.tidyverse = F,
+      bib.file = "grateful-refs-codebook.bib",
+      Rmd.file = "grateful-report-codebook.Rmd",
+      out.name = "grateful-citations-codebook"
+      )
+    knitr::kable(pkgs)
+
+```

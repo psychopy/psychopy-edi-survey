@@ -1,0 +1,182 @@
+---
+title: "alternativeLabels"
+format: html
+editor: visual
+---
+
+# Alternative labels for survey data
+
+```{r}
+
+v02 <- v01 |>
+  var_labels(
+    # informed consent
+    readAndUnderstood = 
+      "Informed Consent: Read and understood",
+    oppToAskAboutStudy = 
+      "Informed Consent: Opportunity to ask questions",
+    questionsAnswered = 
+      "Informed Consent: All questions answered satisfactorily",
+    withdrawAtAnyTime = 
+      "Informed Consent: Understand freedom to withdraw",
+    permissionToShareData = 
+      "Informed Consent: Permission for anonymous data to be shared",
+    agreeToParticipate = 
+      "Informed Consent: Agreement to take part",
+    # background
+    careerStatus = 
+      "Career status",
+    engagement = 
+      "Best description of role in PsychoPy",
+    contributeMost = 
+      "Primary contribution activity",
+    contributeMostComment = 
+      "'Other' description for Primary contribution activity",
+    deterrentsLackOfInterest = 
+      "Deterrent: Lack of interest",
+    deterrentsDontKnowHowToStart = 
+      "Deterrent: Not knowing how to start",
+    deterrentsNotConfidentOfWelcome = 
+      "Deterrent: Unconfident of a welcome",
+    deterrentsLackOfTime = 
+      "Deterrent: Lack of time",
+    deterrentsLackOfCodingSkills = 
+      "Deterrent: Lack of coding skills",
+    deterrentsUnawareContributingWasPossible = 
+      "Deterrent: Unaware that contributing was possible",
+    workshopsOnContributing = 
+      "Engagement would improve with contributor workshops",
+    # gender self-identification
+    gender = 
+      "Gender: Primary association(s)",
+    genderDesc = 
+      "Gender: Description",
+    genderAffected = 
+      "Gender: Affected PsychoPy interactions",
+    # non-heterosexuality self-identification
+    notHeteroCommunity = 
+      "Non-heterosexuality: Primary association(s)",
+    nonHeteroDesc = 
+      "Non-heterosexuality: Description",
+    nonHeteroAffected = 
+      "Non-heterosexuality: Affected PsychoPy interactions",
+    # race and culture self-identification
+    raceCulture = 
+      "Race(s)/culture(s): Primary association(s)",
+    raceCultureDesc = 
+      "Race/culture: Description",
+    raceCultureAffected = 
+      "Race/culture: Affected PsychoPy interactions",
+    # disability self-identification
+    disability = 
+      "Disability(-ies): Primary association(s)",
+    disabilityDesc = 
+      "Disability: Description",
+    disabilityAffected = 
+      "Disability: Affected PsychoPy interactions",
+    # dominant language self-identification
+    domLangEnglish = 
+      "English as dominant written language",
+    domLangDesc = 
+      "Dominant language: Description",
+    domLangAffected = 
+      "Dominant language: Affected PsychoPy interactions",
+    # anonymity check
+    anonymityCheck = 
+      "Comfortable with risk of quasi-identification",
+    # gender follow-up questions
+    genderNegPerc = 
+      "Gender: Negative perception",
+    genderHideID = 
+      "Gender: Need to hide ID",
+    genderIgnored = 
+      "Gender: Contributions ignored",
+    genderDerisive = 
+      "Gender: Received derisive comments",
+    genderMicroaggressions = 
+      "Gender: Received microaggressions",
+    genderSelfDoubt = 
+      "Gender: Experienced self-doubt",
+    genderStereotypeThreat = 
+      "Gender: Experienced stereotype threat",
+    genderOthersLikeMe = "Gender: Wish to see others more like me in community",
+    # non-heterosexuality follow-up questions
+    nonHeteroNegPerc = 
+      "Non-heterosexuality: Negative perception",
+    nonHeteroHideID = 
+      "Non-heterosexuality: Need to hide ID",
+    nonHeteroIgnored = 
+      "Non-heterosexuality: Contributions ignored",
+    nonHeteroDerisive = 
+      "Non-heterosexuality: Received derisive comments",
+    nonHeteroMicroaggressions = 
+      "Non-heterosexuality: Received microaggressions",
+    nonHeteroSelfDoubt = 
+      "Non-heterosexuality: Experienced self-doubt",
+    nonHeteroStereotypeThreat = 
+      "Non-heterosexuality: Experienced stereotype threat",
+    nonHeteroOthersLikeMe = 
+      "Non-heterosexuality: Wish to see others more like me in community",
+    # race and culture follow-up questions
+    raceCultureNegPerc = 
+      "Race/culture: Negative perception",
+    raceCultureHideID = 
+      "Race/culture: Need to hide ID",
+    raceCultureIgnored = 
+      "Race/culture: Contributions ignored",
+    raceCultureDerisive = 
+      "Race/culture: Received derisive comments",
+    raceCultureMicroaggressions = 
+      "Race/culture: Received microaggressions",
+    raceCultureSelfDoubt = 
+      "Race/culture: Experienced self-doubt",
+    raceCultureStereotypeThreat = 
+      "Race/culture: Experienced stereotype threat",
+    raceCultureOthersLikeMe = 
+      "Race/culture: Wish to see others more like me in community",
+    # disability follow-up questions
+    disabilityNegPerc = 
+      "Disability: Negative perception",
+    disabilityHideID = 
+      "Disability: Need to hide ID",
+    disabilityIgnored = 
+      "Disability: Contributions ignored",
+    disabilityDerisive = 
+      "Disability: Received derisive comments",
+    disabilityMicroaggressions = 
+    "Disability: Received microaggressions",
+    disabilitySelfDoubt = 
+      "Disability: Experienced self-doubt",
+    disabilityStereotypeThreat = 
+      "Disability: Experienced stereotype threat",
+    disabilityOthersLikeMe = 
+      "Disability: Wish to see others more like me in community",
+    # dominant language follow-up questions
+    domLangNegPerc = 
+      "Dominant language: Negative perception",
+    domLangHideID = 
+      "Dominant language: Need to hide ID",
+    domLangIgnored = 
+      "Dominant language: Contributions ignored",
+    domLangDerisive = 
+      "Dominant language: Received derisive comments",
+    domLangMicroaggressions = 
+      "Dominant language: Received microaggressions",
+    domLangSelfDoubt = 
+      "Dominant language: Experienced self-doubt",
+    domLangStereotypeThreat = 
+      "Dominant language: Experienced stereotype threat",
+    domLangOthersLikeMe = 
+      "Dominant language: Wish to see others more like me in community",
+    # code of conduct
+    awareOfCodeOfConduct = 
+      "Code of Conduct: Aware",
+    psychopyDocumentationEasy = 
+      "Documentation: findable, searchable, and accessible",
+    trustCodeWillBeEnforced = 
+      "Code of Conduct: Trust in enforcement"
+  )
+
+
+
+```

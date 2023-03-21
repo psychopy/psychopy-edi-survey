@@ -1,0 +1,1191 @@
+---
+title: "Tidying"
+author: "Patrick Bolger"
+date: now
+date-format: "D MMM YYYY, h:mm a"
+format: 
+  html:
+    toc: true
+    toc-title: Contents
+    toc-depth: 4
+    embed-resources: true
+    code-fold: true
+    code-summary: "Show the code"
+    theme: flatly
+    mainfont: arvo
+    page-layout: full
+editor: source
+bibliography: grateful-refs-tidying.bib
+csl: apa.csl
+number-sections: true
+number-depth: 4
+---
+
+# (Install) and attache packages
+
+```{r getAndAttachPackages}
+#| message: false
+#| warning: false
+#| include: false
+
+# list the needed packages
+neededPackages <- c(
+  "readr", 
+  "dplyr", 
+  "stringr", 
+  "tidyr",
+  "tibble",
+  "tidyselect",
+  "summarytools",
+  "sjPlot",
+  "sjlabelled",
+  "gtsummary",
+  "DT",
+  "knitr",
+  "xfun"
+  )
+
+# The code directly below installs R packages 
+# Uncomment the code if you don't already have them installed
+#install.packages(neededPackages)
+#install.packages("remotes")
+#library(remotes)
+#remotes::install_github("Pakillo/grateful")
+
+# attach them
+invisible(lapply(neededPackages, require, character.only=T))
+
+```
+
+# Data import and cleansing
+
+------------------------------------------------------------------------
+
+## import the raw data
+
+Get the data in from the .csv file from *Pavlovia*.
+
+```{r importData}
+
+# `read_csv` is from the readr package
+
+d01 <- read_csv(
+  "responses_776cc413-2716-4170-987c-6f9b4658a726_RUNNING_2023-10-1000.csv",
+  col_types =
+    cols(
+      `deterrents.Lack of interest` = 
+        col_character(),
+      `deterrents.Lack of time` = 
+        col_character(),
+      `deterrents.Lack of knowledge on how to get started` =
+        col_character(),
+      `deterrents.Lack of coding skills` = 
+        col_character(),
+      `deterrents.Not confident I would be welcomed by the community` = 
+        col_character(),
+      `deterrents.Not aware contributing was possible` =
+        col_character()
+      ),
+  na="")
+
+```
+
+## variables
+
+### removal
+
+*Pavlovia* adds reaction times automatically, as well as some other variables that aren't directly relevant here. They are removed here.
+
+```{r removeUnnecessaryVars}
+#|warning: false
+#|message: false
+
+# this chunk uses  the dplyr and tidyselect packages
+
+# get rid of reaction-time variables
+d02 <- d01 |> 
+  select(
+    -ends_with(
+      "_rt"
+      )
+    )
+
+# get rid of further irrelevant variables
+d03 <- d02 |> 
+  select(
+    !c(
+      surveyId, 
+      experimentId, 
+      sessionToken, 
+      participant,
+      isComplete,
+      surveyStatus,
+      length_ch,
+      expanded,
+      responseDate
+      )
+    )
+
+```
+
+### addition
+
+The `responseId` variable from *Pavlovia* provides unique IDs, but they're pretty unweildy for analysis, so they're being supplemented here with the rownames associated by *R* upon importing the data. This will be called `ID`. This also gives us the survey-completion order of the participants in the survey.
+
+```{r makeRownamesVar}
+
+# this chunk uses the *tibble* package
+
+d04 <- d03 |>
+  rownames_to_column(var = "ID")
+
+```
+
+### rename
+
+The variable `notHeteroCommunity` should be `nonHeteroCommunity` (*non-*, not *not-*), like all the other `nonHetero-` variables. We fix this here.
+
+```{r renameNotToNon}
+
+d05 <- d04 |>
+  rename(nonHeteroCommunity = notHeteroCommunity)
+
+```
+
+
+## observation removal
+
+We need to remove some observations from analysis. This is ***required*** in two cases, and ***prudent*** in another.
+
+### not fully consented (required)
+
+Some people didn't fully consent to the survey. That is, they answered *No* to one or more of the informed-consent questions. We ID them and remove them from analysis below.
+
+The table below shows the total samples size (*N*) vs. the numbers of participants who responded *yes* to each of the informed-consent question.
+
+```{r plotInformedConsent}
+#| label: informed-consent-table
+#| tbl-cap: Counts of *yes* responses to informed-consent questions and statement
+
+d05 |>
+  select(
+    c(
+      readAndUnderstood,
+      oppToAskAboutStudy,
+      questionsAnswered,
+      withdrawAtAnyTime,
+      permissionToShareData,
+      agreeToParticipate
+      )
+    ) |>
+  tbl_summary(
+    by = NULL,
+    type = everything() ~ "dichotomous",
+    missing = "no"
+    ) |>
+  modify_header(label = "Consent questions & statement")
+
+```
+
+::: {.callout-note collapse=true}
+
+#### Is the U of Nottingham consent form appropriate for online surveys?
+
+You may have noticed that the largest drops due to non-consents was on the following questions:
+
+>Have you had the opportunity to ask questions about the study (and understand that this is available to do so over email)?
+
+>Have all your questions been answered satisfactorily (if applicable)?
+
+I wonder if we might be able to change this in the future. It is awkward. Seems to be confusing participants.
+
+:::
+
+```{r rmThoseWhoDidntFullyConsent}
+
+# remove them from further analysis
+d06 <- d05 |> 
+  filter(
+    if_all(
+      c(
+        readAndUnderstood,
+        oppToAskAboutStudy,
+        questionsAnswered,
+        withdrawAtAnyTime,
+        permissionToShareData,
+        agreeToParticipate
+        ),
+      ~ . == TRUE)
+    )
+
+```
+
+The original sample size was `r nrow(d05)`. The number of those who didn't answer to one or more of the informed-consent questions was `r nrow(d05)-nrow(d06)`. So they were removed, leaving `r nrow(d06)` observations.
+
+The Pavlovia IDs of the non-consenters are in the table below.
+
+```{r tableNonConsenters}
+#| label: nonconsenters-table
+#| tbl-cap: Pavlovia IDs of those who didn't fully consent
+
+# print out the relevant columns.
+# We may want to remove them from Pavlovia.
+# I'm not sure.
+d05 |>
+  filter(
+    if_any(
+      c(
+        readAndUnderstood,
+        oppToAskAboutStudy,
+        questionsAnswered,
+        withdrawAtAnyTime,
+        permissionToShareData,
+        agreeToParticipate
+        ), 
+      ~ . == FALSE)
+    ) |>
+  select(
+    c(
+      ID,
+      responseId
+      )
+  ) |>
+  datatable()
+
+```
+
+
+### had second thoughts (required)
+
+A certain number of participants provided an answer of *Yes* to one or more of the diversity questions which were worded as follows:
+
+> Do you feel that your \_\_\_\_\_\_\_ has affected your interactions with with the PsychoPy community or software ecosystem?
+
+If they responded that they did so, they were also presented with the following question after having reviewed all their responses to the further diversity questions that opened up for them:
+
+> I have considered the risk that I could be identified through the answers I provided above and I ***am/am not*** comfortable with my (anonymous) data being public.
+
+The number of participants who responded ***am*** to the question above was
+**`r length(which(d06$anonymityCheck == 1))`**. 
+
+The number who did not see the question in the first place because they responded *no* to all the initial diversity questions was **`r length(which(is.na(d06$anonymityCheck)))`**. 
+
+These numbers can be seen in the table below.
+
+
+```{r tableAnonymityCheck}
+#| label: anonymity-check-table
+#| tbl-cap: Count of *yes* responses to anonymity statement
+
+d06 |>
+  select(anonymityCheck) |>
+  tbl_summary(
+    by = NULL,
+    type = everything() ~ "dichotomous",
+    missing = "always",
+    missing_text = "did not see question"
+    ) |>
+  modify_header(label = "Continued consent statement")
+
+```
+
+Together, they sum to **`r length(which(d06$anonymityCheck == 1))+length(which(is.na(d06$anonymityCheck)))`**.
+
+The Pavlovia IDs of the removed participants are in the table below.
+
+```{r tableAnonymityChecks}
+#| label: anonymity-removal-table
+#| tbl-cap: Pavlovia IDs of those who indicated they no longer wanted their data public
+
+# print out the relevant columns
+# we may want to remove them from Pavlovia.
+# I'm not sure
+d06 |>
+  filter(anonymityCheck == F) |>
+  select(
+     c(
+      ID,
+      responseId,
+      anonymityCheck
+      )
+  ) |>
+  datatable()
+
+```
+
+```{r rmSecondThoughters}
+# remove them from further analysis
+d07 <- d06 |> filter(
+  anonymityCheck == T |
+    is.na(anonymityCheck
+          )
+  )
+```
+
+---
+
+### fully consented, but otherwise NA
+
+For whatever reason, there are one or more participants who answered *Yes* to all the informed-consent questions, but then provided no more data whatsoever. This is ***perfectly*** uninformative, so we can remove such observations.
+
+```{r removeObsWithAllNAs}
+
+# remove such participants
+d08 <- d07 |>
+  filter(
+    if_any(
+      !c(
+        ID,
+        responseId,
+        readAndUnderstood,
+        oppToAskAboutStudy,
+        questionsAnswered,
+        withdrawAtAnyTime,
+        permissionToShareData,
+        agreeToParticipate
+        ),
+    ~ !is.na(.x)
+    )
+  )
+
+```
+
+The number of participant(s) who answered *Yes* to all the consent questions, but who didn't complete any part of the remaining survey was `r nrow(d07)-nrow(d08)`. This is perfectly uninformative, so any such observations were removed, leaving us with a sample size of `r nrow(d08)`, which is the number that will be included in the data summaries and visualisations.
+
+The Pavlovia IDs of the removed participants are in the table below.
+
+```{r tableObsWithAllNAs}
+#| label: nas-only-removal-table
+#| tbl-cap: Pavlovia IDs of those who provided only NAs after consenting
+
+d07 |>
+    filter(
+      if_all(
+        !c(
+          ID,
+          responseId,
+          readAndUnderstood,
+          oppToAskAboutStudy,
+          questionsAnswered,
+          withdrawAtAnyTime,
+          permissionToShareData,
+          agreeToParticipate
+          ),
+        ~ is.na(.x)
+        )
+      ) |>
+  select(
+     c(
+      ID,
+      responseId
+      )
+     ) |>
+  datatable()
+
+```
+
+
+## fixing various issues
+
+### remove the `responseId` variable
+
+This variable from *Pavlovia* no longer serves a purpose here. So it's being removed.
+
+```{r removeResponseId}
+
+# remove responseId as a variable as it's no longer needed
+d08$responseId <- NULL
+
+```
+
+### recode character (Likert) values that should have been numeric
+
+One of our questions involved a response matrix, where I needed to manually type in meanings for the extremes of the scales. Unfortunately, this ended up making the output text instead of numeric. I'm converting it back here.
+
+```{r fixLikertValues}
+
+# this chunk uses  the dplyr and tidyselect packages
+
+#a vector to tell the function how to recode
+recode_vec <- 
+  c(
+    "1 (not at all)" = 1,
+    "2" = 2,
+    "3" = 3, 
+    "4" = 4,
+    "5 (very much)" = 5
+    )
+
+#recode function
+myrecode <- 
+  function(x){recode(x, !!!recode_vec)
+    }
+
+#apply the function across the variables starting with "deterrents."
+d09 <- d08 |> 
+  mutate(
+    across(
+      starts_with("deterrents."),
+      myrecode
+      )
+  )
+
+# remove the objects
+rm(
+  list=c(
+    "recode_vec",
+    "myrecode"
+    )
+  )
+
+```
+
+### fix levels of `careerStatus`
+
+One of the levels of `careerStatus` is spelled differently. This gets fixed here.
+
+```{r renameLevel}
+
+# the function below is from the dplyr package
+
+d10 <- d09 |> 
+  mutate(
+    careerStatus = case_when(
+      careerStatus %in% "rsercherSenior" ~ "rsrcherSenior",
+      TRUE ~ careerStatus
+      )
+    )
+
+```
+
+### pivot responses to variables
+
+This is a pretty unusual operation. We chose to let participants choose *all that apply* in their response to how they contribute most to the *PsychoPy/JS* project. This resulted in multiple responses per observation under the variable `contributeMost` and is not convenient for data visualisation, where it would be much better to have each response as its own variable, with boolean values indicating whether participants had chosen that option or not. The operation below re-formats the data frame to make this the case.
+
+#### remove non-alphabetic characters
+
+First, the multiple-response variable came enclosed by square brackets and slashes. Those are of no use to us, so they're being removed here.
+
+```{r removeNonalphabeticChars}
+
+# this chunk uses the dplyr package
+
+d11 <- d10 |> 
+  mutate(
+    contributeMost = str_remove_all(
+      contributeMost,
+      "\""
+      )
+    ) |>
+  mutate(
+    contributeMost = str_remove_all(
+      contributeMost,
+      "\\[|\\]"
+      )
+    )
+
+```
+
+#### convert responses on `contributeMost`
+
+Second, we can lengthen then widen the data frame to convert the multiple responses into new variables.
+
+```{r pivotResponsesWide}
+
+# this chunk uses the tidyr package
+
+# The `separate_longer_delim()` function from the tidyr package takes
+# multiple responses from one participant separated by a delimiter and
+# converts them into multiple observatios for the same participant, making
+# the data frame longer, with one response per observation under the
+# variable `contributeMost`.
+
+# We then use `tidyr::pivot_wider()` to expand the levels of
+# `contributeMost` into new columns, with 0 representing cases where the
+# participant did not check that option, and 1 representing cases where the
+# participant did. The variable `contributeMost` is deleted in the process.
+d12 <- d11 |>
+  separate_longer_delim(
+    contributeMost,
+    delim = ","
+    ) |>
+  mutate(ind = 1) |>
+  pivot_wider(
+    names_from = contributeMost,
+    values_from = ind,
+    values_fn = ~ 1,
+    values_fill = 0,
+    names_prefix = "contrib_"
+      )
+
+# Missing values also got pivoted into their own column, 
+# which needs to be  deleted.
+d12$contrib_NA <- NULL
+
+```
+
+### deal with free-response string differences
+
+We could probably do more here, but I'm not very good at it. I'll need to learn regular expressions mabye. Anyway, the two functions I've included here trim whitespace and converts all responses to lowercase so that *Gay* and *gay* are not treated differently.
+
+```{r someTextCleaning}
+
+# this chunk uses the dplyr and stringr packages
+
+# puts everything into lower case so that, for instance, "bisexual"
+# and "Bisexual" don't end up as separate factors
+# also gets rid of any extra whitespace, the str_squish() function
+
+charVars <- c(
+  "genderDesc", 
+  "nonHeteroDesc", 
+  "raceCultureDesc", 
+  "disabilityDesc", 
+  "domLangDesc")
+
+d13 <- d12 |> 
+  mutate(
+    across(
+      where(is.character), 
+      ~ str_squish(.x)
+      )
+    ) |>
+  mutate(
+    across(
+      all_of(charVars), 
+      ~ str_to_lower(.x)
+      )
+    )
+
+# remove the list
+rm(charVars)
+
+```
+
+### rename variables
+
+Some of the variables were imported with spaces. Not the end of the world, but I'd rather there be no spaces, so I'm converting them here. We'll add full questions as labels. I'm also making some other minor changes to variable names.
+
+```{r renameVars}
+
+# this chunk uses the dplyr package
+
+d14 <- d13 |> 
+  rename(
+    `deterrentsLackOfInterest` =
+      `deterrents.Lack of interest`,
+    
+    `deterrentsDontKnowHowToStart` =
+      `deterrents.Lack of knowledge on how to get started`,
+    
+    `deterrentsNotConfidentOfWelcome` = 
+      `deterrents.Not confident I would be welcomed by the community`,
+         
+    `deterrentsLackOfTime` = 
+      `deterrents.Lack of time`,
+         
+    `deterrentsLackOfCodingSkills` = 
+      `deterrents.Lack of coding skills`,
+         
+    `deterrentsUnawareContributingWasPossible` = 
+      `deterrents.Not aware contributing was possible`,
+         
+    `disabilityHideID` = 
+      `disabledHideID`,
+         
+    `disabilityNegPerc` = 
+      `disabledNegPerc`,
+         
+    `contributeMostComment` = 
+      `contributeMost-Comment`,
+         
+    `contribFixBugs` =
+      `contrib_fixBugs`,
+           
+    `contribAddFeatures` =
+      `contrib_addFeatures`,
+           
+    `contribSuppOthers` =
+      `contrib_supportOth`,
+          
+    `contribImprvDoc` =
+      `contrib_improvDoc`,
+         
+    `contribOther` =
+      `contrib_other`,
+         
+    `contribProvTransl` =
+      `contrib_provTransl`,
+    
+    `contribOtherDesc` =
+      `contributeMost-Comment`
+    )
+
+```
+
+### put variables into original survey order
+
+This is important for a study with many variables where one needs a bird's eye view of whether the variables you asked for are the ones you got.
+
+```{r reorderVariables}
+
+# this chunk uses the dplyr package
+
+d15 <- d14 |> 
+  relocate(
+    c(
+      ID,
+      readAndUnderstood,
+      oppToAskAboutStudy,
+      questionsAnswered,
+      withdrawAtAnyTime,
+      permissionToShareData,
+      agreeToParticipate,
+      careerStatus,
+      engagement,
+      contribImprvDoc,
+      contribSuppOthers,
+      contribFixBugs,
+      contribAddFeatures,
+      contribProvTransl,
+      contribOther,
+      contribOtherDesc,
+      deterrentsLackOfInterest,
+      deterrentsLackOfTime,
+      deterrentsDontKnowHowToStart,
+      deterrentsLackOfCodingSkills,
+      deterrentsNotConfidentOfWelcome,
+      deterrentsUnawareContributingWasPossible,
+      workshopsOnContributing,
+      gender,
+      genderDesc,
+      genderAffected,
+      nonHeteroCommunity,
+      nonHeteroDesc,
+      nonHeteroAffected,
+      raceCulture,
+      raceCultureDesc,
+      raceCultureAffected,
+      disability,
+      disabilityDesc,
+      disabilityAffected,
+      domLangEnglish,
+      domLangDesc,
+      domLangAffected,
+      anonymityCheck,
+      genderNegPerc,
+      genderHideID,
+      genderIgnored,
+      genderDerisive,
+      genderMicroaggressions,
+      genderSelfDoubt,
+      genderStereotypeThreat,
+      genderOthersLikeMe,
+      nonHeteroNegPerc,
+      nonHeteroHideID,
+      nonHeteroIgnored,
+      nonHeteroDerisive,
+      nonHeteroMicroaggressions,
+      nonHeteroSelfDoubt,
+      nonHeteroStereotypeThreat,
+      nonHeteroOthersLikeMe,
+      raceCultureNegPerc,
+      raceCultureHideID,
+      raceCultureIgnored,
+      raceCultureDerisive,
+      raceCultureMicroaggressions,
+      raceCultureSelfDoubt,
+      raceCultureStereotypeThreat,
+      raceCultureOthersLikeMe,
+      disabilityNegPerc,
+      disabilityHideID,
+      disabilityIgnored,
+      disabilityDerisive,
+      disabilityMicroaggressions,
+      disabilitySelfDoubt,
+      disabilityStereotypeThreat,
+      disabilityOthersLikeMe,
+      domLangNegPerc,
+      domLangHideID,
+      domLangIgnored,
+      domLangDerisive,
+      domLangMicroaggressions,
+      domLangSelfDoubt,
+      domLangStereotypeThreat,
+      domLangOthersLikeMe,
+      awareOfCodeOfConduct,
+      psychopyDocumentationEasy,
+      trustCodeWillBeEnforced
+      )
+    )
+
+```
+
+# Add labels
+
+## change `TRUE`/`FALSE` to `1`/`0`
+
+```{r changeBooleanToBinary}
+# Convert these to numeric before giving them variable labels
+# (sjPlot seems to have trouble with logical vectors and labels)
+# The problem is that applying the as.numeric function strips the
+# variables of their labels for some reason. So this needs to be 
+# done up here.
+
+YesNoQuestions <- c(
+          "readAndUnderstood",
+          "oppToAskAboutStudy",
+          "questionsAnswered",
+          "withdrawAtAnyTime",
+          "permissionToShareData",
+          "agreeToParticipate",
+          "genderAffected",
+          "nonHeteroCommunity",
+          "nonHeteroAffected",
+          "raceCulture",
+          "raceCultureAffected",
+          "disability",
+          "disabilityAffected",
+          "domLangEnglish",
+          "domLangAffected",
+          "anonymityCheck",
+          "awareOfCodeOfConduct"
+          )
+
+
+d16 <- d15 |>
+  mutate(
+    across(
+      all_of(YesNoQuestions), 
+      ~ as.numeric(.)
+      )
+    ) 
+
+# A similar problem seems to occur with renaming factor levels
+# Convert original factor levels into natural-language levels
+d17 <- d16 |> 
+  mutate(
+    careerStatus = 
+      recode(careerStatus, 
+             rsrcherEarly = "Researcher - early career",
+             rsrcherMid = "Researcher - mid career",
+             rsrcherSenior = "Researcher - senior",
+             techJunior = "Technical - junior",
+             techSenior = "Technical - senior"
+             )
+    )
+
+d18 <- d17 |> 
+  mutate(
+    engagement = 
+      recode(
+        engagement,
+        userOcc = "Occasional user",
+        userFreq = "Frequent user",
+        contribOcc = "Occasional contributor",
+        contribFreq = "Frequent contributor",
+        senDev = "Senior developer"
+        )
+    )
+
+d19 <- d18 |> 
+  mutate(
+    gender = 
+      recode(gender, 
+             man = "man",
+             woman = "woman",
+             notListed = "not listed"
+             )
+    )
+
+```
+
+## add variable labels
+
+```{r associateSurveyQuestions}
+
+# this chunk uses the sjlabelled package
+
+d20 <- d19 |>
+  var_labels(
+    # informed consent
+    readAndUnderstood = 
+      "Have you read and understood the text on the previous screens?",
+    oppToAskAboutStudy = 
+      "Have you had the opportunity to ask questions about the study (and understand that this is available to do so over email)?",
+    questionsAnswered = 
+      "Have all your questions been answered satisfactorily (if applicable)? ",
+    withdrawAtAnyTime = 
+      "Do you understand that you are free to withdraw from the study at any time without giving a reason (and that this can be done by closing the browser window)?",
+    permissionToShareData = 
+      "I give permission for my data from this study to be shared with other researchers, provided that my data is anonymous.",
+    agreeToParticipate = 
+      "Do you agree to take part in the study?",
+    # background
+    careerStatus = 
+      "Roughly speaking, what is your career status?",
+    engagement = 
+      "What best describes your role/usage of PsychoPy? (Note: 'Contributor' refers to any form of contribution, whether to the code, the documentation or supporting other users)",
+    #contribution profile
+    contribImprvDoc = 
+      "[I] contribute [by] improving documentation",
+    contribSuppOthers = 
+      "[I] contribute [by] supporting other users (e.g., on the forum)",
+    contribFixBugs = 
+      "[I] contribute [by] fixing bugs",
+    contribAddFeatures = 
+      "[I] contribute [by] adding new features",
+    contribProvTransl = 
+      "[I] contribute [by] providing translations to other languages",
+    contribOther = 
+      "[I] contribute [in] other [ways not listed here]",
+    contribOtherDesc = 
+      "[I] contribute in these other ways",
+    deterrentsLackOfInterest = 
+      "Lack of interest limits the amount you feel able to contribute to the PsychoPy project",
+    deterrentsDontKnowHowToStart = 
+      "[Not knowing how to start] limit[s] the amount you feel able to contribute to the PsychoPy project",
+    deterrentsNotConfidentOfWelcome = 
+      "[Lack of confidence in a welcome] limit[s] the amount you feel able to contribute to the PsychoPy project",
+    deterrentsLackOfTime = 
+      "[Lack of time] limit[s] the amount you feel able to contribute to the PsychoPy project",
+    deterrentsLackOfCodingSkills = 
+      "[Lack of coding skills] limit[s] the amount you feel able to contribute to the PsychoPy project ",
+    deterrentsUnawareContributingWasPossible = 
+      "[Unawareness that contributing was possible] limit[s] the amount you feel able to contribute to the PsychoPy project",
+    workshopsOnContributing = 
+      "My engagement with the community would be helped if workshops were provided on how to contribute",
+    # gender self-identification
+     gender = 
+       "Which gender do you identify most with?",
+    genderDesc = 
+      "Feel free to describe your gender here (or not)",
+    genderAffected = 
+      "Do you feel that your gender status has affected your interactions with the PsychoPy community or software ecosystem?",
+    # non-heterosexuality self-identification
+    nonHeteroCommunity = 
+      "Do you, or might others who know you well, consider you somehow NOT to be part of the heterosexual community?",
+    nonHeteroDesc = 
+      "Feel free to describe your sexual orientation here (or not)",
+    nonHeteroAffected = 
+      "Do you feel that your sexual orientation has affected your interactions with the PsychoPy community or software ecosystem?",
+    # race and culture self-identification
+    raceCulture = 
+      "Do you, or might others who know you well, consider you part of a race and/or culture that is potentially discriminated against?",
+    raceCultureDesc = 
+      "Feel free to describe your race and/or culture here (or not)",
+    raceCultureAffected = 
+      "Do you feel that your race and/or culture has affected your interactions with the PsychoPy community or software ecosystem?",
+    # disability self-identification
+    disability = 
+      "Do you, or might others who know you well, consider you disabled and/or neurodivergent (i.e., visible or invisible; e.g., blind, paralysed, cerebral palsy, ASD, ADHD)?",
+    disabilityDesc = 
+      "Feel free to describe your disabled and/or neurodivergent status (or not)",
+    disabilityAffected = 
+      "Do you feel that your disabled and/or neurodivergent status has affected your interactions with the PsychoPy community or software ecosystem?",
+    # dominant language self-identification
+    domLangEnglish = 
+      "Is your dominant (preferred) written language English?",
+    domLangDesc = 
+      "Feel free to type in your dominant language (or not)",
+    domLangAffected = 
+      "Do you feel that your dominant language has affected your interactions with the PsychoPy community or software ecosystem?",
+    # anonymity check
+    anonymityCheck = 
+      "I have considered the risk that I could be identified through the answers I provided above and I __________ comfortable with my (anonymous) data being public.",
+    # gender follow-up questions
+    genderNegPerc = 
+      "I feel that I have been negatively perceived [due to my gender]",
+    genderHideID = 
+      "I have felt the need to hide [my gender] in order to be taken seriously",
+    genderIgnored = 
+      "My questions and/or contributions have been ignored at times [due to my gender]",
+    genderDerisive = 
+      "I have been the target of intentionally derisive comments [due to my gender]",
+    genderMicroaggressions = 
+      "[Due to my gender] I have been the target of often unintentional, but subtly disdainful comments that are cumulatively hurtful",
+    genderSelfDoubt = 
+      "[Due to my gender] I have doubted my own potential",
+    genderStereotypeThreat = 
+      "[Due to my gender] I have feared being negatively judged by others, which has discouraged me from trying out new skills",
+    genderOthersLikeMe = 
+      "I wish I saw more people in the community that were similar [in gender] to me",
+    # non-heterosexuality follow-up questions
+    nonHeteroNegPerc = 
+      "I feel that I have been negatively perceived [due to my non-heterosexuality]",
+    nonHeteroHideID = 
+      "I have felt the need to hide [my non-heterosexuality] in order to be taken seriously",
+    nonHeteroIgnored = 
+      "My questions and/or contributions have been ignored at times [due to my non-heterosexuality]",
+    nonHeteroDerisive = 
+      "I have been the target of intentionally derisive comments [due to my non-heterosexuality]",
+    nonHeteroMicroaggressions = 
+      "[Due to my non-heterosexuality] I have been the target of often unintentional, but subtly disdainful comments that are cumulatively hurtful",
+    nonHeteroSelfDoubt = 
+      "[Due to my non-heterosexuality] I have doubted my own potential",
+    nonHeteroStereotypeThreat = 
+      "[Due to my non-heterosexuality] I have feared being negatively judged by others, which has discouraged me from trying out new skills",
+    nonHeteroOthersLikeMe = 
+      "I wish I saw more people in the community that were similar [in non-heterosexuality] to me",
+    # race and culture follow-up questions
+    raceCultureNegPerc = 
+      "I feel that I have been negatively perceived [due to my race and/or culture]",
+    raceCultureHideID = 
+      "I have felt the need to hide [my race and/or culture] in order to be taken seriously",
+    raceCultureIgnored = 
+      "My questions and/or contributions have been ignored at times [due to my race and/or culture]",
+    raceCultureDerisive = 
+      "I have been the target of intentionally derisive comments [due to my race and/or culture]",
+    raceCultureMicroaggressions = 
+      "[Due to my race and/or culture] I have been the target of often unintentional, but subtly disdainful comments that are cumulatively hurtful",
+    raceCultureSelfDoubt = 
+      "[Due to my race and/or culture] I have doubted my own potential",
+    raceCultureStereotypeThreat = 
+      "[Due to my race and/or culture] I have feared being negatively judged by others, which has discouraged me from trying out new skills",
+    raceCultureOthersLikeMe = 
+      "I wish I saw more people in the community that were similar [in race and/or culture] to me",
+    # disability follow-up questions
+    disabilityNegPerc = 
+      "I feel that I have been negatively perceived [due to my disability and/or neurodivergence]",
+    disabilityHideID = 
+      "I have felt the need to hide [my disability and/or neurodivergence] in order to be taken seriously",
+    disabilityIgnored = 
+      "My questions and/or contributions have been ignored at times [due to my disability and/or neurodivergence]",
+    disabilityDerisive = 
+      "I have been the target of intentionally derisive comments [due to my disability and/or neurodivergence]",
+    disabilityMicroaggressions = 
+      "[Due to my disability and/or neurodivergence] I have been the target of often unintentional, but subtly disdainful comments that are cumulatively hurtful",
+    disabilitySelfDoubt = 
+      "[Due to my disability and/or neurodivergence] I have doubted my own potential",
+    disabilityStereotypeThreat = 
+      "[Due to my disability and/or neurodivergence] I have feared being negatively judged by others, which has discouraged me from trying out new skills",
+    disabilityOthersLikeMe = 
+      "I wish I saw more people in the community that were similar [in disability and/or neurodivergence] to me",
+    # dominant language follow-up questions
+    domLangNegPerc = 
+      "I feel that I have been negatively perceived [due to my dominant written language]",
+    domLangHideID = 
+      "I have felt the need to hide [my dominant written language] in order to be taken seriously",
+    domLangIgnored = 
+      "My questions and/or contributions have been ignored at times [due to my dominant written language]",
+    domLangDerisive = 
+      "I have been the target of intentionally derisive comments [due to my dominant written language]",
+    domLangMicroaggressions = 
+      "[Due to my dominant written language] I have been the target of often unintentional, but subtly disdainful comments that are cumulatively hurtful",
+    domLangSelfDoubt = 
+      "[Due to my dominant written language] I have doubted my own potential",
+    domLangStereotypeThreat = 
+      "[Due to my dominant written language] I have feared being negatively judged by others, which has discouraged me from trying out new skills",
+    domLangOthersLikeMe = 
+      "I wish I saw more people in the community who used my language",
+    # code of conduct
+    awareOfCodeOfConduct = 
+      "I am aware of the community Code of Conduct",
+    psychopyDocumentationEasy = 
+      "I have found PsychoPy documentation to be easily findable, searchable, and accessible",
+    trustCodeWillBeEnforced = 
+      "I trust that the Code of Conduct will be enforced"
+  )
+
+
+```
+
+## add value labels
+
+```{r addValueLabels}
+
+# this chunk uses the dplyr, tidyselect, and sjlabelled packages
+
+# Provide labels for 1-5 Likert scales for the deterrent questions
+howDeterred <- c(
+  `1 (Not at all)` = 1,
+  `2` = 2,
+  `3` = 3,
+  `4` = 4,
+  `5 (Very much)` = 5
+  )
+
+# Apply them
+d21 <- d20 |>
+  mutate(
+    across(
+      starts_with("deterrents"),
+      ~ sjlabelled::set_labels(., labels=howDeterred)
+      )
+    )
+
+# Provide labels for 1-7 Likert scales regarding agreement
+extentAgree7 <- c(
+  `1 (Strongly disagree)` = 1,
+  `2` = 2,
+  `3` = 3,
+  `4` = 4,
+  `5` = 5,
+  `6` = 6,
+  `7 (Strongly agree)` = 7
+  )
+
+# Apply them
+d22 <- d21 |>
+  mutate(
+    across(
+      ends_with(
+        c(
+          "NegPerc",
+          "HideID",
+          "Ignored",
+          "Derisive",
+          "Microaggressions",
+          "SelfDoubt",
+          "StereotypeThreat",
+          "OthersLikeMe",
+          "DocumentationEasy",
+          "CodeWillBeEnforced"
+          )
+        ),
+      ~ sjlabelled::set_labels(., labels=extentAgree7
+    )
+  ) 
+)
+
+# Provide labels for 1-5 Likert scales regarding agreement
+extentAgree5 <- c(
+  `1 (Strongly disagree)` = 1,
+  `2` = 2,
+  `3` = 3,
+  `4` = 4,
+  `5 (Strongly agree)` = 5
+  )
+
+# Apply them
+d23 <- d22 |>
+  mutate(
+    across(
+      ends_with(
+        c("OnContributing")
+        ),
+      ~ sjlabelled::set_labels(., labels=extentAgree5
+    )
+  ) 
+)
+
+# Provide labels for the as.numeric-transformed boolean questions
+booleanYesNo <- 
+  c(
+    `No` = 0, 
+    `Yes` = 1
+    )
+
+# Apply them
+d24 <- d23 |>
+  mutate(
+    across(
+      all_of(YesNoQuestions), 
+      ~ sjlabelled::set_labels(., labels=booleanYesNo)))
+
+# create a vector of the contribution questions
+
+contribQuestions <- c(
+  "contribImprvDoc",
+  "contribSuppOthers",
+  "contribFixBugs",
+  "contribAddFeatures",
+  "contribProvTransl",
+  "contribOther")
+
+# Provide labels for the as.numeric-transformed boolean questions
+booleanSelected <- 
+  c(
+    `Not selected` = 0, 
+    `Selected` = 1
+    )
+
+# Apply them
+d25 <- d24 |>
+  mutate(
+    across(
+      all_of(contribQuestions), 
+      ~ sjlabelled::set_labels(., labels=booleanSelected)))
+
+
+
+rm(
+  list=c(
+    "howDeterred",
+    "extentAgree7",
+    "extentAgree5",
+    "YesNoQuestions",
+    "booleanSelected",
+    "booleanYesNo"
+    )
+  )
+
+```
+
+# Export to .tsv and .rds
+
+Export one .tsv and one .rds file
+
+-   one .tsv for the *Open Science Framework*\
+-   (for now anyway, there are commas in the free responses)\
+-   one .rds for data analysis, and visualisation & codebook
+
+```{r renameFinal}
+
+# rename the last data frame object
+tidiedData <- d25
+
+# remove old data frames
+rm(list = c(paste0("d0",c(1:9))))
+rm(list = c(paste0("d1",c(0:9))))
+rm(list = c(paste0("d2",c(0:4))))
+
+```
+
+```{r writeTSV}
+
+# this chunk uses the readr package
+
+# save the one for OSF
+write_tsv(
+  tidiedData,
+  "anonymousSurveyData.tsv"
+  )
+
+```
+
+```{r saveRDS}
+
+# save the one use in analysis and visualisation
+saveRDS(
+  tidiedData,
+  "tidyLabeledSurveyData.rds"
+  )
+
+```
+
+# *R* packages used
+
+```{r citePackages}
+    #| results: asis
+
+allPackages <- 
+  append(
+    neededPackages,
+    c(
+      "grateful", 
+      "remotes"
+      )
+    )
+
+    pkgs <- grateful::cite_packages(
+      pkgs = allPackages,
+      output = "table", 
+      cite.tidyverse = F,
+      bib.file = "grateful-refs-tidying.bib",
+      Rmd.file = "grateful-report-tidying.Rmd",
+      out.name = "grateful-citations-tidying"
+      )
+    knitr::kable(pkgs)
+
+```
