@@ -46,7 +46,3 @@ vignettes/*.pdf
 *.tsv
 *.rds
 /archive
-
-# Output
-*.html
-*.bib
