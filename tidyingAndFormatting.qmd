@@ -1174,7 +1174,8 @@ allPackages <-
     neededPackages,
     c(
       "grateful", 
-      "remotes"
+      "remotes",
+      "renv"
       )
     )
 
