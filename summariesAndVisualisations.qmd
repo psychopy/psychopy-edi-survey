@@ -3,6 +3,8 @@ title: "Summaries of EDI-survey responses"
 author: "Patrick Bolger"
 date: now
 date-format: "D MMM YYYY, h:mm a"
+execute: 
+  echo: false
 format: 
   html:
     toc: true
@@ -22,14 +24,6 @@ bibliography: grateful-refs-sumandvis.bib
 csl: apa.csl
 ---
 
-# pre-summary stuff
-
-::: {.callout-note}
-## Note regarding report
-There are four sections to this report: *pre-summary stuff*, *summaries*, *[some final remarks]*, and *R Packages used*/*References*. The first and third, *pre-summary stuff* and *[some final remarks]*, respectively, would disappear before this report was shown to the public (if that is what's desired). It's just for internal purposes. Any section marked as *[some remarks]* are just Patrick's thoughts for now.
-:::
-
-## attach *R* packages needed
 
 ```{r getPackages}
 #| output: false
@@ -39,6 +33,8 @@ neededPackages <- c(
   "dplyr",
   "purrr",
   "tidyr",
+  "sysfonts",
+  "showtext",
   "sjPlot",
   "sjlabelled",
   "sjmisc",
@@ -49,7 +45,9 @@ neededPackages <- c(
   "stringr",
   "flextable",
   "showtext",
-  "flextable")
+  "flextable",
+  "cowplot",
+  "renv")
 
 # The code directly below installs R packages 
 # Uncomment the code directly below if you 
@@ -67,32 +65,29 @@ library(grateful)
 
 ```
 
-## use *arvo* font throughout
+
 
 ```{r getFontArvo}
 #| output: false
+
+## use *arvo* font throughout
 
 font_add_google("Arvo", "arvo")
 showtext_auto()
 
 ```
 
-## import data
-
-::: {.callout-note}
-## source of data
-The data imported here was pre-processed in another *R* script.
-:::
 
 ```{r readTidiedData}
 #| output: false
+
+# source of data
+# The data imported here was pre-processed in another *R* script.
 
 # Read in the data that was saved as .rds output in tidyingAndFormatting.qmd
 visMain <- readRDS("tidyLabeledSurveyData.rds")
               
 ```
-
-## settings
 
 ```{r setPlottingTheme}
 #| output: false
@@ -143,8 +138,6 @@ ostOrange <- "#EB692A"
 ostYellow <- "#F7F11C"
 
 ```
-
-## functions
 
 ```{r summarisingFunctions}
 #| output: false
