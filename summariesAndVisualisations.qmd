@@ -45,9 +45,11 @@ neededPackages <- c(
   "stringr",
   "flextable",
   "showtext",
-  "flextable",
   "cowplot",
-  "renv")
+  "renv",
+  "ggplot2",
+  "cowplot",
+  "GGally")
 
 # The code directly below installs R packages 
 # Uncomment the code directly below if you 
@@ -59,9 +61,15 @@ neededPackages <- c(
 # Uncomment the code directly below in order to do so.
 #install.packages("remotes"); library(remotes); remotes::install_github("Pakillo/grateful")
 
+# The gghalves package supports ggbeeswarm, but currently
+# only with the development version (04 Apr 2023). 
+# This will probably change in the near future.
+#remotes::install_github('erocoar/gghalves')
+
 #Attach the packages
 lapply(neededPackages, require, character.only=T)
 library(grateful)
+library(gghalves)
 
 ```
 
@@ -136,6 +144,19 @@ OSTcolours6 <-
 ostBlue   <- "#26DCF0"
 ostOrange <- "#EB692A"
 ostYellow <- "#F7F11C"
+
+ostPrimaryColours3 <- 
+  c(
+    "#26DCF0",
+    "#EB692A",
+    "#F7F11C"
+    )
+
+ostPrimaryColours2 <- 
+  c(
+    "#26DCF0",
+    "#EB692A"
+    )
 
 ```
 
@@ -250,6 +271,51 @@ tableLikert <- function(.x, lowerBound, upperBound) {
     gtsummary::as_flex_table()
   flextable::flextable_to_rmd(p)
 }
+
+# variable-by-EDI boxplots
+
+varByEdiBoxplots <- function(
+    .x, 
+    respVar, 
+    ediVar, 
+    wrapVar, 
+    ostColour,
+    altLabel
+    ) {
+p <- 
+  ggplot(.x) +
+  geom_boxplot(
+    aes_string(
+      respVar, 
+      ediVar,
+      fill=ediVar),
+    varwidth = T,
+    show.legend = F
+    ) +
+  geom_jitter(
+    aes_string(respVar, ediVar),
+    alpha=.2
+    ) +
+  stat_summary(
+    aes_string(respVar, ediVar),
+    fun = mean, 
+    geom = "point",
+    shape = 21,
+    size = 5,
+    color = "green",
+    fill = "green"
+    ) +
+  labs(
+    title = paste(wrapVar ,"by", ediVar),
+    subtitle = "(mean value indicated by green circle)",
+    caption = sjlabelled::get_label(ediVar),
+    alt = altLabel
+  ) +
+  scale_fill_manual(values = ostColour) +
+  facet_wrap(wrapVar)
+print(p)
+}
+
 
 ```
 
@@ -609,6 +675,7 @@ visMain |>
 
 - supporting others seems to be the dominant form of contributing among the survey participants
 
+
 ---
 
 ### deterrents to contributing
@@ -709,6 +776,234 @@ visMain |>
 
 
 <!-- Combined with the fact that many of these responses are coming from frequent and occasional users (vs. contributors), this is both unsurprising and promising for the purposes of our survey, I think... except *lack of time* -->
+
+#### Alt visualisations
+
+```{r makeLongerForGGplot}
+
+# make deterrents longer for ggplot
+
+visMainDetsAndEdis <- visMain |>
+  select(
+    c(
+      ID,
+      starts_with("deterrents"),
+      gender,
+      nonHeteroCommunity,
+      raceCulture,
+      disability,
+      domLangEnglish
+      )
+    )
+
+visMainDetsLong <- visMainDetsAndEdis |>
+  pivot_longer(
+    starts_with("deterrents"),
+    names_to = "deterrent",
+    values_to = "response"
+  )
+
+visMainDetsLong <- visMainDetsLong |> 
+  mutate(
+    deterrents = 
+      recode(deterrent, 
+             deterrentsLackOfInterest = "lack of interest",
+             deterrentsLackOfTime = "lack of time",
+             deterrentsDontKnowHowToStart = "do not know how to start",
+             deterrentsLackOfCodingSkills = "lack of coding skills",
+             deterrentsNotConfidentOfWelcome = "not confident of welcome",
+             deterrentsUnawareContributingWasPossible = "unaware contributing was possible"
+             )
+    )
+visMainDetsLong$deterrent <- NULL
+
+visMainDetsLong <- visMainDetsLong |>
+  var_labels(
+    deterrents = "deterrents to contributing",
+    response = "response on a scale of 1 to 5"
+  )
+
+visMainDetsLong <- visMainDetsLong |>
+  mutate(across(where(is.numeric) & !response, as.character))
+
+visMainDetsLong <- visMainDetsLong |>
+  mutate(across(
+    c(
+      "nonHeteroCommunity",
+      "raceCulture",
+      "disability",
+      "domLangEnglish"
+      ),
+    ~recode(
+      .,
+      "0" = "No",
+      "1" = "Yes"
+      )
+    )
+  )
+
+# Drop NAs from each combination of EDI variable and response
+
+visMainDetsLongGender <- 
+  visMainDetsLong |>
+  select(response, deterrents, gender) |>
+  drop_na(gender) |>
+  drop_na(response) |>
+  var_labels(
+    gender = 
+      "[I] identify most with [the following gender]")
+
+visMainDetsLongNonHetero <- 
+  visMainDetsLong |>
+  select(response, deterrents, nonHeteroCommunity) |>
+  drop_na(nonHeteroCommunity) |>
+  drop_na(response)|>
+  var_labels(
+    nonHeteroCommunity = 
+      "[I am] consider[ed]... somehow NOT to be part of the heterosexual community"
+    )
+  
+visMainDetsLongRace <- 
+  visMainDetsLong |>
+  select(response, deterrents, raceCulture) |>
+  drop_na(raceCulture) |>
+  drop_na(response)|>
+  var_labels(
+    raceCulture = 
+      "[I am] condered[ed to be] part of a race and/or culture that is potentially discriminated against")
+
+visMainDetsLongDisability <- 
+  visMainDetsLong |>
+  select(response, deterrents, disability) |>
+  drop_na(disability) |>
+  drop_na(response) |>
+  var_labels(
+    disability = 
+      "[I am] consider[ed to be] disabled and/or neurodivergent...")
+
+visMainDetsLongDomLangEnglish <- 
+  visMainDetsLong |>
+  select(response, deterrents, domLangEnglish) |>
+  drop_na(domLangEnglish) |>
+  drop_na(response) |>
+  var_labels(
+    domLangEnglish = 
+      "[My] dominant (preferred) written language [is] English")
+
+```
+
+
+```{r deterrentByEdiBoxplots}
+
+# Make the boxplots
+  
+visMainDetsLongGender |>
+varByEdiBoxplots(
+  respVar = "response", 
+  ediVar = "gender", 
+  wrapVar = "deterrents", 
+  ostColour = ostPrimaryColours3,
+  altLabel = "Boxplots of deterrents by gender, where the green circle indicates the mean."
+  )
+
+visMainDetsLongNonHetero |>
+  varByEdiBoxplots(
+    respVar = "response", 
+    ediVar = "nonHeteroCommunity", 
+    wrapVar = "deterrents", 
+    ostColour = ostPrimaryColours2,
+    altLabel = "Boxplots of deterrents by non-heterosexuality, where the green circle indicates the mean."
+  )
+
+visMainDetsLongRace |>
+  varByEdiBoxplots(
+    respVar = "response", 
+    ediVar = "raceCulture", 
+    wrapVar = "deterrents", 
+    ostColour = ostPrimaryColours2,
+    altLabel = "Boxplots of deterrents by race and-or culture, where the green circle indicates the mean."
+  )
+
+visMainDetsLongDisability |>
+  varByEdiBoxplots(
+    respVar = "response", 
+    ediVar = "disability", 
+    wrapVar = "deterrents", 
+    ostColour = ostPrimaryColours2,
+    altLabel = "Boxplots of deterrents by disability and-or neurodivergence, where the green circle indicates the mean."
+  )
+
+visMainDetsLongDomLangEnglish |>
+  varByEdiBoxplots(
+    respVar = "response", 
+    ediVar = "domLangEnglish", 
+    wrapVar = "deterrents", 
+    ostColour = ostPrimaryColours2,
+    altLabel = "Boxplots of deterrents by whether English is their dominant written language, where the green circle indicates the mean."
+  )
+
+```
+
+
+```{r}
+
+# pm <- visMain |>
+#   drop_na(deterrentsDontKnowHowToStart) |>
+#   drop_na(gender) |>
+#   ggduo(
+#   c("gender"),
+#   c(
+#     "deterrentsLackOfInterest",
+#     "deterrentsLackOfTime",
+#     "deterrentsDontKnowHowToStart",
+#     "deterrentsLackOfCodingSkills",
+#     "deterrentsNotConfidentOfWelcome",
+#     "deterrentsUnawareContributingWasPossible"
+#     )
+#  )
+
+# p10 <- visMain |>
+#   drop_na(deterrentsDontKnowHowToStart) |>
+#   drop_na(gender) |>
+# ggally_facethist( mapping = ggplot2::aes(
+#   x = deterrentsDontKnowHowToStart, 
+#   y = gender),
+#   binwidth=1
+#   ) +
+#   ggtitle(get_label(visMain$deterrentsDontKnowHowToStart))
+# 
+# p10
+
+# p10 <- visMain |>
+#   drop_na(deterrentsDontKnowHowToStart) |>
+#   drop_na(gender) |>
+# ggbivariate(
+#   mapping = ggplot2::aes(
+#     x = deterrentsDontKnowHowToStart,
+#     y = gender),
+#   binwidth=1
+#   ) +
+#   ggtitle(get_label(visMain$deterrentsDontKnowHowToStart))
+# 
+# p10
+
+p11 <- visMain |>
+  drop_na(deterrentsDontKnowHowToStart) |>
+  drop_na(gender) |>
+ggbivariate(.,
+  explanatory = visMain$deterrentsDontKnowHowToStart,
+  mapping = ggplot2::aes(
+    x = deterrentsDontKnowHowToStart,
+    y = gender
+    ),
+  binwidth=1
+  ) +
+  ggtitle(get_label(visMain$deterrentsDontKnowHowToStart))
+
+p11
+
+```
+
 
 #### [some remarks]
 
@@ -2069,7 +2364,8 @@ allPackages <-
     neededPackages,
     c(
       "grateful", 
-      "remotes"
+      "remotes",
+      "gghalves"
       )
     )
 

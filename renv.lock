@@ -743,9 +743,28 @@
       ],
       "Hash": "80ddc709c6b871b6b777f482d9f6c66d"
     },
+    "gghalves": {
+      "Package": "gghalves",
+      "Version": "0.1.4",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "gghalves",
+      "RemoteUsername": "erocoar",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "e5c3c79e79f13a00795a2a7774794252d1980d86",
+      "Requirements": [
+        "R",
+        "ggplot2",
+        "grDevices",
+        "grid",
+        "gtable"
+      ],
+      "Hash": "505bc0a7bddc0822a7ef2cf5bee96c22"
+    },
     "ggplot2": {
       "Package": "ggplot2",
-      "Version": "3.4.1",
+      "Version": "3.4.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -766,7 +785,7 @@
         "vctrs",
         "withr"
       ],
-      "Hash": "d494daf77c4aa7f084dbbe6ca5dcaca7"
+      "Hash": "3a147ee02e85a8941aad9909f1b43b7b"
     },
     "glue": {
       "Package": "glue",

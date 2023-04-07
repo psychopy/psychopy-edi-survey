@@ -496,7 +496,7 @@ Second, we can lengthen then widen the data frame to convert the multiple respon
 
 # The `separate_longer_delim()` function from the tidyr package takes
 # multiple responses from one participant separated by a delimiter and
-# converts them into multiple observatios for the same participant, making
+# converts them into multiple observations for the same participant, making
 # the data frame longer, with one response per observation under the
 # variable `contributeMost`.
 
