@@ -29,27 +29,29 @@ csl: apa.csl
 #| output: false
 
 # List the packages needed for this file
-neededPackages <- c(
-  "dplyr",
-  "purrr",
-  "tidyr",
-  "sysfonts",
-  "showtext",
-  "sjPlot",
-  "sjlabelled",
-  "sjmisc",
-  "DT",
-  "knitr",
-  "gtsummary",
-  "xfun",
-  "stringr",
-  "flextable",
-  "showtext",
-  "cowplot",
-  "renv",
-  "ggplot2",
-  "cowplot",
-  "GGally")
+neededPackages <- 
+  c(
+    "dplyr",
+    "purrr",
+    "tidyr",
+    "sysfonts",
+    "showtext",
+    "sjPlot",
+    "sjlabelled",
+    "sjmisc",
+    "DT",
+    "knitr",
+    "gtsummary",
+    "xfun",
+    "stringr",
+    "flextable",
+    "showtext",
+    "cowplot",
+    "renv",
+    "ggplot2",
+    "cowplot",
+    "GGally"
+    )
 
 # The code directly below installs R packages 
 # Uncomment the code directly below if you 
@@ -61,18 +63,11 @@ neededPackages <- c(
 # Uncomment the code directly below in order to do so.
 #install.packages("remotes"); library(remotes); remotes::install_github("Pakillo/grateful")
 
-# The gghalves package supports ggbeeswarm, but currently
-# only with the development version (04 Apr 2023). 
-# This will probably change in the near future.
-#remotes::install_github('erocoar/gghalves')
-
 #Attach the packages
 lapply(neededPackages, require, character.only=T)
 library(grateful)
-library(gghalves)
 
 ```
-
 
 
 ```{r getFontArvo}
@@ -97,6 +92,8 @@ visMain <- readRDS("tidyLabeledSurveyData.rds")
               
 ```
 
+# themes (remove header)
+
 ```{r setPlottingTheme}
 #| output: false
 
@@ -120,8 +117,25 @@ flextable::set_flextable_defaults(
   )
 
 # create an OST pallete for Likert scales with 5 items
-# OST yellow will be neutral
-OSTcolours4 <- 
+
+ostBlue   <- "#26DCF0"
+ostOrange <- "#EB692A"
+ostYellow <- "#F7F11C"
+
+ostColours2 <- 
+  c(
+    "#26DCF0",
+    "#EB692A"
+    )
+
+ostColours3 <- 
+  c(
+    "#26DCF0",
+    "#EB692A",
+    "#F7F11C"
+    )
+
+ostColours4 <- 
   c(
     "#EB692A",
     "#f3a57f",
@@ -129,9 +143,16 @@ OSTcolours4 <-
     "#26DCF0"
     )
 
-# create an OST pallete for Likert scales with 7 items
-# OST yellow will be neutral
-OSTcolours6 <- 
+ostColours5 <- 
+  c(
+    "#EB692A",
+    "#f3a57f",
+    "#F7F11C",
+    "#7deaf6",
+    "#26DCF0"
+    )
+
+ostColours6 <- 
   c(
     "#EB692A",
     "#f3a57f",
@@ -141,24 +162,20 @@ OSTcolours6 <-
     "#26DCF0"
     )
 
-ostBlue   <- "#26DCF0"
-ostOrange <- "#EB692A"
-ostYellow <- "#F7F11C"
-
-ostPrimaryColours3 <- 
+ostColours7 <- 
   c(
-    "#26DCF0",
     "#EB692A",
-    "#F7F11C"
-    )
-
-ostPrimaryColours2 <- 
-  c(
-    "#26DCF0",
-    "#EB692A"
+    "#f3a57f",
+    "#fbe1d4",
+    "#F7F11C",
+    "#d4f8fc",
+    "#7deaf6",
+    "#26DCF0"
     )
 
 ```
+
+# functions (remove header)
 
 ```{r summarisingFunctions}
 #| output: false
@@ -203,7 +220,7 @@ stackedLikertGroups <- function(.x, likertTitle) {
       grid.range = c(1.1,1.1),
       group.legend.options = list(nrow = 1),
       wrap.labels = 40,
-      geom.colors = OSTcolours6,
+      geom.colors = ostColours6,
       geom.size = .75,
       digits = 0,
       show.prc.sign = T,
@@ -212,12 +229,33 @@ stackedLikertGroups <- function(.x, likertTitle) {
 print(p)
 }
 
+
+stackedProportions <- function(
+    .x, 
+    figureTitle,
+    colours) {
+  p <-
+    sjPlot::plot_stackfrq(
+      .x,
+      title = figureTitle,
+      legend.title = "response",
+      sort.frq = "last.desc",
+      wrap.labels = 40,
+      geom.colors = colours,
+      geom.size = .75,
+      digits = 0
+      )
+print(p)
+}
+
+# STOPPED HERE 13:18 ON 8 APR 2023
+
 ## with no grouping
-stackedLikertNoGroups <- function(.x, likertTitle) {
+stackedProportionNoGroups <- function(.x, figureTitle) {
   p <-
     sjPlot::plot_likert(
       .x,
-      title = likertTitle,
+      title = figureTitle,
       legend.title = "response",
       catcount = 4,
       legend.pos = "bottom",
@@ -229,7 +267,7 @@ stackedLikertNoGroups <- function(.x, likertTitle) {
       grid.range = c(1.1,1.1),
       group.legend.options = list(nrow = 1),
       wrap.labels = 40,
-      geom.colors = OSTcolours4,
+      geom.colors = OSTcolours5,
       geom.size = .75,
       digits = 0,
       show.prc.sign = T,
@@ -272,49 +310,6 @@ tableLikert <- function(.x, lowerBound, upperBound) {
   flextable::flextable_to_rmd(p)
 }
 
-# variable-by-EDI boxplots
-
-varByEdiBoxplots <- function(
-    .x, 
-    respVar, 
-    ediVar, 
-    wrapVar, 
-    ostColour,
-    altLabel
-    ) {
-p <- 
-  ggplot(.x) +
-  geom_boxplot(
-    aes_string(
-      respVar, 
-      ediVar,
-      fill=ediVar),
-    varwidth = T,
-    show.legend = F
-    ) +
-  geom_jitter(
-    aes_string(respVar, ediVar),
-    alpha=.2
-    ) +
-  stat_summary(
-    aes_string(respVar, ediVar),
-    fun = mean, 
-    geom = "point",
-    shape = 21,
-    size = 5,
-    color = "green",
-    fill = "green"
-    ) +
-  labs(
-    title = paste(wrapVar ,"by", ediVar),
-    subtitle = "(mean value indicated by green circle)",
-    caption = sjlabelled::get_label(ediVar),
-    alt = altLabel
-  ) +
-  scale_fill_manual(values = ostColour) +
-  facet_wrap(wrapVar)
-print(p)
-}
 
 
 ```
@@ -362,713 +357,6 @@ Below are the full survey categories in more detail.
 None of the questions here required responses. 
 
 Each of the headings in the list above above is depicted below with a visualisation, followed by a verbal summary of that visualisation, and then statistics on central tendency in cases where there were any Likert items.
-
-## background
-
-The first few items on the survey collected information about  general background demographics, including participants' career status, the role they typically play in their usage of *PsychoPy*<sup>&reg;</sup>. These are covered in the subsections below.
-
-### career status
-
-This section summarises, both visually and verbally, the answer to the following question:
-
->`r get_label(visMain$careerStatus)`
-
-Participants had to choose from one of the following:
-
-- *Researcher - early career (e.g. PhD, postdoc)*\
-- *Researcher - mid career (e.g. Assistant/Associate Professor)*\
-- *Researcher - senior (e.g. Full Professor)*\
-- *Technical - junior*\
-- *Technical - senior*
-
-#### visualisation 
-
-The visualisation below presents responses in descending order of frequency.
-
-```{r plotCareerStatus}
-#| label: career-status-plot
-#| fig-alt: "Descending frequency barplot of the responses to the following question: 'Roughly speaking, what is your career status?'"
-
-visMain |>
-  select(careerStatus) |>
-  ostFreqPlot(
-    ostColour = ostBlue, 
-    sorting = "desc"
-    )
-
-```
-
-#### verbal summary 
-
-The verbal summaries below proceed in the order in which the responses appeared in the original survey (i.e., not descending order of response frequency, as in the visualisation above).
-
-With respect to the `r length(which(!is.na(visMain$careerStatus)))` participants who provided an answer to the question regarding their career status, the number of people in each career type are as follows:
-
-- research career\
-  - early phase: `r length(which(visMain$careerStatus == "Researcher - early career"))`, or `r round(length(which(visMain$careerStatus == "Researcher - early career"))/length(which(!is.na(visMain$careerStatus))),3)*100`%\
-  - middle phase: `r length(which(visMain$careerStatus == "Researcher - mid career"))`, or `r round(length(which(visMain$careerStatus == "Researcher - mid career"))/length(which(!is.na(visMain$careerStatus))),3)*100`%\
-  - senior phase: `r length(which(visMain$careerStatus == "Researcher - senior"))`, or `r round(length(which(visMain$careerStatus == "Researcher - senior"))/length(which(!is.na(visMain$careerStatus))),3)*100`%\
-
-- technical career\
-  - junior phase: `r length(which(visMain$careerStatus == "Technical - junior"))`, or `r round(length(which(visMain$careerStatus == "Technical - junior"))/length(which(!is.na(visMain$careerStatus))),3)*100`%\
-  - senior phase: `r length(which(visMain$careerStatus == "Technical - senior"))`, or `r round(length(which(visMain$careerStatus == "Technical - senior"))/length(which(!is.na(visMain$careerStatus))),3)*100`%
-
-#### [some remarks]
-
-- Looks like almost half of the responses came from early-career researchers
-
----
-
-### type of engagement with *PsychoPy*<sup>&reg;</sup>
-
-This section summarises, both visually and verbally, the responses to the following prompt:
-
->`r get_label(visMain$engagement)`
-
-Participants had to choose from one of the following:
-
-- *Occasional user*\
-- *Frequent user*\
-- *Occasional contributor*\
-- *Frequent contributor*\
-- *Senior developer*
-
-#### visualisation
-
-The visualisation below presents responses in descending order of frequency.
-
-```{r plotEngagement}
-#| label: engagement-type-plot
-#| fig-alt: "Descending frequency barplot of the responses to the following question: 'What best describes your role/usage of PsychoPy?'"
-
-visMain |>
-  select(engagement) |>
-  ostFreqPlot(
-    ostColour = ostOrange, 
-    sorting = "desc"
-    )
-
-```
-
-#### verbal summary
-
-The verbal summaries below proceed in the order in which the responses appeared in the original survey (i.e., not descending order of response frequency, as in the visualisation above).
-
-With respect to the `r length(which(!is.na(visMain$engagement)))` participants who provided an answer to the question regarding roughly how they engage with *PsychoPy/JS*<sup>&reg;</sup>, the number of people in each type are as follows:
-
-- user\
-  - occasional: `r length(which(visMain$engagement == "Occasional user"))`, or `r round(length(which(visMain$engagement == "Occasional user"))/length(which(!is.na(visMain$engagement))),3)*100`%\
-  - frequent: `r length(which(visMain$engagement == "Frequent user"))`, or `r round(length(which(visMain$engagement == "Frequent user"))/length(which(!is.na(visMain$engagement))),3)*100`%\
-
-- contributor\
-  - occasional: `r length(which(visMain$engagement == "Occasional contributor"))`, or `r round(length(which(visMain$engagement == "Occasional contributor"))/length(which(!is.na(visMain$engagement))),3)*100`%\
-  - frequent: `r length(which(visMain$engagement == "Frequent contributor"))`, or `r round(length(which(visMain$engagement == "Frequent contributor"))/length(which(!is.na(visMain$engagement))),3)*100`%\
-
-- senior developer: `r length(which(visMain$engagement == "Senior developer"))`, or `r round(length(which(visMain$engagement == "Senior developer"))/length(which(!is.na(visMain$engagement))),3)*100`%
-
-#### [some remarks]
-
-- just over 88% of the people who responded are users, not contributors\
-- almost all of the others were *occasional contributors*
-- but about 2.2% were *frequent contributors* or *senior developers*
-
----
-
-### ways of contributing
-
-This was a select-all-that-apply question, worded as follows:
-
->In which way do you contribute most? (select all that apply)
-
-Each participant could select more than one option when describing how they contribute most. For ease of visual and verbal summary, the responses were converted into new variables, one per response. It is important to note here that multiple responses from the same person were possible here (and certainly did occur).
-
-The possible selections were as follows:
-
-- *Improving documentation*\
-- *Supporting other users (e.g., on the forum)*\
-- *Fixing bugs*\
-- *Adding new features*\
-- *Providing translations to other languages*\
-- *Other (describe)*
-
-It is important to keep in mind that participants may be counted as *yes* or *no* independently in any of the possible responses, which were converted to individual boolean variables below. If they selected the response, we assigned the value *selected*; if they did not, we assigned the value *not selected*. 
-
-#### improving documentation
-
-The summaries below refer to responses to the following reworded statement:
-
->`r get_label(visMain$contribImprvDoc)`
-
-##### visualisation
-
-```{r plotContribImprvDoc}
-#| label: contribImprvDoc-plot
-#| fig-alt: "Frequency barplot of the response 'improving documentation' to the following question: 'In which way do you contribute most?'"
-
-visMain |>
-  select(contribImprvDoc) |>
-  ostFreqPlot(
-    ostColour = ostYellow, 
-    sorting = "none"
-    )
-
-```
-
-##### verbal summary
-
-`r str_to_title(numbers_to_words(length(which(visMain$contribImprvDoc == 1))))`, or `r round(length(which(visMain$contribImprvDoc == 1))/length(which(!is.na(visMain$contribImprvDoc))),3)*100`% of those who responded to this question, indicated that they improved documentation.
-
----
-
-#### supporting others
-
-The summaries below refer to responses to the following reworded statement:
-
->`r get_label(visMain$contribSuppOthers)`
-
-##### visualisation
-
-```{r plotContribSuppOthers}
-#| label: contribSuppOthers-plot
-#| fig-alt: "Frequency barplot of the response 'supporting other users' to the following question: 'In which way do you contribute most?'"
-
-visMain |>
-  select(contribSuppOthers) |>
-  ostFreqPlot(
-    ostColour = ostBlue, 
-    sorting = "none"
-    )
-
-```
-
-##### verbal summary
-
-`r str_to_title(numbers_to_words(length(which(visMain$contribSuppOthers == 1))))`, or `r round(length(which(visMain$contribSuppOthers == 1))/length(which(!is.na(visMain$contribSuppOthers))),3)*100`% of those who responded to this question, indicated that they supported others.
-
----
-
-#### fixing bugs
-
-The summaries below refer to responses to the following reworded statement:
-
->`r get_label(visMain$contribFixBugs)`
-
-##### visualisation
-
-```{r plotContribFixBugs}
-#| label: contribFixBugs-plot
-#| fig-alt: "Frequency barplot of the response 'fixing bugs' to the following question: 'In which way do you contribute most?'"
-
-visMain |>
-  select(contribFixBugs) |>
-  ostFreqPlot(
-    ostColour = ostOrange, 
-    sorting = "none"
-    )
-
-```
-
-##### verbal summary
-
-`r str_to_title(numbers_to_words(length(which(visMain$contribFixBugs == 1))))`, or `r round(length(which(visMain$contribFixBugs == 1))/length(which(!is.na(visMain$contribFixBugs))),3)*100`% of those who responded to this question, indicated that they fixed bugs.
-
----
-
-#### adding features
-
-The summaries below refer to responses to the following reworded statement:
-
->`r get_label(visMain$contribAddFeatures)`
-
-##### visualisation
-
-```{r plotContribAddFeatures}
-#| label: contribAddFeatures-plot
-#| fig-alt: "Frequency barplot of the response 'adding new features' to the following question: 'In which way do you contribute most?'"
-
-visMain |>
-  select(contribAddFeatures) |>
-  ostFreqPlot(
-    ostColour = ostYellow, 
-    sorting = "none"
-    )
-
-```
-
-##### verbal summary
-
-`r str_to_title(numbers_to_words(length(which(visMain$contribAddFeatures == 1))))`, or `r round(length(which(visMain$contribAddFeatures == 1))/length(which(!is.na(visMain$contribAddFeatures))),3)*100`% of those who responded to this question, indicated that they added features.
-
----
-
-#### providing translations
-
-The summaries below refer to responses to the following reworded statement:
-
->`r get_label(visMain$contribProvTransl)`
-
-##### visualisation
-
-```{r plotContribProvTransl}
-#| label: contribProvTransl-plot
-#| fig-alt: "Frequency barplot of the response 'providing translations to other languages' to the following question: 'In which way do you contribute most?'"
-
-visMain |>
-  select(contribProvTransl) |>
-  ostFreqPlot(
-    ostColour = ostBlue, 
-    sorting = "none"
-    )
-
-```
-
-##### verbal summary
-
-`r str_to_title(numbers_to_words(length(which(visMain$contribProvTransl == 1))))`, or `r round(length(which(visMain$contribProvTransl == 1))/length(which(!is.na(visMain$contribProvTransl))),3)*100`% of those who responded to this question, indicated that they provided translations.
-
----
-
-#### other
-
-The summaries below refer to responses to the following reworded statement:
-
->`r get_label(visMain$contribOther)`
-
-##### visualisation
-
-```{r plotContribOther}
-#| label: contribOther-plot
-#| fig-alt: "Frequency barplot of the response 'Other (describe)' to the following question: 'In which way do you contribute most?'"
-
-visMain |>
-  select(contribOther) |>
-  ostFreqPlot(
-    ostColour = ostOrange, 
-    sorting = "none"
-    )
-
-```
-
-##### verbal summary
-
-`r str_to_title(numbers_to_words(length(which(visMain$contribOther == 1))))`, or `r round(length(which(visMain$contribOther == 1))/length(which(!is.na(visMain$contribOther))),3)*100`% of those who responded to this question, indicated that they contributed in other ways. 
-
-##### descriptions
-
-The participants were given the option to describe those other contributions. These descriptions are listed in the table below.
-
-```{r tableOfOtherContributions}
-#| label: other-contributions-table
-#| tbl-cap: "Descriptions of other contributions to PyschoPy/JS that some participants provided"
-
-visMain |> 
-  select(contribOtherDesc) |>
-  drop_na() |>
-  datatable(
-    class = 'cell-border stripe',
-    colnames = "[I] contribute in these other ways"
-  )
-
-```
-
-#### [some remarks]
-
-- supporting others seems to be the dominant form of contributing among the survey participants
-
-
----
-
-### deterrents to contributing
-
-Participants were asked the following:
-
->To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?
-
-Below the question was a list of the following potential causes:
-
-- *Lack of interest*\
-- *Lack of time*\
-- *Lack of knowledge on how to get started*\
-- *Lack of coding skills*\
-- *Not confident I would be welcomed by the community*\
-- *Not aware contributing was possible*
-
-Participants could rank each of these on a `1`-`5` Likert scale, where `1` indicated *not at all* and a `5` indicated *very much*.
-
-This section summarises, both visually and verbally, the rankings that participants provided for each potential cause.
-
-::: {.callout-note}
-Note that on this `1`-`5` scale, the number `3` is directly in the middle of the scale, which can be interpreted as neither agreeing nor disagreeing. We set responses of `3` to the side of the stacked frequency barplots below, in yellow.
-
-Also, the barplots are sorted along descending frequency of agreement. That is, the topmost barplot is the one with highest number of agreements, whereas the bottommost barplot is the one with the highest number of disagreements.
-:::
-
-##### visualisation
-
-```{r plotDeterrents}
-#| label: deterrents-plot
-#| fig-alt: "Stacked frequency barplots of the responses to: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?'"
-
-visMain |>
-  select(starts_with("deterrents")) |>
-  stackedLikertNoGroups(
-    likertTitle = "Deterrents to contributing"
-    )
-
-```
-
-##### verbal summary
-
-Below, we describe the numbers in the figure above, but in the order in which the items appeared in the survey.
-
-- *`r get_label(visMain$deterrentsLackOfInterest)`*\
-  - Total responses: `r length(which(!is.na(visMain$deterrentsLackOfInterest)))`\
-  - Those who believed this was *not* the case: `r length(which(visMain$deterrentsLackOfInterest == 1))+length(which(visMain$deterrentsLackOfInterest == 2))`, or `r round((length(which(visMain$deterrentsLackOfInterest == 1))+length(which(visMain$deterrentsLackOfInterest == 2)))/length(which(!is.na(visMain$deterrentsLackOfInterest))),3)*100`%\
-  - Those who believed this *was* the case: `r length(which(visMain$deterrentsLackOfInterest == 4))+length(which(visMain$deterrentsLackOfInterest == 5))`, or `r round((length(which(visMain$deterrentsLackOfInterest == 4))+length(which(visMain$deterrentsLackOfInterest == 5)))/length(which(!is.na(visMain$deterrentsLackOfInterest))),3)*100`%\
-  - Those who were neutral: `r length(which(visMain$deterrentsLackOfInterest == 3))`, or `r round(length(which(visMain$deterrentsLackOfInterest == 3))/length(which(!is.na(visMain$deterrentsLackOfInterest))),3)*100`%
-
-- *`r get_label(visMain$deterrentsLackOfTime)`*\
-  - Total responses: `r length(which(!is.na(visMain$deterrentsLackOfTime)))`\
-  - Those who believed this was *not* the case: `r length(which(visMain$deterrentsLackOfTime == 1))+length(which(visMain$deterrentsLackOfTime == 2))`, or `r round((length(which(visMain$deterrentsLackOfTime == 1))+length(which(visMain$deterrentsLackOfTime == 2)))/length(which(!is.na(visMain$deterrentsLackOfTime))),3)*100`%\
-  - Those who believed this *was* the case: `r length(which(visMain$deterrentsLackOfTime == 4))+length(which(visMain$deterrentsLackOfTime == 5))`, or `r round((length(which(visMain$deterrentsLackOfTime == 4))+length(which(visMain$deterrentsLackOfTime == 5)))/length(which(!is.na(visMain$deterrentsLackOfTime))),3)*100`%\
-  - Those who were neutral: `r length(which(visMain$deterrentsLackOfTime == 3))`, or `r round(length(which(visMain$deterrentsLackOfTime == 3))/length(which(!is.na(visMain$deterrentsLackOfTime))),3)*100`%
-
-- *`r get_label(visMain$deterrentsDontKnowHowToStart)`*\
-  - Total responses: `r length(which(!is.na(visMain$deterrentsDontKnowHowToStart)))`\
-  - Those who believed this was *not* the case: `r length(which(visMain$deterrentsDontKnowHowToStart == 1))+length(which(visMain$deterrentsDontKnowHowToStart == 2))`, or `r round((length(which(visMain$deterrentsDontKnowHowToStart == 1))+length(which(visMain$deterrentsDontKnowHowToStart == 2)))/length(which(!is.na(visMain$deterrentsDontKnowHowToStart))),3)*100`%\
-  - Those who believed this *was* the case: `r length(which(visMain$deterrentsDontKnowHowToStart == 4))+length(which(visMain$deterrentsDontKnowHowToStart == 5))`, or `r round((length(which(visMain$deterrentsDontKnowHowToStart == 4))+length(which(visMain$deterrentsDontKnowHowToStart == 5)))/length(which(!is.na(visMain$deterrentsDontKnowHowToStart))),3)*100`%\
-  - Those who were neutral: `r length(which(visMain$deterrentsDontKnowHowToStart == 3))`, or `r round(length(which(visMain$deterrentsDontKnowHowToStart == 3))/length(which(!is.na(visMain$deterrentsDontKnowHowToStart))),3)*100`%
-
-- *`r get_label(visMain$deterrentsLackOfCodingSkills)`*\
-  - Total responses: `r length(which(!is.na(visMain$deterrentsLackOfCodingSkills)))`\
-  - Those who believed this was *not* the case: `r length(which(visMain$deterrentsLackOfCodingSkills == 1))+length(which(visMain$deterrentsLackOfCodingSkills == 2))`, or `r round((length(which(visMain$deterrentsLackOfCodingSkills == 1))+length(which(visMain$deterrentsLackOfCodingSkills == 2)))/length(which(!is.na(visMain$deterrentsLackOfCodingSkills))),3)*100`%\
-  - Those who believed this *was* the case: `r length(which(visMain$deterrentsLackOfCodingSkills == 4))+length(which(visMain$deterrentsLackOfCodingSkills == 5))`, or `r round((length(which(visMain$deterrentsLackOfCodingSkills == 4))+length(which(visMain$deterrentsLackOfCodingSkills == 5)))/length(which(!is.na(visMain$deterrentsLackOfCodingSkills))),3)*100`%\
-  - Those who were neutral: `r length(which(visMain$deterrentsLackOfCodingSkills == 3))`, or `r round(length(which(visMain$deterrentsLackOfCodingSkills == 3))/length(which(!is.na(visMain$deterrentsLackOfCodingSkills))),3)*100`%
-
-- *`r get_label(visMain$deterrentsNotConfidentOfWelcome)`*\
-  - Total responses: `r length(which(!is.na(visMain$deterrentsNotConfidentOfWelcome)))`\
-  - Those who believed this was *not* the case: `r length(which(visMain$deterrentsNotConfidentOfWelcome == 1))+length(which(visMain$deterrentsNotConfidentOfWelcome == 2))`, or `r round((length(which(visMain$deterrentsNotConfidentOfWelcome == 1))+length(which(visMain$deterrentsNotConfidentOfWelcome == 2)))/length(which(!is.na(visMain$deterrentsNotConfidentOfWelcome))),3)*100`%\
-  - Those who believed this *was* the case: `r length(which(visMain$deterrentsNotConfidentOfWelcome == 4))+length(which(visMain$deterrentsNotConfidentOfWelcome == 5))`, or `r round((length(which(visMain$deterrentsNotConfidentOfWelcome == 4))+length(which(visMain$deterrentsNotConfidentOfWelcome == 5)))/length(which(!is.na(visMain$deterrentsNotConfidentOfWelcome))),3)*100`%\
-  - Those who were neutral: `r length(which(visMain$deterrentsNotConfidentOfWelcome == 3))`, or `r round(length(which(visMain$deterrentsNotConfidentOfWelcome == 3))/length(which(!is.na(visMain$deterrentsNotConfidentOfWelcome))),3)*100`%
-
-- *`r get_label(visMain$deterrentsUnawareContributingWasPossible)`*\
-  - Total responses: `r length(which(!is.na(visMain$deterrentsUnawareContributingWasPossible)))`\
-  - Those who believed this was *not* the case: `r length(which(visMain$deterrentsUnawareContributingWasPossible == 1))+length(which(visMain$deterrentsUnawareContributingWasPossible == 2))`, or `r round((length(which(visMain$deterrentsUnawareContributingWasPossible == 1))+length(which(visMain$deterrentsUnawareContributingWasPossible == 2)))/length(which(!is.na(visMain$deterrentsUnawareContributingWasPossible))),3)*100`%\
-  - Those who believed this *was* the case: `r length(which(visMain$deterrentsUnawareContributingWasPossible == 4))+length(which(visMain$deterrentsUnawareContributingWasPossible == 5))`, or `r round((length(which(visMain$deterrentsUnawareContributingWasPossible == 4))+length(which(visMain$deterrentsUnawareContributingWasPossible == 5)))/length(which(!is.na(visMain$deterrentsUnawareContributingWasPossible))),3)*100`%\
-  - Those who were neutral: `r length(which(visMain$deterrentsUnawareContributingWasPossible == 3))`, or `r round(length(which(visMain$deterrentsUnawareContributingWasPossible == 3))/length(which(!is.na(visMain$deterrentsUnawareContributingWasPossible))),3)*100`%
-
-#### central tendency
-
-```{r tableDeterrents}
-#| label: deterrents-stats-table
-#| tbl-cap: "Statistical summaries of responses to statements regarding deterrents to contributing."
-#| output: asis
-
-visMain |>
-  select(starts_with("deterrents"))  |>
-  tableLikert(
-    lowerBound = "1 = not at all",
-    upperBound = "5 = very much"
-  )
-
-```
-
-
-
-<!-- Combined with the fact that many of these responses are coming from frequent and occasional users (vs. contributors), this is both unsurprising and promising for the purposes of our survey, I think... except *lack of time* -->
-
-#### Alt visualisations
-
-```{r makeLongerForGGplot}
-
-# make deterrents longer for ggplot
-
-visMainDetsAndEdis <- visMain |>
-  select(
-    c(
-      ID,
-      starts_with("deterrents"),
-      gender,
-      nonHeteroCommunity,
-      raceCulture,
-      disability,
-      domLangEnglish
-      )
-    )
-
-visMainDetsLong <- visMainDetsAndEdis |>
-  pivot_longer(
-    starts_with("deterrents"),
-    names_to = "deterrent",
-    values_to = "response"
-  )
-
-visMainDetsLong <- visMainDetsLong |> 
-  mutate(
-    deterrents = 
-      recode(deterrent, 
-             deterrentsLackOfInterest = "lack of interest",
-             deterrentsLackOfTime = "lack of time",
-             deterrentsDontKnowHowToStart = "do not know how to start",
-             deterrentsLackOfCodingSkills = "lack of coding skills",
-             deterrentsNotConfidentOfWelcome = "not confident of welcome",
-             deterrentsUnawareContributingWasPossible = "unaware contributing was possible"
-             )
-    )
-visMainDetsLong$deterrent <- NULL
-
-visMainDetsLong <- visMainDetsLong |>
-  var_labels(
-    deterrents = "deterrents to contributing",
-    response = "response on a scale of 1 to 5"
-  )
-
-visMainDetsLong <- visMainDetsLong |>
-  mutate(across(where(is.numeric) & !response, as.character))
-
-visMainDetsLong <- visMainDetsLong |>
-  mutate(across(
-    c(
-      "nonHeteroCommunity",
-      "raceCulture",
-      "disability",
-      "domLangEnglish"
-      ),
-    ~recode(
-      .,
-      "0" = "No",
-      "1" = "Yes"
-      )
-    )
-  )
-
-# Drop NAs from each combination of EDI variable and response
-
-visMainDetsLongGender <- 
-  visMainDetsLong |>
-  select(response, deterrents, gender) |>
-  drop_na(gender) |>
-  drop_na(response) |>
-  var_labels(
-    gender = 
-      "[I] identify most with [the following gender]")
-
-visMainDetsLongNonHetero <- 
-  visMainDetsLong |>
-  select(response, deterrents, nonHeteroCommunity) |>
-  drop_na(nonHeteroCommunity) |>
-  drop_na(response)|>
-  var_labels(
-    nonHeteroCommunity = 
-      "[I am] consider[ed]... somehow NOT to be part of the heterosexual community"
-    )
-  
-visMainDetsLongRace <- 
-  visMainDetsLong |>
-  select(response, deterrents, raceCulture) |>
-  drop_na(raceCulture) |>
-  drop_na(response)|>
-  var_labels(
-    raceCulture = 
-      "[I am] condered[ed to be] part of a race and/or culture that is potentially discriminated against")
-
-visMainDetsLongDisability <- 
-  visMainDetsLong |>
-  select(response, deterrents, disability) |>
-  drop_na(disability) |>
-  drop_na(response) |>
-  var_labels(
-    disability = 
-      "[I am] consider[ed to be] disabled and/or neurodivergent...")
-
-visMainDetsLongDomLangEnglish <- 
-  visMainDetsLong |>
-  select(response, deterrents, domLangEnglish) |>
-  drop_na(domLangEnglish) |>
-  drop_na(response) |>
-  var_labels(
-    domLangEnglish = 
-      "[My] dominant (preferred) written language [is] English")
-
-```
-
-
-```{r deterrentByEdiBoxplots}
-
-# Make the boxplots
-  
-visMainDetsLongGender |>
-varByEdiBoxplots(
-  respVar = "response", 
-  ediVar = "gender", 
-  wrapVar = "deterrents", 
-  ostColour = ostPrimaryColours3,
-  altLabel = "Boxplots of deterrents by gender, where the green circle indicates the mean."
-  )
-
-visMainDetsLongNonHetero |>
-  varByEdiBoxplots(
-    respVar = "response", 
-    ediVar = "nonHeteroCommunity", 
-    wrapVar = "deterrents", 
-    ostColour = ostPrimaryColours2,
-    altLabel = "Boxplots of deterrents by non-heterosexuality, where the green circle indicates the mean."
-  )
-
-visMainDetsLongRace |>
-  varByEdiBoxplots(
-    respVar = "response", 
-    ediVar = "raceCulture", 
-    wrapVar = "deterrents", 
-    ostColour = ostPrimaryColours2,
-    altLabel = "Boxplots of deterrents by race and-or culture, where the green circle indicates the mean."
-  )
-
-visMainDetsLongDisability |>
-  varByEdiBoxplots(
-    respVar = "response", 
-    ediVar = "disability", 
-    wrapVar = "deterrents", 
-    ostColour = ostPrimaryColours2,
-    altLabel = "Boxplots of deterrents by disability and-or neurodivergence, where the green circle indicates the mean."
-  )
-
-visMainDetsLongDomLangEnglish |>
-  varByEdiBoxplots(
-    respVar = "response", 
-    ediVar = "domLangEnglish", 
-    wrapVar = "deterrents", 
-    ostColour = ostPrimaryColours2,
-    altLabel = "Boxplots of deterrents by whether English is their dominant written language, where the green circle indicates the mean."
-  )
-
-```
-
-
-```{r}
-
-# pm <- visMain |>
-#   drop_na(deterrentsDontKnowHowToStart) |>
-#   drop_na(gender) |>
-#   ggduo(
-#   c("gender"),
-#   c(
-#     "deterrentsLackOfInterest",
-#     "deterrentsLackOfTime",
-#     "deterrentsDontKnowHowToStart",
-#     "deterrentsLackOfCodingSkills",
-#     "deterrentsNotConfidentOfWelcome",
-#     "deterrentsUnawareContributingWasPossible"
-#     )
-#  )
-
-# p10 <- visMain |>
-#   drop_na(deterrentsDontKnowHowToStart) |>
-#   drop_na(gender) |>
-# ggally_facethist( mapping = ggplot2::aes(
-#   x = deterrentsDontKnowHowToStart, 
-#   y = gender),
-#   binwidth=1
-#   ) +
-#   ggtitle(get_label(visMain$deterrentsDontKnowHowToStart))
-# 
-# p10
-
-# p10 <- visMain |>
-#   drop_na(deterrentsDontKnowHowToStart) |>
-#   drop_na(gender) |>
-# ggbivariate(
-#   mapping = ggplot2::aes(
-#     x = deterrentsDontKnowHowToStart,
-#     y = gender),
-#   binwidth=1
-#   ) +
-#   ggtitle(get_label(visMain$deterrentsDontKnowHowToStart))
-# 
-# p10
-
-p11 <- visMain |>
-  drop_na(deterrentsDontKnowHowToStart) |>
-  drop_na(gender) |>
-ggbivariate(.,
-  explanatory = visMain$deterrentsDontKnowHowToStart,
-  mapping = ggplot2::aes(
-    x = deterrentsDontKnowHowToStart,
-    y = gender
-    ),
-  binwidth=1
-  ) +
-  ggtitle(get_label(visMain$deterrentsDontKnowHowToStart))
-
-p11
-
-```
-
-
-#### [some remarks]
-
-- *Lack of time* is dominant here\
-- but *not knowing how to start* is close behind, which is good news for us in terms of increasing the contributor base\
-- importantly, most participants disagreed that *lack of interest* or *lack of confidence in a welcome* were holding them back
-
----
-
-### workshops on contributing
-
-This section summarises, both visually and verbally, the answer to the following question:
-
->`r get_label(visMain$workshopsOnContributing)`
-
-Participants provided answers on a `1`-`5` Likert scale, where `1` indicated *Strongly disagree* and a `5` indicated *Strongly agree*.
-
-#### visualisation
-
-```{r plotWorkshopsOnContributing}
-#| label: contrib-workshops-plot
-#| fig-alt: "Barplot of responses to the following statement: 'My engagement with the community would be helped if workshops were provided on how to contribute'"
-
-visMain |> 
-  select(workshopsOnContributing) |> 
-  ostFreqPlot(
-    ostColour = ostYellow,
-    sorting = "none"
-  )
-
-```
-
-#### verbal summary
-
-Below, we describe the numbers in the figure above.
-
-- *`r get_label(visMain$workshopsOnContributing)`*\
-  - Total responses: `r length(which(!is.na(visMain$workshopsOnContributing)))`\
-  - Those who *strongly disagreed* (`1`): `r length(which(visMain$workshopsOnContributing == 1))`, or `r round(length(which(visMain$workshopsOnContributing == 1))/length(which(!is.na(visMain$workshopsOnContributing))),3)*100`%\
-  - Those who somewhat *disagreed* (`2`): `r length(which(visMain$workshopsOnContributing == 2))`, or `r round(length(which(visMain$workshopsOnContributing == 2))/length(which(!is.na(visMain$workshopsOnContributing))),3)*100`%\
-  - Those who were neutral (`3`): `r length(which(visMain$workshopsOnContributing == 3))`, or `r round(length(which(visMain$workshopsOnContributing == 3))/length(which(!is.na(visMain$workshopsOnContributing))),3)*100`%\
-  - Those who somewhat *agreed* (`4`): `r length(which(visMain$workshopsOnContributing == 4))`, or `r round(length(which(visMain$workshopsOnContributing == 4))/length(which(!is.na(visMain$workshopsOnContributing))),3)*100`%\
-  - Those who *strongly agreed* (`5`): `r length(which(visMain$workshopsOnContributing == 5))`, or `r round(length(which(visMain$workshopsOnContributing == 5))/length(which(!is.na(visMain$workshopsOnContributing))),3)*100`%\
-
-#### central tendency
-
-```{r}
-#| label: workshops-stats-table
-#| tbl-cap: "Statistical summaries of responses to statement regarding the potential helpfulness of contributor workshops."
-#| output: asis
-
-visMain |>
-  select(workshopsOnContributing)  |>
-  tableLikert(
-    lowerBound = "1 = Strongly disagree",
-    upperBound = "5 = Strongly agree"
-  )
-
-```
-
-#### [some remarks]
-
-- It looks like around half of the participants agreed that they could be engaged more with workshops. That's really good.
-
----
 
 ## EDI issues
 
@@ -1653,7 +941,8 @@ The exact questions are listed in the verbal summary after the visualisation.
 
 visMain |>
   select(raceCultureNegPerc:raceCultureOthersLikeMe) |> 
-  stackedLikertGroups(likertTitle = "Race(s) and/or Culture(s)")
+  stackedLikertGroups(
+    likertTitle = "Race(s) and/or Culture(s)")
 
 ```
 
@@ -2075,7 +1364,8 @@ The exact questions are listed in the verbal summary after the visualisation.
 
 visMain |>
   select(domLangNegPerc:domLangOthersLikeMe) |> 
-  stackedLikertGroups(likertTitle = "Dominant Language")
+  stackedLikertGroups(
+    likertTitle = "Dominant Language")
 
 ```
 
@@ -2161,6 +1451,549 @@ visMain |>
 
 
 ---
+
+## background
+
+The first few items on the survey collected information about  general background demographics, including participants' career status, the role they typically play in their usage of *PsychoPy*<sup>&reg;</sup>. These are covered in the subsections below.
+
+### career status
+
+This section summarises, both visually and verbally, the answer to the following question:
+
+>`r get_label(visMain$careerStatus)`
+
+Participants had to choose from one of the following:
+
+- *Researcher - early career (e.g. PhD, postdoc)*\
+- *Researcher - mid career (e.g. Assistant/Associate Professor)*\
+- *Researcher - senior (e.g. Full Professor)*\
+- *Technical - junior*\
+- *Technical - senior*
+
+#### visualisation 
+
+The visualisation below presents responses in descending order of frequency.
+
+```{r plotCareerStatus}
+#| label: career-status-plot
+#| fig-alt: "Descending frequency barplot of the responses to the following question: 'Roughly speaking, what is your career status?'"
+
+visMain |>
+  select(careerStatus) |>
+  ostFreqPlot(
+    ostColour = ostBlue, 
+    sorting = "desc"
+    )
+
+```
+
+#### verbal summary 
+
+The verbal summaries below proceed in the order in which the responses appeared in the original survey (i.e., not descending order of response frequency, as in the visualisation above).
+
+With respect to the `r length(which(!is.na(visMain$careerStatus)))` participants who provided an answer to the question regarding their career status, the number of people in each career type are as follows:
+
+- research career\
+  - early phase: `r length(which(visMain$careerStatus == "Researcher - early career"))`, or `r round(length(which(visMain$careerStatus == "Researcher - early career"))/length(which(!is.na(visMain$careerStatus))),3)*100`%\
+  - middle phase: `r length(which(visMain$careerStatus == "Researcher - mid career"))`, or `r round(length(which(visMain$careerStatus == "Researcher - mid career"))/length(which(!is.na(visMain$careerStatus))),3)*100`%\
+  - senior phase: `r length(which(visMain$careerStatus == "Researcher - senior"))`, or `r round(length(which(visMain$careerStatus == "Researcher - senior"))/length(which(!is.na(visMain$careerStatus))),3)*100`%\
+
+- technical career\
+  - junior phase: `r length(which(visMain$careerStatus == "Technical - junior"))`, or `r round(length(which(visMain$careerStatus == "Technical - junior"))/length(which(!is.na(visMain$careerStatus))),3)*100`%\
+  - senior phase: `r length(which(visMain$careerStatus == "Technical - senior"))`, or `r round(length(which(visMain$careerStatus == "Technical - senior"))/length(which(!is.na(visMain$careerStatus))),3)*100`%
+
+#### [some remarks]
+
+- Looks like almost half of the responses came from early-career researchers
+
+---
+
+### type of engagement with *PsychoPy*<sup>&reg;</sup>
+
+This section summarises, both visually and verbally, the responses to the following prompt:
+
+>`r get_label(visMain$engagement)`
+
+Participants had to choose from one of the following:
+
+- *Occasional user*\
+- *Frequent user*\
+- *Occasional contributor*\
+- *Frequent contributor*\
+- *Senior developer*
+
+#### visualisation
+
+The visualisation below presents responses in descending order of frequency.
+
+```{r plotEngagement}
+#| label: engagement-type-plot
+#| fig-alt: "Descending frequency barplot of the responses to the following question: 'What best describes your role/usage of PsychoPy?'"
+
+visMain |>
+  select(engagement) |>
+  ostFreqPlot(
+    ostColour = ostOrange, 
+    sorting = "desc"
+    )
+
+```
+
+#### verbal summary
+
+The verbal summaries below proceed in the order in which the responses appeared in the original survey (i.e., not descending order of response frequency, as in the visualisation above).
+
+With respect to the `r length(which(!is.na(visMain$engagement)))` participants who provided an answer to the question regarding roughly how they engage with *PsychoPy/JS*<sup>&reg;</sup>, the number of people in each type are as follows:
+
+- user\
+  - occasional: `r length(which(visMain$engagement == "Occasional user"))`, or `r round(length(which(visMain$engagement == "Occasional user"))/length(which(!is.na(visMain$engagement))),3)*100`%\
+  - frequent: `r length(which(visMain$engagement == "Frequent user"))`, or `r round(length(which(visMain$engagement == "Frequent user"))/length(which(!is.na(visMain$engagement))),3)*100`%\
+
+- contributor\
+  - occasional: `r length(which(visMain$engagement == "Occasional contributor"))`, or `r round(length(which(visMain$engagement == "Occasional contributor"))/length(which(!is.na(visMain$engagement))),3)*100`%\
+  - frequent: `r length(which(visMain$engagement == "Frequent contributor"))`, or `r round(length(which(visMain$engagement == "Frequent contributor"))/length(which(!is.na(visMain$engagement))),3)*100`%\
+
+- senior developer: `r length(which(visMain$engagement == "Senior developer"))`, or `r round(length(which(visMain$engagement == "Senior developer"))/length(which(!is.na(visMain$engagement))),3)*100`%
+
+#### [some remarks]
+
+- just over 88% of the people who responded are users, not contributors\
+- almost all of the others were *occasional contributors*
+- but about 2.2% were *frequent contributors* or *senior developers*
+
+---
+
+### ways of contributing
+
+This was a select-all-that-apply question, worded as follows:
+
+>In which way do you contribute most? (select all that apply)
+
+Each participant could select more than one option when describing how they contribute most. For ease of visual and verbal summary, the responses were converted into new variables, one per response. It is important to note here that multiple responses from the same person were possible here (and certainly did occur).
+
+The possible selections were as follows:
+
+- *Improving documentation*\
+- *Supporting other users (e.g., on the forum)*\
+- *Fixing bugs*\
+- *Adding new features*\
+- *Providing translations to other languages*\
+- *Other (describe)*
+
+It is important to keep in mind that participants may be counted as *yes* or *no* independently in any of the possible responses, which were converted to individual boolean variables below. If they selected the response, we assigned the value *selected*; if they did not, we assigned the value *not selected*. 
+
+#### improving documentation
+
+The summaries below refer to responses to the following reworded statement:
+
+>`r get_label(visMain$contribImprvDoc)`
+
+##### visualisation
+
+```{r plotContribImprvDoc}
+#| label: contribImprvDoc-plot
+#| fig-alt: "Frequency barplot of the response 'improving documentation' to the following question: 'In which way do you contribute most?'"
+
+visMain |>
+  select(contribImprvDoc) |>
+  ostFreqPlot(
+    ostColour = ostYellow, 
+    sorting = "none"
+    )
+
+```
+
+##### verbal summary
+
+`r str_to_title(numbers_to_words(length(which(visMain$contribImprvDoc == 1))))`, or `r round(length(which(visMain$contribImprvDoc == 1))/length(which(!is.na(visMain$contribImprvDoc))),3)*100`% of those who responded to this question, indicated that they improved documentation.
+
+---
+
+#### supporting others
+
+The summaries below refer to responses to the following reworded statement:
+
+>`r get_label(visMain$contribSuppOthers)`
+
+##### visualisation
+
+```{r plotContribSuppOthers}
+#| label: contribSuppOthers-plot
+#| fig-alt: "Frequency barplot of the response 'supporting other users' to the following question: 'In which way do you contribute most?'"
+
+visMain |>
+  select(contribSuppOthers) |>
+  ostFreqPlot(
+    ostColour = ostBlue, 
+    sorting = "none"
+    )
+
+```
+
+##### verbal summary
+
+`r str_to_title(numbers_to_words(length(which(visMain$contribSuppOthers == 1))))`, or `r round(length(which(visMain$contribSuppOthers == 1))/length(which(!is.na(visMain$contribSuppOthers))),3)*100`% of those who responded to this question, indicated that they supported others.
+
+---
+
+#### fixing bugs
+
+The summaries below refer to responses to the following reworded statement:
+
+>`r get_label(visMain$contribFixBugs)`
+
+##### visualisation
+
+```{r plotContribFixBugs}
+#| label: contribFixBugs-plot
+#| fig-alt: "Frequency barplot of the response 'fixing bugs' to the following question: 'In which way do you contribute most?'"
+
+visMain |>
+  select(contribFixBugs) |>
+  ostFreqPlot(
+    ostColour = ostOrange, 
+    sorting = "none"
+    )
+
+```
+
+##### verbal summary
+
+`r str_to_title(numbers_to_words(length(which(visMain$contribFixBugs == 1))))`, or `r round(length(which(visMain$contribFixBugs == 1))/length(which(!is.na(visMain$contribFixBugs))),3)*100`% of those who responded to this question, indicated that they fixed bugs.
+
+---
+
+#### adding features
+
+The summaries below refer to responses to the following reworded statement:
+
+>`r get_label(visMain$contribAddFeatures)`
+
+##### visualisation
+
+```{r plotContribAddFeatures}
+#| label: contribAddFeatures-plot
+#| fig-alt: "Frequency barplot of the response 'adding new features' to the following question: 'In which way do you contribute most?'"
+
+visMain |>
+  select(contribAddFeatures) |>
+  ostFreqPlot(
+    ostColour = ostYellow, 
+    sorting = "none"
+    )
+
+```
+
+##### verbal summary
+
+`r str_to_title(numbers_to_words(length(which(visMain$contribAddFeatures == 1))))`, or `r round(length(which(visMain$contribAddFeatures == 1))/length(which(!is.na(visMain$contribAddFeatures))),3)*100`% of those who responded to this question, indicated that they added features.
+
+---
+
+#### providing translations
+
+The summaries below refer to responses to the following reworded statement:
+
+>`r get_label(visMain$contribProvTransl)`
+
+##### visualisation
+
+```{r plotContribProvTransl}
+#| label: contribProvTransl-plot
+#| fig-alt: "Frequency barplot of the response 'providing translations to other languages' to the following question: 'In which way do you contribute most?'"
+
+visMain |>
+  select(contribProvTransl) |>
+  ostFreqPlot(
+    ostColour = ostBlue, 
+    sorting = "none"
+    )
+
+```
+
+##### verbal summary
+
+`r str_to_title(numbers_to_words(length(which(visMain$contribProvTransl == 1))))`, or `r round(length(which(visMain$contribProvTransl == 1))/length(which(!is.na(visMain$contribProvTransl))),3)*100`% of those who responded to this question, indicated that they provided translations.
+
+---
+
+#### other
+
+The summaries below refer to responses to the following reworded statement:
+
+>`r get_label(visMain$contribOther)`
+
+##### visualisation
+
+```{r plotContribOther}
+#| label: contribOther-plot
+#| fig-alt: "Frequency barplot of the response 'Other (describe)' to the following question: 'In which way do you contribute most?'"
+
+visMain |>
+  select(contribOther) |>
+  ostFreqPlot(
+    ostColour = ostOrange, 
+    sorting = "none"
+    )
+
+```
+
+##### verbal summary
+
+`r str_to_title(numbers_to_words(length(which(visMain$contribOther == 1))))`, or `r round(length(which(visMain$contribOther == 1))/length(which(!is.na(visMain$contribOther))),3)*100`% of those who responded to this question, indicated that they contributed in other ways. 
+
+##### descriptions
+
+The participants were given the option to describe those other contributions. These descriptions are listed in the table below.
+
+```{r tableOfOtherContributions}
+#| label: other-contributions-table
+#| tbl-cap: "Descriptions of other contributions to PyschoPy/JS that some participants provided"
+
+visMain |> 
+  select(contribOtherDesc) |>
+  drop_na() |>
+  datatable(
+    class = 'cell-border stripe',
+    colnames = "[I] contribute in these other ways"
+  )
+
+```
+
+#### [some remarks]
+
+- supporting others seems to be the dominant form of contributing among the survey participants
+
+
+---
+
+### deterrents to contributing
+
+Participants were asked the following:
+
+>To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?
+
+Below the question was a list of the following potential causes:
+
+- *Lack of interest*\
+- *Lack of time*\
+- *Lack of knowledge on how to get started*\
+- *Lack of coding skills*\
+- *Not confident I would be welcomed by the community*\
+- *Not aware contributing was possible*
+
+Participants could rank each of these on a `1`-`5` Likert scale, where `1` indicated *not at all* and a `5` indicated *very much*.
+
+This section summarises, both visually and verbally, the rankings that participants provided for each potential cause.
+
+::: {.callout-note}
+Note that on this `1`-`5` scale, the number `3` is directly in the middle of the scale, which can be interpreted as neither agreeing nor disagreeing. We set responses of `3` to the side of the stacked frequency barplots below, in yellow.
+
+Also, the barplots are sorted along descending frequency of agreement. That is, the topmost barplot is the one with highest number of agreements, whereas the bottommost barplot is the one with the highest number of disagreements.
+:::
+
+##### visualisation
+
+```{r plotDeterrents}
+#| label: deterrents-plot
+#| fig-alt: "Stacked frequency barplots of the responses to: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?'"
+
+visMain |>
+  select(starts_with("deterrents")) |>
+  stackedProportions(
+    figureTitle = "Deterrents to contributing",
+    colours = ostColours5
+    )
+
+```
+
+##### verbal summary
+
+Below, we describe the numbers in the figure above, but in the order in which the items appeared in the survey.
+
+- *`r get_label(visMain$deterrentsLackOfInterest)`*\
+  - Total responses: `r length(which(!is.na(visMain$deterrentsLackOfInterest)))`\
+  - Those who believed this was *not* the case: `r length(which(visMain$deterrentsLackOfInterest == 1))+length(which(visMain$deterrentsLackOfInterest == 2))`, or `r round((length(which(visMain$deterrentsLackOfInterest == 1))+length(which(visMain$deterrentsLackOfInterest == 2)))/length(which(!is.na(visMain$deterrentsLackOfInterest))),3)*100`%\
+  - Those who believed this *was* the case: `r length(which(visMain$deterrentsLackOfInterest == 4))+length(which(visMain$deterrentsLackOfInterest == 5))`, or `r round((length(which(visMain$deterrentsLackOfInterest == 4))+length(which(visMain$deterrentsLackOfInterest == 5)))/length(which(!is.na(visMain$deterrentsLackOfInterest))),3)*100`%\
+  - Those who were neutral: `r length(which(visMain$deterrentsLackOfInterest == 3))`, or `r round(length(which(visMain$deterrentsLackOfInterest == 3))/length(which(!is.na(visMain$deterrentsLackOfInterest))),3)*100`%
+
+- *`r get_label(visMain$deterrentsLackOfTime)`*\
+  - Total responses: `r length(which(!is.na(visMain$deterrentsLackOfTime)))`\
+  - Those who believed this was *not* the case: `r length(which(visMain$deterrentsLackOfTime == 1))+length(which(visMain$deterrentsLackOfTime == 2))`, or `r round((length(which(visMain$deterrentsLackOfTime == 1))+length(which(visMain$deterrentsLackOfTime == 2)))/length(which(!is.na(visMain$deterrentsLackOfTime))),3)*100`%\
+  - Those who believed this *was* the case: `r length(which(visMain$deterrentsLackOfTime == 4))+length(which(visMain$deterrentsLackOfTime == 5))`, or `r round((length(which(visMain$deterrentsLackOfTime == 4))+length(which(visMain$deterrentsLackOfTime == 5)))/length(which(!is.na(visMain$deterrentsLackOfTime))),3)*100`%\
+  - Those who were neutral: `r length(which(visMain$deterrentsLackOfTime == 3))`, or `r round(length(which(visMain$deterrentsLackOfTime == 3))/length(which(!is.na(visMain$deterrentsLackOfTime))),3)*100`%
+
+- *`r get_label(visMain$deterrentsDontKnowHowToStart)`*\
+  - Total responses: `r length(which(!is.na(visMain$deterrentsDontKnowHowToStart)))`\
+  - Those who believed this was *not* the case: `r length(which(visMain$deterrentsDontKnowHowToStart == 1))+length(which(visMain$deterrentsDontKnowHowToStart == 2))`, or `r round((length(which(visMain$deterrentsDontKnowHowToStart == 1))+length(which(visMain$deterrentsDontKnowHowToStart == 2)))/length(which(!is.na(visMain$deterrentsDontKnowHowToStart))),3)*100`%\
+  - Those who believed this *was* the case: `r length(which(visMain$deterrentsDontKnowHowToStart == 4))+length(which(visMain$deterrentsDontKnowHowToStart == 5))`, or `r round((length(which(visMain$deterrentsDontKnowHowToStart == 4))+length(which(visMain$deterrentsDontKnowHowToStart == 5)))/length(which(!is.na(visMain$deterrentsDontKnowHowToStart))),3)*100`%\
+  - Those who were neutral: `r length(which(visMain$deterrentsDontKnowHowToStart == 3))`, or `r round(length(which(visMain$deterrentsDontKnowHowToStart == 3))/length(which(!is.na(visMain$deterrentsDontKnowHowToStart))),3)*100`%
+
+- *`r get_label(visMain$deterrentsLackOfCodingSkills)`*\
+  - Total responses: `r length(which(!is.na(visMain$deterrentsLackOfCodingSkills)))`\
+  - Those who believed this was *not* the case: `r length(which(visMain$deterrentsLackOfCodingSkills == 1))+length(which(visMain$deterrentsLackOfCodingSkills == 2))`, or `r round((length(which(visMain$deterrentsLackOfCodingSkills == 1))+length(which(visMain$deterrentsLackOfCodingSkills == 2)))/length(which(!is.na(visMain$deterrentsLackOfCodingSkills))),3)*100`%\
+  - Those who believed this *was* the case: `r length(which(visMain$deterrentsLackOfCodingSkills == 4))+length(which(visMain$deterrentsLackOfCodingSkills == 5))`, or `r round((length(which(visMain$deterrentsLackOfCodingSkills == 4))+length(which(visMain$deterrentsLackOfCodingSkills == 5)))/length(which(!is.na(visMain$deterrentsLackOfCodingSkills))),3)*100`%\
+  - Those who were neutral: `r length(which(visMain$deterrentsLackOfCodingSkills == 3))`, or `r round(length(which(visMain$deterrentsLackOfCodingSkills == 3))/length(which(!is.na(visMain$deterrentsLackOfCodingSkills))),3)*100`%
+
+- *`r get_label(visMain$deterrentsNotConfidentOfWelcome)`*\
+  - Total responses: `r length(which(!is.na(visMain$deterrentsNotConfidentOfWelcome)))`\
+  - Those who believed this was *not* the case: `r length(which(visMain$deterrentsNotConfidentOfWelcome == 1))+length(which(visMain$deterrentsNotConfidentOfWelcome == 2))`, or `r round((length(which(visMain$deterrentsNotConfidentOfWelcome == 1))+length(which(visMain$deterrentsNotConfidentOfWelcome == 2)))/length(which(!is.na(visMain$deterrentsNotConfidentOfWelcome))),3)*100`%\
+  - Those who believed this *was* the case: `r length(which(visMain$deterrentsNotConfidentOfWelcome == 4))+length(which(visMain$deterrentsNotConfidentOfWelcome == 5))`, or `r round((length(which(visMain$deterrentsNotConfidentOfWelcome == 4))+length(which(visMain$deterrentsNotConfidentOfWelcome == 5)))/length(which(!is.na(visMain$deterrentsNotConfidentOfWelcome))),3)*100`%\
+  - Those who were neutral: `r length(which(visMain$deterrentsNotConfidentOfWelcome == 3))`, or `r round(length(which(visMain$deterrentsNotConfidentOfWelcome == 3))/length(which(!is.na(visMain$deterrentsNotConfidentOfWelcome))),3)*100`%
+
+- *`r get_label(visMain$deterrentsUnawareContributingWasPossible)`*\
+  - Total responses: `r length(which(!is.na(visMain$deterrentsUnawareContributingWasPossible)))`\
+  - Those who believed this was *not* the case: `r length(which(visMain$deterrentsUnawareContributingWasPossible == 1))+length(which(visMain$deterrentsUnawareContributingWasPossible == 2))`, or `r round((length(which(visMain$deterrentsUnawareContributingWasPossible == 1))+length(which(visMain$deterrentsUnawareContributingWasPossible == 2)))/length(which(!is.na(visMain$deterrentsUnawareContributingWasPossible))),3)*100`%\
+  - Those who believed this *was* the case: `r length(which(visMain$deterrentsUnawareContributingWasPossible == 4))+length(which(visMain$deterrentsUnawareContributingWasPossible == 5))`, or `r round((length(which(visMain$deterrentsUnawareContributingWasPossible == 4))+length(which(visMain$deterrentsUnawareContributingWasPossible == 5)))/length(which(!is.na(visMain$deterrentsUnawareContributingWasPossible))),3)*100`%\
+  - Those who were neutral: `r length(which(visMain$deterrentsUnawareContributingWasPossible == 3))`, or `r round(length(which(visMain$deterrentsUnawareContributingWasPossible == 3))/length(which(!is.na(visMain$deterrentsUnawareContributingWasPossible))),3)*100`%
+
+#### central tendency
+
+```{r tableDeterrents}
+#| label: deterrents-stats-table
+#| tbl-cap: "Statistical summaries of responses to statements regarding deterrents to contributing."
+#| output: asis
+
+visMain |>
+  select(starts_with("deterrents"))  |>
+  tableLikert(
+    lowerBound = "1 = not at all",
+    upperBound = "5 = very much"
+  )
+
+```
+
+
+
+<!-- Combined with the fact that many of these responses are coming from frequent and occasional users (vs. contributors), this is both unsurprising and promising for the purposes of our survey, I think... except *lack of time* -->
+
+
+
+```{r}
+
+# pm <- visMain |>
+#   drop_na(deterrentsDontKnowHowToStart) |>
+#   drop_na(gender) |>
+#   ggduo(
+#   c("gender"),
+#   c(
+#     "deterrentsLackOfInterest",
+#     "deterrentsLackOfTime",
+#     "deterrentsDontKnowHowToStart",
+#     "deterrentsLackOfCodingSkills",
+#     "deterrentsNotConfidentOfWelcome",
+#     "deterrentsUnawareContributingWasPossible"
+#     )
+#  )
+
+# p10 <- visMain |>
+#   drop_na(deterrentsDontKnowHowToStart) |>
+#   drop_na(gender) |>
+# ggally_facethist( mapping = ggplot2::aes(
+#   x = deterrentsDontKnowHowToStart, 
+#   y = gender),
+#   binwidth=1
+#   ) +
+#   ggtitle(get_label(visMain$deterrentsDontKnowHowToStart))
+# 
+# p10
+
+# p10 <- visMain |>
+#   drop_na(deterrentsDontKnowHowToStart) |>
+#   drop_na(gender) |>
+# ggbivariate(
+#   mapping = ggplot2::aes(
+#     x = deterrentsDontKnowHowToStart,
+#     y = gender),
+#   binwidth=1
+#   ) +
+#   ggtitle(get_label(visMain$deterrentsDontKnowHowToStart))
+# 
+# p10
+# 
+# p11 <- visMain |>
+#   drop_na(deterrentsDontKnowHowToStart) |>
+#   drop_na(gender) |>
+# ggbivariate(.,
+#   explanatory = visMain$deterrentsDontKnowHowToStart,
+#   mapping = ggplot2::aes(
+#     x = deterrentsDontKnowHowToStart,
+#     y = gender
+#     ),
+#   binwidth=1
+#   ) +
+#   ggtitle(get_label(visMain$deterrentsDontKnowHowToStart))
+# 
+# p11
+
+```
+
+
+#### [some remarks]
+
+- *Lack of time* is dominant here\
+- but *not knowing how to start* is close behind, which is good news for us in terms of increasing the contributor base\
+- importantly, most participants disagreed that *lack of interest* or *lack of confidence in a welcome* were holding them back
+
+---
+
+### workshops on contributing
+
+This section summarises, both visually and verbally, the answer to the following question:
+
+>`r get_label(visMain$workshopsOnContributing)`
+
+Participants provided answers on a `1`-`5` Likert scale, where `1` indicated *Strongly disagree* and a `5` indicated *Strongly agree*.
+
+#### visualisation
+
+```{r plotWorkshopsOnContributing}
+#| label: contrib-workshops-plot
+#| fig-alt: "Barplot of responses to the following statement: 'My engagement with the community would be helped if workshops were provided on how to contribute'"
+
+visMain |> 
+  select(workshopsOnContributing) |> 
+  ostFreqPlot(
+    ostColour = ostYellow,
+    sorting = "none"
+  )
+
+```
+
+#### verbal summary
+
+Below, we describe the numbers in the figure above.
+
+- *`r get_label(visMain$workshopsOnContributing)`*\
+  - Total responses: `r length(which(!is.na(visMain$workshopsOnContributing)))`\
+  - Those who *strongly disagreed* (`1`): `r length(which(visMain$workshopsOnContributing == 1))`, or `r round(length(which(visMain$workshopsOnContributing == 1))/length(which(!is.na(visMain$workshopsOnContributing))),3)*100`%\
+  - Those who somewhat *disagreed* (`2`): `r length(which(visMain$workshopsOnContributing == 2))`, or `r round(length(which(visMain$workshopsOnContributing == 2))/length(which(!is.na(visMain$workshopsOnContributing))),3)*100`%\
+  - Those who were neutral (`3`): `r length(which(visMain$workshopsOnContributing == 3))`, or `r round(length(which(visMain$workshopsOnContributing == 3))/length(which(!is.na(visMain$workshopsOnContributing))),3)*100`%\
+  - Those who somewhat *agreed* (`4`): `r length(which(visMain$workshopsOnContributing == 4))`, or `r round(length(which(visMain$workshopsOnContributing == 4))/length(which(!is.na(visMain$workshopsOnContributing))),3)*100`%\
+  - Those who *strongly agreed* (`5`): `r length(which(visMain$workshopsOnContributing == 5))`, or `r round(length(which(visMain$workshopsOnContributing == 5))/length(which(!is.na(visMain$workshopsOnContributing))),3)*100`%\
+
+#### central tendency
+
+```{r}
+#| label: workshops-stats-table
+#| tbl-cap: "Statistical summaries of responses to statement regarding the potential helpfulness of contributor workshops."
+#| output: asis
+
+visMain |>
+  select(workshopsOnContributing)  |>
+  tableLikert(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "5 = Strongly agree"
+  )
+
+```
+
+#### [some remarks]
+
+- It looks like around half of the participants agreed that they could be engaged more with workshops. That's really good.
+
+---
+
 
 ## *Code of Conduct* and documentation
 
@@ -2297,6 +2130,83 @@ visMain |>
 - About two-thirds of the participants were aware of the *Code of Conduct*. I suppose that's to be expected, but it's kinda disappointing, no?\
 - Most of them felt that the documentation was *easily findable, searchable, and accessible*. But there were a few (just under 20%) who disagreed with this in general.\
 - In terms of trust that the *Code of Conduct* would be enforced, there was general agreement here, though about 5% expressed mild disagreement here. About 2% expressed somewhat stronger disagreement. One person expressed the strongest level of disagreement (i.e., *Strongly disagree*).
+
+# Key interactions
+
+## deterrents by EDI variables
+
+```{r deterrentsEveryone}
+
+visMain |>
+  select(starts_with("deterrents")) |>
+  plot_stackfrq(
+    title = "Everyone",
+    sort.frq = "last.desc",
+    geom.colors = ostColours5
+  )
+
+```
+
+
+```{r deterrentsByGender}
+
+visMain |>
+  select(starts_with("deterrents"), gender) |>
+  group_by(gender) |>
+  plot_stackfrq(
+    sort.frq = "last.desc",
+    geom.colors = ostColours5
+  )
+  
+```
+
+```{r deterrentsBySexualOrientation}
+
+visMain |>
+  select(starts_with("deterrents"), nonHeteroCommunity) |>
+  group_by(nonHeteroCommunity) |>
+  plot_stackfrq(
+    sort.frq = "last.desc",
+    geom.colors = ostColours5
+  )
+
+```
+
+```{r deterrentsByRaceCulture}
+
+visMain |>
+  select(starts_with("deterrents"), raceCulture) |>
+  group_by(raceCulture) |>
+  plot_stackfrq(
+    sort.frq = "last.desc",
+    geom.colors = ostColours5
+  )
+
+```
+
+```{r deterrentsByDisability}
+
+visMain |>
+  select(starts_with("deterrents"), disability) |>
+  group_by(disability) |>
+  plot_stackfrq(
+    sort.frq = "last.desc",
+    geom.colors = ostColours5
+  )
+
+```
+
+```{r deterrentsByDomLangEnglish}
+
+visMain |>
+  select(starts_with("deterrents"), domLangEnglish) |>
+  group_by(domLangEnglish) |>
+  plot_stackfrq(
+    sort.frq = "last.desc",
+    geom.colors = ostColours5
+  )
+
+```
 
 # [some final remarks]
 
