@@ -26,7 +26,7 @@
     },
     "Matrix": {
       "Package": "Matrix",
-      "Version": "1.5-3",
+      "Version": "1.5-4",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -38,7 +38,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "4006dffe49958d2dd591c17e61e60591"
+      "Hash": "e779c7d9f35cc364438578f334cffee2"
     },
     "R6": {
       "Package": "R6",
@@ -87,7 +87,7 @@
     },
     "V8": {
       "Package": "V8",
-      "Version": "4.2.2",
+      "Version": "4.3.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -96,7 +96,7 @@
         "jsonlite",
         "utils"
       ],
-      "Hash": "ebee37dadb0a8f5086663825d2c33076"
+      "Hash": "d1fa8fae6a47e88bb46d5152312bd8bd"
     },
     "askpass": {
       "Package": "askpass",
@@ -130,7 +130,7 @@
     },
     "bayestestR": {
       "Package": "bayestestR",
-      "Version": "0.13.0",
+      "Version": "0.13.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -142,7 +142,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "caecf6cf095962f3d6645ddab4c691e8"
+      "Hash": "61f643ea5ee9fe0e70ab0246340b3c2e"
     },
     "bigD": {
       "Package": "bigD",
@@ -227,7 +227,7 @@
     },
     "broom.helpers": {
       "Package": "broom.helpers",
-      "Version": "1.12.0",
+      "Version": "1.13.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -244,7 +244,7 @@
         "tibble",
         "tidyr"
       ],
-      "Hash": "9f9b7ba2e918fc92c3d450701bc4373c"
+      "Hash": "2e94ff50e1846787f4e3e829f50a6336"
     },
     "bslib": {
       "Package": "bslib",
@@ -423,7 +423,7 @@
     },
     "datawizard": {
       "Package": "datawizard",
-      "Version": "0.7.0",
+      "Version": "0.7.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -432,7 +432,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "29182cd2cee995f3e9d16fdd9647bb6c"
+      "Hash": "001775ea47f92ef8e2916ed0cfa59735"
     },
     "desc": {
       "Package": "desc",
@@ -591,7 +591,7 @@
     },
     "flextable": {
       "Package": "flextable",
-      "Version": "0.9.0",
+      "Version": "0.9.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -611,7 +611,7 @@
         "uuid",
         "xml2"
       ],
-      "Hash": "239db0c3776dca646077cac6aca4cfb7"
+      "Hash": "4b1608f01ef5550b07384c03e01cabbd"
     },
     "fontBitstreamVera": {
       "Package": "fontBitstreamVera",
@@ -686,7 +686,7 @@
     },
     "gdtools": {
       "Package": "gdtools",
-      "Version": "0.3.2",
+      "Version": "0.3.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -696,11 +696,10 @@
         "fontquiver",
         "gfonts",
         "htmltools",
-        "memoise",
         "systemfonts",
         "tools"
       ],
-      "Hash": "0a177ef7aabba4a038af8fd7a045f479"
+      "Hash": "98158453e15bbd2486fac8454f4b4409"
     },
     "generics": {
       "Package": "generics",
@@ -732,7 +731,7 @@
     },
     "ggeffects": {
       "Package": "ggeffects",
-      "Version": "1.2.0",
+      "Version": "1.2.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -741,7 +740,7 @@
         "insight",
         "stats"
       ],
-      "Hash": "80ddc709c6b871b6b777f482d9f6c66d"
+      "Hash": "6157134ac90a85bb38375fb049fb638f"
     },
     "gghalves": {
       "Package": "gghalves",
@@ -834,7 +833,7 @@
     },
     "gt": {
       "Package": "gt",
-      "Version": "0.8.0",
+      "Version": "0.9.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -846,18 +845,21 @@
         "commonmark",
         "dplyr",
         "fs",
-        "ggplot2",
         "glue",
         "htmltools",
+        "htmlwidgets",
         "juicyjuice",
         "magrittr",
+        "markdown",
+        "reactable",
         "rlang",
         "sass",
         "scales",
         "tibble",
-        "tidyselect"
+        "tidyselect",
+        "xml2"
       ],
-      "Hash": "d100be8d1f54dc589cc8d63366839287"
+      "Hash": "d55233a737e43e44987724e57dfec302"
     },
     "gtable": {
       "Package": "gtable",
@@ -961,6 +963,21 @@
         "utils"
       ],
       "Hash": "ba0240784ad50a62165058a27459304a"
+    },
+    "htmlwidgets": {
+      "Package": "htmlwidgets",
+      "Version": "1.6.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "grDevices",
+        "htmltools",
+        "jsonlite",
+        "knitr",
+        "rmarkdown",
+        "yaml"
+      ],
+      "Hash": "a865aa85bcb2697f47505bfd70422471"
     },
     "httpcode": {
       "Package": "httpcode",
@@ -1067,7 +1084,7 @@
     },
     "labelled": {
       "Package": "labelled",
-      "Version": "2.10.0",
+      "Version": "2.11.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1080,7 +1097,7 @@
         "tidyr",
         "vctrs"
       ],
-      "Hash": "1c444c7fe66cebddc0e6e3e2a5ca37c1"
+      "Hash": "bf5e8a9e9a64b779a338a81c54c2a2a3"
     },
     "later": {
       "Package": "later",
@@ -1095,7 +1112,7 @@
     },
     "lattice": {
       "Package": "lattice",
-      "Version": "0.20-45",
+      "Version": "0.21-8",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1106,7 +1123,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "b64cdbb2b340437c4ee047a1f4c4377b"
+      "Hash": "0b8a6d63c8770f02a8b5635f3c431e6b"
     },
     "lifecycle": {
       "Package": "lifecycle",
@@ -1173,6 +1190,19 @@
         "R"
       ],
       "Hash": "7ce2733a9826b3aeb1775d56fd305472"
+    },
+    "markdown": {
+      "Package": "markdown",
+      "Version": "1.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "commonmark",
+        "utils",
+        "xfun"
+      ],
+      "Hash": "c0e8495f796d73f2d2e1a8c6964d67e8"
     },
     "memoise": {
       "Package": "memoise",
@@ -1309,7 +1339,7 @@
     },
     "officer": {
       "Package": "officer",
-      "Version": "0.6.1",
+      "Version": "0.6.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1324,7 +1354,7 @@
         "xml2",
         "zip"
       ],
-      "Hash": "163715472ad00744e9a149f707262b92"
+      "Hash": "d570077027cfedcf743d86838ffbd885"
     },
     "openssl": {
       "Package": "openssl",
@@ -1338,7 +1368,7 @@
     },
     "parameters": {
       "Package": "parameters",
-      "Version": "0.20.2",
+      "Version": "0.20.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1351,11 +1381,11 @@
         "stats",
         "utils"
       ],
-      "Hash": "be0f471c6ca3151ca107231d578233a9"
+      "Hash": "355169c6ab10eff3b4a5bfd113d1077c"
     },
     "performance": {
       "Package": "performance",
-      "Version": "0.10.2",
+      "Version": "0.10.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1367,7 +1397,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "912b1a00a859efe958c7b9bae210db18"
+      "Hash": "1f296af2d4b50919aeb54be451ea2c6d"
     },
     "pillar": {
       "Package": "pillar",
@@ -1484,14 +1514,14 @@
     },
     "ps": {
       "Package": "ps",
-      "Version": "1.7.3",
+      "Version": "1.7.4",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "utils"
       ],
-      "Hash": "ebaacc87f539b1100e285e9e5d6496ad"
+      "Hash": "d88be14c6790aa6fd7b27a2079a45a85"
     },
     "psych": {
       "Package": "psych",
@@ -1546,6 +1576,31 @@
       ],
       "Hash": "5e3c5dc0b071b21fa128676560dbe94d"
     },
+    "reactR": {
+      "Package": "reactR",
+      "Version": "0.4.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "htmltools"
+      ],
+      "Hash": "75389c8091eb14ee21c6bc87a88b3809"
+    },
+    "reactable": {
+      "Package": "reactable",
+      "Version": "0.4.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "digest",
+        "htmltools",
+        "htmlwidgets",
+        "jsonlite",
+        "reactR"
+      ],
+      "Hash": "6069eb2a6597963eae0605c1875ff14c"
+    },
     "readr": {
       "Package": "readr",
       "Version": "2.1.4",
@@ -1595,13 +1650,13 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "0.17.2",
+      "Version": "0.17.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "utils"
       ],
-      "Hash": "aaf3c7f769695266a2113db67a25148b"
+      "Hash": "4543b8cd233ae25c6aba8548be9e747e"
     },
     "repr": {
       "Package": "repr",
@@ -1760,7 +1815,7 @@
     },
     "sjPlot": {
       "Package": "sjPlot",
-      "Version": "2.8.13",
+      "Version": "2.8.14",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1769,7 +1824,6 @@
         "bayestestR",
         "datawizard",
         "dplyr",
-        "effectsize",
         "ggeffects",
         "ggplot2",
         "grDevices",
@@ -1788,7 +1842,7 @@
         "tidyr",
         "utils"
       ],
-      "Hash": "16702b431e437ff65302877fbbed0f14"
+      "Hash": "e35e718515c2f5a711433bff25d8c6ba"
     },
     "sjlabelled": {
       "Package": "sjlabelled",
