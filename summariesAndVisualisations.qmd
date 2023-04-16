@@ -46,16 +46,12 @@ neededPackages <-
     "xfun",
     "stringr",
     "flextable",
-    "showtext",
-    "cowplot",
     "renv",
-    "cowplot",
-    "GGally",
     "ggplot2",
     "systemfonts",
-    "magrittr",
-    "ggtext"
-    #"ggeasy"
+    #"magrittr",
+    "ggtext",
+    "colorblindcheck"
     )
 
 # The code directly below installs R packages 
@@ -99,7 +95,6 @@ visMain <- readRDS("tidyLabeledSurveyData.rds")
               
 ```
 
-# importFunctions
 
 ```{r importCustomFunctions}
 
@@ -1254,6 +1249,16 @@ Unlike the items above that directly address dimensions of equity, diversity, an
 
 These are covered in the subsections below.
 
+```{r importLongFiles}
+# These are for some of the interactions between EDI variables
+# and background variables
+
+longerDataSimple <- readRDS("longerDataSimple.rds")
+longerDataContributions <- readRDS("longerDataContributions.rds")
+longerDataDeterrents <- readRDS("longerDataDeterrents.rds")
+
+```
+
 ### career status
 
 This section summarises, both visually and verbally, the answer to the following question:
@@ -1325,71 +1330,30 @@ contingencyPlot(
 
 ---
 
-##### sexuality
+##### other EDI variables
 
-```{r careerStatusBySexuality}
-#| label: career-status-by-sexuality-plot
-#| fig-alt: "Descending frequency barplot of the responses by sexual orientation to the following question: 'Roughly speaking, what is your career status?'"
+```{r careerStatusByOtherEdiVars}
+#| label: career-status-by-other-edis-plot
+#| fig-alt: "Wrapped, stacked frequency barplots of the responses by EDI variables other than gender to the following question: 'Roughly speaking, what is your career status?'"
 
-contingencyPlot(
-  df = visMain,
-  contingX = "careerStatus",
-  contingGrp = "nonHeteroCommunity",
-  colours = ostColours2rev
+careerStatusLabel <- get_label(longerDataSimple$careerStatus)
+
+longerDataSimple |>
+  drop_na(response) |>
+  drop_na(careerStatus) |>
+  wrappedStackedFreqPlot(
+    xVar = careerStatus,
+    fillVar = response,
+    fillLabel = "Member of\nEDI group",
+    wrapVar = ediVar,
+    ostColours = ostColours2rev,
+    figCaption = NULL,
+    figTitle = careerStatusLabel,
+    titleAdjust = -120
   )
 
 ```
 
----
-
-##### race and/or culture
-
-```{r careerStatusByRaceCulture}
-#| label: career-status-by-race-plot
-#| fig-alt: "Descending frequency barplot of the responses by race and/or culture to the following question: 'Roughly speaking, what is your career status?'"
-
-contingencyPlot(
-  df = visMain,
-  contingX = "careerStatus",
-  contingGrp = "raceCulture",
-  colours = ostColours2rev
-  )
-
-```
-
----
-
-##### disability and/or neurodivergence
-
-```{r careerStatusByDisability}
-#| label: career-status-by-disability-plot
-#| fig-alt: "Descending frequency barplot of the responses by disability and/or neurodivergence to the following question: 'Roughly speaking, what is your career status?'"
-
-contingencyPlot(
-  df = visMain,
-  contingX = "careerStatus",
-  contingGrp = "disability",
-  colours = ostColours2rev
-  )
-
-```
-
----
-
-##### English as dominant language
-
-```{r careerStatusByLangDomEng}
-#| label: career-status-by-domLang-plot
-#| fig-alt: "Descending frequency barplot of the responses by whether the participants were dominant in written English to the following question: 'Roughly speaking, what is your career status?'"
-
-contingencyPlot(
-  df = visMain,
-  contingX = "careerStatus",
-  contingGrp = "domLangEnglish",
-  colours = ostColours2rev
-  )
-
-```
 
 ---
 
@@ -1451,26 +1415,6 @@ With respect to the `r length(which(!is.na(visMain$engagement)))` participants w
 
 ##### gender
 
-```{r reorderFactors}
-
-visMain$engagement <- fct_relevel(
-  visMain$engagement,
-  "Occasional user",
-  "Frequent user",
-  "Occasional contributor",
-  "Frequent contributor",
-  "Senior developer"
-  )
-
-visMain <- visMain |>
-  var_labels(
-    engagement = 
-      "What best describes your role/usage of PsychoPy? (Note: 'Contributor' refers to any form of contribution, whether to the code, the documentation or supporting other users)"
-  )
-
-```
-
-
 ```{r engagementStatusByGender}
 #| label: engagement-type-plot-gender
 #| fig-alt: "Descending frequency barplot of responses by gender to the following question: 'What best describes your role/usage of PsychoPy?'"
@@ -1487,72 +1431,29 @@ contingencyPlot(
 
 ---
 
-##### sexuality
+##### other EDI varaibles
 
-```{r engagementStatusBySexuality}
-#| label: engagement-type-plot-sexuality
-#| fig-alt: "Descending frequency barplot of responses by sexual orientation to the following question: 'What best describes your role/usage of PsychoPy?'"
+```{r}
 
-contingencyPlot(
-  df = visMain,
-  contingX = "engagement",
-  contingGrp = "nonHeteroCommunity",
-  colours = ostColours2rev
+engagementLabel <- get_label(longerDataSimple$careerStatus)
+
+longerDataSimple |>
+  drop_na(response) |>
+  drop_na(engagement) |>
+  wrappedStackedFreqPlot(
+    xVar = engagement,
+    fillVar = response,
+    fillLabel = "Member of\nEDI group",
+    wrapVar = ediVar,
+    ostColours = ostColours2rev,
+    figCaption = NULL,
+    figTitle = engagementLabel,
+    titleAdjust = -120
   )
+
 
 ```
 
----
-
-
-##### race and/or culture
-
-```{r engagementStatusByRaceCulture}
-#| label: engagement-type-plot-race
-#| fig-alt: "Descending frequency barplot of responses by race and/or culture to the following question: 'What best describes your role/usage of PsychoPy?'"
-
-contingencyPlot(
-  df = visMain,
-  contingX = "engagement",
-  contingGrp = "raceCulture",
-  colours = ostColours2rev
-  )
-
-```
-
----
-
-##### disability and/or neurodivergence
-
-```{r engagementStatusByDisability}
-#| label: engagement-type-plot-disability
-#| fig-alt: "Descending frequency barplot of responses by disability and/or neurodivergence to the following question: 'What best describes your role/usage of PsychoPy?'"
-
-contingencyPlot(
-  df = visMain,
-  contingX = "engagement",
-  contingGrp = "disability",
-  colours = ostColours2rev
-  )
-
-```
-
----
-
-##### English as dominant language
-
-```{r engagementStatusByEnglishDom}
-#| label: engagement-type-plot-domLang
-#| fig-alt: "Descending frequency barplot of responses by whether the participants are dominant in written English to the following question: 'What best describes your role/usage of PsychoPy?'"
-
-contingencyPlot(
-  df = visMain,
-  contingX = "engagement",
-  contingGrp = "domLangEnglish",
-  colours = ostColours2rev
-  )
-
-```
 
 ---
 
@@ -1577,7 +1478,9 @@ It is important to keep in mind that participants may be counted as *yes* or *no
 
 ```{r importContributionsLong}
 
-contributeLong <- readRDS("contributeLong.rds")
+longerDataContributions <- readRDS("longerDataContributions.rds")
+contributeLabel <- get_label(longerDataContributions$contributionType)
+contributeCaption <- "Note: Respondents could select more than one contribution type."
 
 ```
 
@@ -1588,12 +1491,12 @@ contributeLong <- readRDS("contributeLong.rds")
 #| label: contribEveryone-plot
 #| fig-alt: "Frequency barplot of the selections made in response to the following question: 'In which way do you contribute most?'"
 
-contributeLong |>
+longerDataContributions |>
   drop_na(selected) |>
   wrappedFreqPlot(
-    xVar = "selected",
-    fillVar = "selected",
-    wrapVar = "contributionType",
+    xVar = selected,
+    fillVar = selected,
+    wrapVar = contributionType,
     ostColours = ostColours2rev
   )
 
@@ -1668,32 +1571,43 @@ visMain |>
 #| label: contrib-by-gender-plot
 #| fig-alt: "Frequency barplot of the selections made by gender in response to the following question: 'In which way do you contribute most?'"
 
-contributeLong |>
+legendLabel = "Gender"
+longerDataContributions |>
   drop_na(gender) |>
-  wrappedFreqInteractionPlot(
-    xVar = "selected",
-    fillVar = "gender",
-    wrapVar = "contributionType",
-    ostColours = ostColours3
+  wrappedStackedFreqPlot(
+    xVar = selected,
+    fillVar = gender,
+    fillLabel = legendLabel,
+    wrapVar = contributionType,
+    ostColours = ostColours3,
+    figTitle = contributeLabel,
+    figCaption = contributeCaption,
+    titleAdjust = NULL
   )
 
 ```
 
+
 ---
 
-##### sexuality
+##### sexual orientation
 
 ```{r contributionsBySexuality}
 #| label: contrib-by-sexuality-plot
 #| fig-alt: "Frequency barplot of the selections made by sexual orientation in response to the following question: 'In which way do you contribute most?'"
 
-contributeLong |>
+legendLabel = "non-heterosexual\ncommunity"
+longerDataContributions |>
   drop_na(nonHeteroCommunity) |>
-  wrappedFreqInteractionPlot(
-    xVar = "selected",
-    fillVar = "nonHeteroCommunity",
-    wrapVar = "contributionType",
-    ostColours = ostColours2rev
+  wrappedStackedFreqPlot(
+    xVar = selected,
+    fillVar = nonHeteroCommunity,
+    wrapVar = contributionType,
+    ostColours = ostColours2rev,
+    titleAdjust = NULL,
+    fillLabel = legendLabel,
+    figTitle = contributeLabel,
+    figCaption = contributeCaption
   )
 
 ```
@@ -1706,13 +1620,18 @@ contributeLong |>
 #| label: contrib-by-race-plot
 #| fig-alt: "Frequency barplot of the selections made by race and/or culture in response to the following question: 'In which way do you contribute most?'"
 
-contributeLong |>
+legendLabel = "Race and/or\nculture"
+longerDataContributions |>
   drop_na(raceCulture) |>
-  wrappedFreqInteractionPlot(
-    xVar = "selected",
-    fillVar = "raceCulture",
-    wrapVar = "contributionType",
-    ostColours = ostColours2rev
+  wrappedStackedFreqPlot(
+    xVar = selected,
+    fillVar = raceCulture,
+    wrapVar = contributionType,
+    ostColours = ostColours2rev,
+    titleAdjust = NULL,
+    fillLabel = legendLabel,
+    figTitle = contributeLabel,
+    figCaption = contributeCaption
   )
 
 ```
@@ -1725,13 +1644,18 @@ contributeLong |>
 #| label: contrib-by-disability-plot
 #| fig-alt: "Frequency barplot of the selections made by disability and/or neurodivergence in response to the following question: 'In which way do you contribute most?'"
 
-contributeLong |>
+legendLabel = "Disability and/or\nneurodivergence"
+longerDataContributions |>
   drop_na(disability) |>
-  wrappedFreqInteractionPlot(
-    xVar = "selected",
-    fillVar = "disability",
-    wrapVar = "contributionType",
-    ostColours = ostColours2rev
+  wrappedStackedFreqPlot(
+    xVar = selected,
+    fillVar = disability,
+    wrapVar = contributionType,
+    ostColours = ostColours2rev,
+    titleAdjust = NULL,
+    fillLabel = legendLabel,
+    figTitle = contributeLabel,
+    figCaption = contributeCaption
   )
 
 ```
@@ -1744,13 +1668,18 @@ contributeLong |>
 #| label: contrib-by-dominant-language-plot
 #| fig-alt: "Frequency barplot of the selections made by whether one is dominant in written English in response to the following question: 'In which way do you contribute most?'"
 
-contributeLong |>
+legendLabel = "English as a\ndominant language"
+longerDataContributions |>
   drop_na(domLangEnglish) |>
-  wrappedFreqInteractionPlot(
-    xVar = "selected",
-    fillVar = "domLangEnglish",
-    wrapVar = "contributionType",
-    ostColours = ostColours2rev
+  wrappedStackedFreqPlot(
+    xVar = selected,
+    fillVar = domLangEnglish,
+    wrapVar = contributionType,
+    ostColours = ostColours2rev,
+    titleAdjust = NULL,
+    fillLabel = legendLabel,
+    figTitle = contributeLabel,
+    figCaption = contributeCaption
   )
 
 ```
@@ -1867,13 +1796,13 @@ visMain |>
 
 #### interactions
 
+```{r createDeterrentsLabel}
 
-```{r importDeterrentsLong}
-
-deterrentsLong <- readRDS("deterrentsLong.rds")
-deterrentsLabel <- get_label(deterrentsLong$deterrent)
+deterrentsLabel <- get_label(longerDataDeterrents$deterrent)
+deterrentsCaption <- "Notes: \n1. A response of 1 indicates 'not at all' \n2. A response of 5 indicates 'very much'\n3. The mean is represented by the diamond"
 
 ```
+
 
 ##### gender
 
@@ -1881,30 +1810,23 @@ deterrentsLabel <- get_label(deterrentsLong$deterrent)
 #| label: deterrents-likert-plot-by-gender
 #| fig-alt: "Boxplots of responses by gender to the the following question: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?.'" 
 
-intLabel <- "Gender"
-deterrentsLong |>
+legendLabel <- "Gender"
+longerDataDeterrents |>
   select(gender, deterrent, response) |>
   drop_na(gender) |>
   drop_na(deterrent) |>
   drop_na(response) |>
   boxplotWithInteraction(
-    xVar = "response",
-    yVar = "gender",
-    wrapVar = "deterrent",
+    xVar = response,
+    yVar = gender,
+    wrapVar = deterrent,
+    lowerBound = 1,
+    upperBound = 5,
     ostColours = ostColours3,
     xLabel = deterrentsLabel,
-    fillLabel = intLabel,
-    figCaption = "Notes: \n1. A response of 1 indicates 'not at all' \n2. A response of 5 indicates 'very much'\n3. The mean is represented by the diamond"
+    fillLabel = legendLabel,
+    figCaption = deterrentsCaption
     )
-
-```
-
-```{r deterrentsByGender}
-
-visMain |>
-  dplyr::select(starts_with("deterrents"), gender) |>
-  group_by(gender) |>
-  stackedFrequencies(colours=ostColours5)
 
 ```
 
@@ -1912,25 +1834,56 @@ visMain |>
 
 ##### sexual orientation
 
-```{r deterrentsBySexuality}
+```{r plotDeterrentsLikertBySexuality}
+#| label: deterrents-likert-plot-by-sexuality
+#| fig-alt: "Boxplots of responses by sexual orientation to the the following question: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?.'" 
 
-visMain |>
-  dplyr::select(starts_with("deterrents"), nonHeteroCommunity) |>
-  group_by(nonHeteroCommunity) |>
-  stackedFrequencies(colours=ostColours5)
-
+legendLabel <- "Non-heterosexual\ncommunity"
+longerDataDeterrents |>
+  select(nonHeteroCommunity, deterrent, response) |>
+  drop_na(nonHeteroCommunity) |>
+  drop_na(deterrent) |>
+  drop_na(response) |>
+  boxplotWithInteraction(
+    xVar = response,
+    yVar = nonHeteroCommunity,
+    wrapVar = deterrent,
+    lowerBound = 1,
+    upperBound = 5,
+    ostColours = ostColours2rev,
+    xLabel = deterrentsLabel,
+    fillLabel = legendLabel,
+    figCaption = deterrentsCaption
+)
 ```
+
+
 
 ---
 
 ##### race and/or culture
 
-```{r deterrentsByRaceCulture}
+```{r plotDeterrentsLikertByRace}
+#| label: deterrents-likert-plot-by-race
+#| fig-alt: "Boxplots of responses by race and/or culture to the the following question: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?.'" 
 
-visMain |>
-  dplyr::select(starts_with("deterrents"), raceCulture) |>
-  group_by(raceCulture) |>
-  stackedFrequencies(colours=ostColours5)
+legendLabel <- "Race and/or culture\nthat is potentially\ndiscriminated against"
+longerDataDeterrents |>
+  select(raceCulture, deterrent, response) |>
+  drop_na(raceCulture) |>
+  drop_na(deterrent) |>
+  drop_na(response) |>
+  boxplotWithInteraction(
+    xVar = response,
+    yVar = raceCulture,
+    wrapVar = deterrent,
+    lowerBound = 1,
+    upperBound = 5,
+    ostColours = ostColours2rev,
+    xLabel = deterrentsLabel,
+    fillLabel = legendLabel,
+    figCaption = deterrentsCaption
+)
 
 ```
 
@@ -1938,12 +1891,27 @@ visMain |>
 
 ##### disability and/or neurodivergence
 
-```{r deterrentsByDisability}
+```{r plotDeterrentsLikertByDisability}
+#| label: deterrents-likert-plot-by-disability
+#| fig-alt: "Boxplots of responses by disability and/or neurodivergence to the the following question: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?.'" 
 
-visMain |>
-  dplyr::select(starts_with("deterrents"), disability) |>
-  group_by(disability) |>
-  stackedFrequencies(colours=ostColours5)
+legendLabel <- "Disabled and/or\n neurodivergent"
+longerDataDeterrents |>
+  select(disability, deterrent, response) |>
+  drop_na(disability) |>
+  drop_na(deterrent) |>
+  drop_na(response) |>
+  boxplotWithInteraction(
+    xVar = response,
+    yVar = disability,
+    wrapVar = deterrent,
+    lowerBound = 1,
+    upperBound = 5,
+    ostColours = ostColours2rev,
+    xLabel = deterrentsLabel,
+    fillLabel = legendLabel,
+    figCaption = deterrentsCaption
+)
 
 ```
 
@@ -1951,12 +1919,27 @@ visMain |>
 
 ##### English as dominant language
 
-```{r deterrentsByDomLangEnglish}
+```{r plotDeterrentsLikertByDisability}
+#| label: deterrents-likert-plot-by-langdom
+#| fig-alt: "Boxplots of responses by whether English is the respondent's dominant written language to the the following question: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?.'" 
 
-visMain |>
-  dplyr::select(starts_with("deterrents"), domLangEnglish) |>
-  group_by(domLangEnglish) |>
-  stackedFrequencies(colours=ostColours5)
+legendLabel <- "English is dominant\nwritten language"
+longerDataDeterrents |>
+  select(domLangEnglish, deterrent, response) |>
+  drop_na(domLangEnglish) |>
+  drop_na(deterrent) |>
+  drop_na(response) |>
+  boxplotWithInteraction(
+    xVar = response,
+    yVar = domLangEnglish,
+    wrapVar = deterrent,
+    lowerBound = 1,
+    upperBound = 5,
+    ostColours = ostColours2rev,
+    xLabel = deterrentsLabel,
+    fillLabel = legendLabel,
+    figCaption = deterrentsCaption
+)
 
 ```
 
@@ -1975,23 +1958,17 @@ Participants provided answers on a `1`-`5` Likert scale, where `1` indicated *St
 
 ```{r workshopLabels}
 
-workshopLabel <- get_label(visMain$workshopsOnContributing)
-likertValues <- get_labels(visMain$workshopsOnContributing)
+workshopLabel <- get_label(longerDataSimple$workshopsOnContributing)
+likertValues <- get_labels(longerDataSimple$workshopsOnContributing)
 
 ```
 
-
-```{r importWorkshopLong }
-
-workshopLong <- readRDS("workshopLong.rds")
-
-```
 
 ```{r plotWorkshopsOnContributing}
 #| label: contrib-workshops-plot
 #| fig-alt: "Barplot of responses to the following statement: 'My engagement with the community would be helped if workshops were provided on how to contribute'"
 
-workshopLong |> 
+longerDataSimple |> 
   select(workshopsOnContributing) |> 
   ostFreqPlot(
     ostColour = ostYellow,
@@ -2046,8 +2023,8 @@ visMain |>
   drop_na(gender) |>
   drop_na(workshopsOnContributing) |>
   boxplotWithInteraction(
-    xVar = "workshopsOnContributing",
-    yVar = "gender",
+    xVar = workshopsOnContributing,
+    yVar = gender,
     lowerBound = 1,
     upperBound = 5,
     ostColours = ostColours3,
@@ -2065,18 +2042,17 @@ visMain |>
 
 #### other EDI variables
 
-
 ```{r plotWkShpsLikertByOtherEDIs}
 #| label: workshop-likert-plot-by-other-edis
 #| fig-alt: "Boxplots of responses by EDI variables other than gender to the question regarding whether the participant felt there engagement would increase with contributor workshops." 
 
-legendLabel <- "Member\nof group"
-workshopLong |>
+legendLabel <- "Member of\nEDI group"
+longerDataSimple |>
   drop_na(workshopsOnContributing) |>
   drop_na(response) |>
   boxplotWithInteraction(
-    xVar = "workshopsOnContributing",
-    yVar = "response",
+    xVar = workshopsOnContributing,
+    yVar = response,
     lowerBound = 1,
     upperBound = 5,
     ostColours = ostColours2rev,
@@ -2084,7 +2060,7 @@ workshopLong |>
     fillLabel = legendLabel,
     tickLabels = likertValues,
     pointFill = "#F7F11C",
-    wrapVar = "ediVar",
+    wrapVar = ediVar,
     figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 5 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
   )
 
@@ -2157,65 +2133,31 @@ contingencyPlot(
 
 ---
 
-##### sexuality
+##### other EDI variables
 
-```{r codeOfConductAwarenessBySexuality}
-#| label: codeofconduct-awareness-by-sexuality-plot
-#| fig-alt: "Contingency barplot of responses by sexual orientation to the following question: 'I am aware of the community Code of Conduct' If participants chose to respond, they could respond with either 'yes' or 'no.'"
+```{r}
+#| label: codeofconduct-awareness-by-edivars-plot
+#| fig-alt: "Contingency barplot of responses by EDI variable (except gender) to the following question: 'I am aware of the community Code of Conduct' If participants chose to respond, they could respond with either 'yes' or 'no.'"
 
-contingencyPlot(
-  df = visMain,
-  contingX = "awareOfCodeOfConduct",
-  contingGrp = "nonHeteroCommunity",
-  colours = ostColours2rev
+codeOfConductLabel <- get_label(longerDataSimple$awareOfCodeOfConduct)
+
+longerDataSimple |>
+  drop_na(response) |>
+  drop_na(awareOfCodeOfConduct) |>
+  wrappedStackedFreqPlot(
+    xVar = awareOfCodeOfConduct,
+    fillVar = response,
+    fillLabel = "Member of\nEDI group",
+    wrapVar = ediVar,
+    ostColours = ostColours2rev,
+    figCaption = NULL,
+    figTitle = codeOfConductLabel,
+    titleAdjust = NULL
   )
 
 ```
 
-##### race and/or culture
 
-```{r codeOfConductAwarenessByRace}
-#| label: codeofconduct-awareness-by-race-plot
-#| fig-alt: "Contingency barplot of responses by race and/or culture to the following question: 'I am aware of the community Code of Conduct' If participants chose to respond, they could respond with either 'yes' or 'no.'"
-
-contingencyPlot(
-  df = visMain,
-  contingX = "awareOfCodeOfConduct",
-  contingGrp = "raceCulture",
-  colours = ostColours2rev
-  )
-
-```
-
-##### disability and/or neurodivergence
-
-```{r codeOfConductAwarenessByDisability}
-#| label: codeofconduct-awareness-by-disability-plot
-#| fig-alt: "Contingency barplot of responses by disability and/or neurodivergence to the following question: 'I am aware of the community Code of Conduct' If participants chose to respond, they could respond with either 'yes' or 'no.'"
-
-contingencyPlot(
-  df = visMain,
-  contingX = "awareOfCodeOfConduct",
-  contingGrp = "disability",
-  colours = ostColours2rev
-  )
-
-```
-
-##### English as dominant language
-
-```{r codeOfConductAwarenessByDomLang}
-#| label: codeofconduct-awareness-by-domlang-plot
-#| fig-alt: "Contingency barplot of responses by whether English is the respondent's dominant written language to the following question: 'I am aware of the community Code of Conduct' If participants chose to respond, they could respond with either 'yes' or 'no.'"
-
-contingencyPlot(
-  df = visMain,
-  contingX = "awareOfCodeOfConduct",
-  contingGrp = "domLangEnglish",
-  colours = ostColours2rev
-  )
-
-```
 
 ### findability, searchability, & accessibility
 
@@ -2250,6 +2192,73 @@ visMain |>
   - Those who selected `5`: `r length(which(visMain$psychopyDocumentationEasy == 5))`, or `r round(length(which(visMain$psychopyDocumentationEasy == 5))/length(which(!is.na(visMain$psychopyDocumentationEasy))),3)*100`%\
   - Those who selected `6`: `r length(which(visMain$psychopyDocumentationEasy == 6))`, or `r round(length(which(visMain$psychopyDocumentationEasy == 6))/length(which(!is.na(visMain$psychopyDocumentationEasy))),3)*100`%\
   - Those who selected `7` (*Strongly agree*): `r length(which(visMain$psychopyDocumentationEasy == 7))`, or `r round(length(which(visMain$psychopyDocumentationEasy == 7))/length(which(!is.na(visMain$psychopyDocumentationEasy))),3)*100`%
+  
+---
+  
+#### interactions
+
+```{r findabilityLabels}
+
+docEasyLabel <- get_label(visMain$psychopyDocumentationEasy)
+
+```
+
+
+##### gender
+
+```{r plotDocEasyByGender}
+#| label: doceasy-likert-plot-by-gender
+#| fig-alt: "Boxplots of responses by EDI variables by gender to the question regarding whether the participants felt the documuntation for PsychoPy was easily findable, searchable, and accessible." 
+
+legendLabel <- "Gender"
+visMain |>
+  drop_na(gender) |>
+  drop_na(psychopyDocumentationEasy) |>
+  boxplotWithInteraction(
+    xVar = psychopyDocumentationEasy,
+    yVar = gender,
+    lowerBound = 1,
+    upperBound = 7,
+    ostColours = ostColours3,
+    xLabel = docEasyLabel,
+    fillLabel = legendLabel,
+    tickLabels = likertValues,
+    pointFill = "#F7F11C",
+    wrapVar = NULL,
+    figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
+  )
+
+```
+
+
+##### other EDI variables
+
+```{r plotDocEasyByOtherEdis}
+#| label: doceasy-likert-plot-by-other-edis
+#| fig-alt: "Boxplots of responses by EDI variables other than gender to the question regarding whether the participants felt the documuntation for PsychoPy was easily findable, searchable, and accessible." 
+
+legendLabel <- "Member of\nEDI group"
+longerDataSimple |>
+  drop_na(psychopyDocumentationEasy) |>
+  drop_na(response) |>
+  boxplotWithInteraction(
+    xVar = psychopyDocumentationEasy,
+    yVar = response,
+    lowerBound = 1,
+    upperBound = 7,
+    ostColours = ostColours2rev,
+    xLabel = docEasyLabel,
+    fillLabel = legendLabel,
+    tickLabels = likertValues,
+    pointFill = "#F7F11C",
+    wrapVar = ediVar,
+    figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
+  )
+
+```
+
+
+---
 
 ### trust in enforcement
 
@@ -2307,6 +2316,68 @@ visMain |>
 - Most of them felt that the documentation was *easily findable, searchable, and accessible*. But there were a few (just under 20%) who disagreed with this in general.\
 - In terms of trust that the *Code of Conduct* would be enforced, there was general agreement here, though about 5% expressed mild disagreement here. About 2% expressed somewhat stronger disagreement. One person expressed the strongest level of disagreement (i.e., *Strongly disagree*).
 
+#### interactions
+
+```{r trustCodeLabels}
+
+trustCodeLabel <- get_label(visMain$trustCodeWillBeEnforced)
+
+```
+
+
+##### gender
+
+```{r plotEnforceCodeOfConductByGender}
+#| label: enforcementtrust-likert-plot-by-gender
+#| fig-alt: "Boxplots of responses by EDI variables by gender to the question regarding whether the participant felt they trusted that the Code of Conduct would be enforced." 
+
+legendLabel <- "Gender"
+visMain |>
+  drop_na(gender) |>
+  drop_na(trustCodeWillBeEnforced) |>
+  boxplotWithInteraction(
+    xVar = trustCodeWillBeEnforced,
+    yVar = gender,
+    lowerBound = 1,
+    upperBound = 7,
+    ostColours = ostColours3,
+    xLabel = trustCodeLabel,
+    fillLabel = legendLabel,
+    tickLabels = likertValues,
+    pointFill = "#F7F11C",
+    wrapVar = NULL,
+    figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
+  )
+
+```
+
+
+##### other EDI variables
+
+```{r plotEnforceCodeOfConductByOtherEdis}
+#| label: enforcementtrust-likert-plot-by-other-edis
+#| fig-alt: "Boxplots of responses by EDI variables other than gender to the question regarding whether the participant felt they trusted that the Code of Conduct would be enforced." 
+
+legendLabel <- "Member of\nEDI group"
+longerDataSimple |>
+  drop_na(trustCodeWillBeEnforced) |>
+  drop_na(response) |>
+  boxplotWithInteraction(
+    xVar = trustCodeWillBeEnforced,
+    yVar = response,
+    lowerBound = 1,
+    upperBound = 7,
+    ostColours = ostColours2rev,
+    xLabel = trustCodeLabel,
+    fillLabel = legendLabel,
+    tickLabels = likertValues,
+    pointFill = "#F7F11C",
+    wrapVar = ediVar,
+    figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
+  )
+
+```
+
 # [some final remarks]
 
 ## background variables
@@ -2363,45 +2434,6 @@ With respect to the *Code of Conduct* and *documentation*, a sizeable minority w
 
 ---
 
-# Color-blindness check
-
-The custom palettes used in this report (which are based on the colors used at [Open Science Tools, Ltd.](https://opensciencetools.org/)) are simulated through various forms of color blindness below to ensure that most people can distinguish the colors on the figures.
-
-## two colors
-
-```{r colorblindnessCheckOst2}
-
-palette_bivariate_plot(ostColours2)
-palette_check(ostColours2)
-
-```
-
-## three colors
-
-```{r colorblindnessCheckOst3}
-
-palette_bivariate_plot(ostColours3)
-palette_check(ostColours3)
-
-```
-
-## five colors
-
-```{r colorblindnessCheckOst5}
-
-palette_bivariate_plot(ostColours5)
-
-```
-
-## six colors
-
-```{r colorblindnessCheckOst6}
-
-palette_bivariate_plot(ostColours6)
-palette_check(ostColours6)
-
-```
-
 # *R* Packages used
 
 ```{r citePackages}
@@ -2412,8 +2444,7 @@ allPackages <-
     neededPackages,
     c(
       "grateful", 
-      "remotes",
-      "gghalves"
+      "remotes"
       )
     )
 
@@ -2426,6 +2457,53 @@ allPackages <-
       out.name = "grateful-citations-sumandvis"
       )
     knitr::kable(pkgs)
+
+```
+
+---
+
+# Appendix
+
+## Color-blindness check
+
+The custom palettes used in this report (which are based on the colors used at [Open Science Tools, Ltd.](https://opensciencetools.org/)) are simulated through various forms of color blindness below to ensure that most people can distinguish the colors on the figures.
+
+### two colors
+
+```{r colorblindnessCheckOst2}
+#| warning: false
+
+palette_bivariate_plot(ostColours2)
+#palette_check(ostColours2)
+
+```
+
+### three colors
+
+```{r colorblindnessCheckOst3}
+#| warning: false
+
+palette_bivariate_plot(ostColours3)
+#palette_check(ostColours3)
+
+```
+
+### five colors
+
+```{r colorblindnessCheckOst5}
+#| warning: false
+
+palette_bivariate_plot(ostColours5)
+
+```
+
+### six colors
+
+```{r colorblindnessCheckOst6}
+#| warning: false
+
+palette_bivariate_plot(ostColours6)
+#palette_check(ostColours6)
 
 ```
 

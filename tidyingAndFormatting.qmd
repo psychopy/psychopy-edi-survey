@@ -776,6 +776,7 @@ d17 <- d16 |>
              )
     )
 
+
 d18 <- d17 |> 
   mutate(
     engagement = 
@@ -788,6 +789,17 @@ d18 <- d17 |>
         senDev = "Senior developer"
         )
     )
+
+# put the factors in the right order
+
+d18$engagement <- fct_relevel(
+  d18$engagement,
+  "Occasional user",
+  "Frequent user",
+  "Occasional contributor",
+  "Frequent contributor",
+  "Senior developer"
+  )
 
 d19 <- d18 |> 
   mutate(
@@ -1167,11 +1179,121 @@ saveRDS(
 
 # Create long formats for faceting interactions
 
+## most of the variables needed
+
+```{r pivotlongerDataSimple}
+
+# This actually makes the EDI variables longer
+# It pivots in cases where there is a single variable that will
+# serve as a response variable.
+# Specifically, contributions and deterrents will need to be
+# handled separately
+
+longerDataSimple <- tidiedData %>%
+  select(
+         nonHeteroCommunity,
+         raceCulture,
+         disability,
+         domLangEnglish,
+         careerStatus,
+         engagement,
+         workshopsOnContributing,
+         awareOfCodeOfConduct,
+         psychopyDocumentationEasy,
+         trustCodeWillBeEnforced,
+         )
+
+longerDataSimple <-
+  longerDataSimple %>%
+  mutate(
+    across(
+      c(
+        nonHeteroCommunity,
+        raceCulture,
+        disability,
+        domLangEnglish,
+        awareOfCodeOfConduct
+        ),
+      as.character
+      )
+    )
+
+longerDataSimple <-
+  longerDataSimple %>%
+  mutate(
+    across(
+      c(
+        nonHeteroCommunity,
+        raceCulture,
+        disability,
+        domLangEnglish,
+        awareOfCodeOfConduct
+        ),
+      ~forcats::fct_recode(.x, "yes" = "1", "no" = "0")
+      )
+    )
+
+longerDataSimple <-
+  longerDataSimple %>%
+  pivot_longer(
+    cols = c(
+      nonHeteroCommunity,
+      raceCulture,
+      disability,
+      domLangEnglish
+    ),
+    names_to = "ediVar",
+    values_to = "response"
+  )
+
+longerDataSimple$ediVar <- 
+  fct_recode(
+    longerDataSimple$ediVar,
+    "Do you, or might others who know you well, consider you somehow NOT to be part of the heterosexual community?" = 
+      "nonHeteroCommunity",
+    "Do you, or might others who know you well, consider you part of a race and/or culture that is potentially discriminated against?" = 
+      "raceCulture",
+    "Do you, or might others who know you well, consider you disabled and/or neurodivergent (i.e., visible or invisible; e.g., blind, paralysed, cerebral palsy, ASD, ADHD)?" = 
+      "disability",
+    "Is your dominant (preferred) written language English?" = 
+      "domLangEnglish"
+    
+  )
+
+longerDataSimple$ediVar <- 
+  fct_relevel(
+    longerDataSimple$ediVar,
+    "Do you, or might others who know you well, consider you somehow NOT to be part of the heterosexual community?",
+    "Do you, or might others who know you well, consider you part of a race and/or culture that is potentially discriminated against?",
+    "Do you, or might others who know you well, consider you disabled and/or neurodivergent (i.e., visible or invisible; e.g., blind, paralysed, cerebral palsy, ASD, ADHD)?",
+    "Is your dominant (preferred) written language English?"
+  )
+
+longerDataSimple <- longerDataSimple |>
+  var_labels(
+    ediVar =
+      "Dimension of diversity",
+    response = 
+      "response",
+    awareOfCodeOfConduct = 
+      "I am aware of the community Code of Conduct"
+  )
+
+```
+
+
+```{r longerDataSimple_ToRDS}
+
+saveRDS(longerDataSimple, "longerDataSimple.rds")
+
+```
+
+
 ## contributions
 
 ```{r pivotContributionsToLong}
 
-contributeLong <-
+longerDataContributions <-
   tidiedData |>
   select(
     gender,
@@ -1189,9 +1311,9 @@ contributeLong <-
   )
 
 
-contributeLong$contributionType <- 
+longerDataContributions$contributionType <- 
   fct_recode(
-    contributeLong$contributionType,
+    longerDataContributions$contributionType,
     "[I] contribute [by] improving documentation" = "ImprvDoc",
     "[I] contribute [by] supporting others" = "SuppOthers",
     "[I] contribute [by] fixing bugs" = "FixBugs",
@@ -1200,8 +1322,8 @@ contributeLong$contributionType <-
     "[I] contribute [in] other [ways not listed here]" = "Other"
   )
 
-contributeLong$contributionType <- fct_relevel(
-  contributeLong$contributionType,
+longerDataContributions$contributionType <- fct_relevel(
+  longerDataContributions$contributionType,
     "[I] contribute [by] improving documentation",
     "[I] contribute [by] supporting others",
     "[I] contribute [by] fixing bugs",
@@ -1210,18 +1332,18 @@ contributeLong$contributionType <- fct_relevel(
     "[I] contribute [in] other [ways not listed here]"
   )
 
-contributeLong <-
-  contributeLong %>%
+longerDataContributions <-
+  longerDataContributions %>%
   mutate(., selected = as.character(selected)) %>%
-  mutate(., selected = fct_recode(selected, "yes" = "1", "no" = "0"))
+  mutate(., selected = fct_recode(selected, "selected" = "1", "not selected" = "0"))
 
-contributeLong <-
-  contributeLong %>%
+longerDataContributions <-
+  longerDataContributions %>%
   mutate(across(!c(gender, contributionType, selected), as.character)) %>%
   mutate(across(!c(gender, contributionType, selected),
               ~ fct_recode(.x, "yes" = "1", "no" = "0")))
 
-contributeLong <- contributeLong |>
+longerDataContributions <- longerDataContributions |>
   var_labels(
     gender =
       "Which gender do you identify most with?",
@@ -1241,9 +1363,9 @@ contributeLong <- contributeLong |>
 
 ```
 
-```{r saveContributeLongToRDS}
+```{r savelongerDataContributionsToRDS}
 
-saveRDS(contributeLong, "contributeLong.rds")
+saveRDS(longerDataContributions, "longerDataContributions.rds")
 
 ```
 
@@ -1251,7 +1373,7 @@ saveRDS(contributeLong, "contributeLong.rds")
 
 ```{r pivotDeterrentsToLong}
 
-deterrentsLong <-
+longerDataDeterrents <-
   tidiedData |>
   select(
     gender,
@@ -1268,9 +1390,9 @@ deterrentsLong <-
     values_to = "response"
   )
 
-deterrentsLong$deterrent <- 
+longerDataDeterrents$deterrent <- 
   fct_recode(
-    deterrentsLong$deterrent,
+    longerDataDeterrents$deterrent,
     "Lack of knowledge on how to get started" = "DontKnowHowToStart",
     "Lack of coding skills" = "LackOfCodingSkills",
     "Lack of interest" = "LackOfInterest",
@@ -1279,9 +1401,9 @@ deterrentsLong$deterrent <-
     "Not aware contributing was possible" = "UnawareContributingWasPossible"
   )
 
-deterrentsLong$deterrent <- 
+longerDataDeterrents$deterrent <- 
   fct_relevel(
-    deterrentsLong$deterrent,
+    longerDataDeterrents$deterrent,
     "Lack of interest",
     "Lack of time",
     "Lack of knowledge on how to get started",
@@ -1290,123 +1412,60 @@ deterrentsLong$deterrent <-
     "Not aware contributing was possible"
   )
 
-deterrentsLong <- deterrentsLong |>
+longerDataDeterrents <-
+  longerDataDeterrents %>%
+  mutate(across(!c(gender, deterrent, response), as.character)) %>%
+  mutate(across(!c(gender, deterrent, response),
+              ~ fct_recode(.x, "yes" = "1", "no" = "0")))
+
+longerDataDeterrents <- longerDataDeterrents |>
   var_labels(
+    gender =
+      "Which gender do you identify most with?",
+    nonHeteroCommunity = 
+      "Do you, or might others who know you well, consider you somehow NOT to be part of the heterosexual community?",
+    raceCulture = 
+      "Do you, or might others who know you well, consider you part of a race and/or culture that is potentially discriminated against?",
+    disability = 
+      "Do you, or might others who know you well, consider you disabled and/or neurodivergent (i.e., visible or invisible; e.g., blind, paralysed, cerebral palsy, ASD, ADHD)?",
+    domLangEnglish = 
+      "Is your dominant (preferred) written language English?",
     deterrent =
       "To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?",
     response = 
       "response"
     )
 
-deterrentsLong <- deterrentsLong |>
+longerDataContributions <- longerDataContributions |>
+  var_labels(
+    gender =
+      "Which gender do you identify most with?",
+    nonHeteroCommunity = 
+      "Do you, or might others who know you well, consider you somehow NOT to be part of the heterosexual community?",
+    raceCulture = 
+      "Do you, or might others who know you well, consider you part of a race and/or culture that is potentially discriminated against?",
+    disability = 
+      "Do you, or might others who know you well, consider you disabled and/or neurodivergent (i.e., visible or invisible; e.g., blind, paralysed, cerebral palsy, ASD, ADHD)?",
+    domLangEnglish = 
+      "Is your dominant (preferred) written language English?",
+    contributionType = 
+      "Ways of contributing to PsychoPy",
+    selected = 
+      "Selected by respondent"
+  )
+
+
+longerDataDeterrents <- longerDataDeterrents |>
   sjlabelled::set_labels(response, labels = howDeterred)
 
 ```
 
 
-```{r saveDeterrentsLongToRDS}
+```{r savelongerDataDeterrentsToRDS}
 
-saveRDS(deterrentsLong, "deterrentsLong.rds")
-
-```
-
-## workshops
-
-### with EDI variables, but not `gender`
-
-```{r pivotWorkshopsToLong}
-
-# This actually makes the EDI variables longer
-
-workshopsLongNoGender <- tidiedData %>%
-  select(
-         nonHeteroCommunity,
-         raceCulture,
-         disability,
-         domLangEnglish,
-         workshopsOnContributing
-         )
-
-workshopsLongNoGender <-
-  workshopsLongNoGender %>%
-  mutate(
-    across(
-      c(
-        nonHeteroCommunity,
-        raceCulture,
-        disability,
-        domLangEnglish
-        ),
-      as.character
-      )
-    )
-
-workshopsLongNoGender <-
-  workshopsLongNoGender %>%
-  mutate(
-    across(
-      c(
-        nonHeteroCommunity,
-        raceCulture,
-        disability,
-        domLangEnglish
-        ),
-      ~forcats::fct_recode(.x, "yes" = "1", "no" = "0")
-      )
-    )
-
-workshopsLongNoGender <-
-  workshopsLongNoGender %>%
-  pivot_longer(
-    cols = c(
-      nonHeteroCommunity,
-      raceCulture,
-      disability,
-      domLangEnglish
-    ),
-    names_to = "ediVar",
-    values_to = "response"
-  )
-
-workshopsLongNoGender$ediVar <- 
-  fct_recode(
-    workshopsLongNoGender$ediVar,
-    "Do you, or might others who know you well, consider you somehow NOT to be part of the heterosexual community?" = 
-      "nonHeteroCommunity",
-    "Do you, or might others who know you well, consider you part of a race and/or culture that is potentially discriminated against?" = 
-      "raceCulture",
-    "Do you, or might others who know you well, consider you disabled and/or neurodivergent (i.e., visible or invisible; e.g., blind, paralysed, cerebral palsy, ASD, ADHD)?" = 
-      "disability",
-    "Is your dominant (preferred) written language English?" = 
-      "domLangEnglish"
-  )
-
-workshopsLongNoGender$ediVar <- 
-  fct_relevel(
-    workshopsLongNoGender$ediVar,
-    "Do you, or might others who know you well, consider you somehow NOT to be part of the heterosexual community?",
-    "Do you, or might others who know you well, consider you part of a race and/or culture that is potentially discriminated against?",
-    "Do you, or might others who know you well, consider you disabled and/or neurodivergent (i.e., visible or invisible; e.g., blind, paralysed, cerebral palsy, ASD, ADHD)?",
-    "Is your dominant (preferred) written language English?"
-  )
-
-workshopsLongNoGender <- workshopsLongNoGender |>
-  var_labels(
-    ediVar =
-      "Dimension of diversity",
-    response = 
-      "response"
-  )
+saveRDS(longerDataDeterrents, "longerDataDeterrents.rds")
 
 ```
-
-
-```{r saveWorkshopLongToRDS}
-
-saveRDS(workshopsLongNoGender, "workshopLong.rds")
-
-```
-
 
 
 # *R* packages used

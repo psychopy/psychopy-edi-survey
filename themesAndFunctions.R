@@ -110,40 +110,6 @@ ostFreqPlot <-
   invisible(capture.output(print(p)))
   }
 
-### function for frequency plot interactions
-ostFreqPlotInteraction <- 
-  function(
-#    .x, 
-    countVar,
-    grpVar,
-    ...,
-    ostColour) {
-    p <- 
-      sjPlot::plot_grpfrq(
-#        .x,
-        var.cnt = countVar,
-        var.grp = grpVar,
-        weight.by = NULL,
-        title = get_label(countVar),
-        wrap.title = 70,
-        type = "boxplot",
-        bar.pos = "stack",
-        axis.titles = c(
-          "",
-          "response"
-        ),
-        drop.empty = T,
-        ylim = c(0,5),
-        expand.grid = T,
-        show.na = F,
-        coord.flip = F,
-        geom.colors = ostColour,
-        show.n = T
-      )
-    invisible(capture.output(print(p)))
-  }
-
-
 ### function for stacked Likert plot
 
 stackedLikertGroups <- function(.x, likertTitle) {
@@ -228,11 +194,13 @@ wrappedFreqPlot <- function(
     wrapVar,
     ostColours
 ) {
+  xVar <- enquo(xVar)
+  wrapVar <- enquo(wrapVar)
   p <- ggplot(
     .x,
-    aes_string(
-      x=xVar,
-      fill=xVar
+    aes(
+      x=!!xVar,
+      fill=!!xVar
       )
     ) +
     geom_bar(stat = "count") +
@@ -249,18 +217,26 @@ wrappedFreqPlot <- function(
 
 ### function for plotting wrapped frequency interactions
 
-wrappedFreqInteractionPlot <- function(
+wrappedStackedFreqPlot <- function(
     .x,
     xVar,
     fillVar,
+    ostColours,
+    figCaption,
+    fillLabel,
+    figTitle,
+    ...,
     wrapVar,
-    ostColours
+    titleAdjust
     ) {
+  xVar <- enquo(xVar)
+  fillVar <- enquo(fillVar)
+  wrapVar <- enquo(wrapVar)
   p <- ggplot(
     .x,
-    aes_string(
-      x=xVar,
-      fill=fillVar
+    aes(
+      x=!!xVar,
+      fill=!!fillVar
       )
     ) +
   geom_bar(
@@ -272,9 +248,27 @@ wrappedFreqInteractionPlot <- function(
     stat = "count", 
     position = position_fill(vjust = .5)
   ) +
+  theme(
+    axis.text.x = element_text(
+      angle = 55,
+      vjust = 1,
+      hjust = 1
+      ),
+    plot.title = element_text(vjust = titleAdjust)
+    ) +
   scale_fill_manual(values=ostColours) +
-  facet_wrap(wrapVar, ncol = 2) +
-    labs(caption = "Note: Respondents could select more than one contribution type.")
+    facet_wrap(
+      wrapVar, 
+      ncol = 2,
+      labeller = label_wrap_gen(width=70)
+    ) +
+    labs(
+      title = figTitle,
+      x = "",
+      y = "",
+      fill = fillLabel,
+      caption = figCaption
+    )
 invisible(capture.output(print(p)))
 }
 
@@ -286,7 +280,7 @@ boxplotWithInteraction <- function(
     xVar,
     yVar,
     ostColours,
-    ostFreqPlotxLabel,
+    #ostFreqPlotxLabel,
     fillLabel,
     xLabel,
     figCaption,
@@ -296,12 +290,16 @@ boxplotWithInteraction <- function(
     tickLabels,
     wrapVar
 ) {
+  xVar <- enquo(xVar)
+  yVar <- enquo(yVar)
+  wrapVar <- enquo(wrapVar)
+  
   p <- ggplot(
     .x,
-    aes_string(
-      x=xVar,
-      y=yVar,
-      fill=yVar
+    aes(
+      x=!!xVar,
+      y=!!yVar,
+      fill=!!yVar
     )
   ) +
     geom_boxplot() +
@@ -347,77 +345,6 @@ boxplotWithInteraction <- function(
       )
 invisible(capture.output(print(p)))
 }
-
-# ### function for wrapped boxplots with interactions
-# 
-# wrappedBoxplotWithInteraction <- function(
-#     .x,
-#     xVar,
-#     yVar,
-#     ostColours,
-#     xLabel,
-#     fillLabel,
-#     tickLabels,
-#     ...,
-#     pointFill
-# ) {
-#   p <- ggplot(
-#     .x,
-#     aes_string(
-#       x=xVar,
-#       y=yVar,
-#       fill=yVar
-#     )
-#   ) +
-#     geom_violin(
-#       na.rm = T
-#     ) +
-#     geom_boxplot(
-#       width = 0.2,
-#       fill = "grey") +
-#     stat_summary(
-#       fun.y=mean, 
-#       geom="point", 
-#       shape=23, 
-#       size=5, 
-#       color="black", 
-#       fill=ostColours,
-#       alpha = .75
-#     ) +
-#     geom_jitter(
-#       alpha=.75,
-#       height = .25,
-#       width = .2,
-#       na.rm = T,
-#       fill = pointFill,
-#       colour = "black",
-#       shape = 21
-#     ) +
-#     scale_fill_manual(values=ostColours) +
-#     labs(
-#       title = xLabel,
-#       x = "",
-#       y = "",
-#       fill = fillLabel,
-#       caption = "Note: The mean is represented by the diamond"
-#     ) +
-#     scale_x_continuous(
-#       limits = c(1,5),
-#       breaks = waiver(),
-#       n.breaks = 5, 
-#       labels=tickLabels
-#     ) +
-#     theme(
-#       axis.text.x = element_text(
-#         angle = 90,
-#         hjust = 1,
-#         size = 10
-#       ),
-#       plot.margin = margin(t=20,r=20,b=20,l=50)
-#     )
-#   invisible(capture.output(print(p)))
-# }
-
 
 ## Tables
 
