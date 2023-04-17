@@ -19,6 +19,8 @@ format:
     fig-width: 11
     fig-height: 8
     fig_retina: 1
+    smooth-scroll: true
+    
 editor: source
 bibliography: grateful-refs-sumandvis.bib
 csl: apa.csl
@@ -103,19 +105,27 @@ source("themesAndFunctions.R")
 ```
 
 
-# summaries
+# description of survey
 
-The variables are listed in rough order of the appearance in the survey. However, all items regarding a particular identity (e.g., *gender*) are presented together here, whereas the first three items are separated from the latter eight items in the survey itself.
+We collected data for this survey (the first of two planned sureys),between 28 November 2022 and 16 March 2023.
 
-The summaries are broadly categorised into three groups, each with its own main heading:
+## MORE ON DESCRIPTION
 
-- *background*\
+The original presentation of the survey begins with *background* variables. It then proceeds to issues of equity, diversity, and inclusion for respondents who indicated not only that they are part of a particular identity of interest, but also that they feel they have been affected somehow by having that identity in the *PsychoPy* community. The survey finished with a few questions about the *Code of Conduct* and *documentation*. Thus:
+
+- *Background*\
 - *EDI issues*\
+- *Code of Conduct* and *documentation*
+
+But it makes more sense to present the data summaries in a different order. Specifically, it would be informative to see how the background variables interact with the EDI issues. Therefore, the background variables are presented *after* the EDI issues, giving us a presentation order as follows:
+
+- *EDI issues*\
+- *background & interactions*\
 - *Code of Conduct* and *documentation*
 
 Each participant saw the all of the *background* items on the survey, as well as the *code-of-conduct* items. For the *EDI issues*, everyone saw at least one of the questions, with the exception of *gender*, in which case everyone saw at least two. 
 
-The one question that everyone saw had to do with whether they identified with, or was typically associated with, one of the EDI groups. In the case of *gender*, they simply indicated their gender (not whether they had a gender or not).
+The one EDI questions that everyone saw had to do with whether they identified with, or was typically associated with, one of the EDI groups. In the case of *gender*, they simply indicated their gender (not whether they had a gender or not).
 
 If they answered *yes* to that question, two more questions appeared. The first invited them to supply more specific information about their identify, but only if they wanted to. The second had to do with whether they felt that this particular identity had affected their interactions in the *PsychoPy*<sup>&reg;</sup> community.
 
@@ -146,6 +156,8 @@ Below are the full survey categories in more detail.
 None of the questions here required responses. 
 
 Each of the headings in the list above above is depicted below with a visualisation, followed by a verbal summary of that visualisation, and then statistics on central tendency in cases where there were any Likert items.
+
+# summaries
 
 ## EDI issues
 
@@ -379,7 +391,9 @@ visMain |>
   select(genderNegPerc:genderOthersLikeMe) |>
   tableLikert(
     lowerBound = "1 = Strongly disagree",
-    upperBound = "7 = Strongly agree"
+    upperBound = "7 = Strongly agree",
+    byVar = NULL,
+    spanVar <- NULL
   )
 
 ```
@@ -592,7 +606,9 @@ visMain |>
   select(nonHeteroNegPerc:nonHeteroOthersLikeMe) |>
   tableLikert(
     lowerBound = "1 = Strongly disagree",
-    upperBound = "7 = Strongly agree"
+    upperBound = "7 = Strongly agree",
+    byVar = NULL,
+    spanVar <- NULL
   )
   
 ```
@@ -804,7 +820,9 @@ visMain |>
   select(raceCultureNegPerc:raceCultureOthersLikeMe) |> 
   tableLikert(
     lowerBound = "1 = Strongly disagree",
-    upperBound = "7 = Strongly agree"
+    upperBound = "7 = Strongly agree",
+    byVar = NULL,
+    spanVar <- NULL
   )
 
 ```
@@ -1016,7 +1034,9 @@ visMain |>
   select(disabilityNegPerc:disabilityOthersLikeMe) |> 
   tableLikert(
     lowerBound = "1 = Strongly disagree",
-    upperBound = "7 = Strongly agree"
+    upperBound = "7 = Strongly agree",
+    byVar = NULL,
+    spanVar <- NULL
   )
 
 ```
@@ -1227,7 +1247,9 @@ visMain |>
   select(domLangNegPerc:domLangOthersLikeMe) |> 
   tableLikert(
     lowerBound = "1 = Strongly disagree",
-    upperBound = "7 = Strongly agree"
+    upperBound = "7 = Strongly agree",
+    byVar = NULL,
+    spanVar <- NULL
   )
 
 ```
@@ -1778,7 +1800,9 @@ visMain |>
   select(starts_with("deterrents"))  |>
   tableLikert(
     lowerBound = "1 = not at all",
-    upperBound = "5 = very much"
+    upperBound = "5 = very much",
+    byVar = NULL,
+    spanVar <- NULL
   )
 
 ```
@@ -1830,6 +1854,24 @@ longerDataDeterrents |>
 
 ```
 
+```{r tableDeterrentsByGender}
+#| label: deterrents-by-gender-stats-table
+#| tbl-cap: "Statistical summaries by gender of responses to statements regarding deterrents to contributing."
+#| output: asis
+
+textForSpan <- get_label(visMain$gender)
+visMain |>
+  select(starts_with("deterrents"), gender)  |>
+  drop_na("gender") |> 
+  tableLikert(
+    lowerBound = "1 = not at all",
+    upperBound = "5 = very much",
+    byVar = "gender",
+    spanVar = textForSpan
+  )
+
+```
+
 ---
 
 ##### sexual orientation
@@ -1858,6 +1900,34 @@ longerDataDeterrents |>
 ```
 
 
+```{r tableDeterrentsBySexuality}
+#| label: deterrents-by-sexuality-stats-table
+#| tbl-cap: "Statistical summaries by sexual orientation of responses to statements regarding deterrents to contributing."
+#| output: asis
+
+textForSpan <- get_label(visMain$nonHeteroCommunity)
+visMain |>
+  select(starts_with("deterrents"), nonHeteroCommunity)  |>
+  drop_na("nonHeteroCommunity") |> 
+  mutate(
+    nonHeteroCommunity = 
+      as.character(nonHeteroCommunity)
+    ) |>
+  mutate(
+    nonHeteroCommunity = 
+      forcats::fct_recode(
+        nonHeteroCommunity, 
+        "yes" = "1", 
+        "no" = "0")
+    ) |>
+  tableLikert(
+    lowerBound = "1 = not at all",
+    upperBound = "5 = very much",
+    byVar = "nonHeteroCommunity",
+    spanVar = textForSpan
+  )
+
+```
 
 ---
 
@@ -1884,6 +1954,35 @@ longerDataDeterrents |>
     fillLabel = legendLabel,
     figCaption = deterrentsCaption
 )
+
+```
+
+```{r tableDeterrentsByRace}
+#| label: deterrents-by-race-stats-table
+#| tbl-cap: "Statistical summaries by race and/or culture of responses to statements regarding deterrents to contributing."
+#| output: asis
+
+textForSpan <- get_label(visMain$raceCulture)
+visMain |>
+  select(starts_with("deterrents"), raceCulture)  |>
+  drop_na("raceCulture") |> 
+  mutate(
+    raceCulture = 
+      as.character(raceCulture)
+    ) |>
+  mutate(
+    raceCulture = 
+      forcats::fct_recode(
+        raceCulture, 
+        "yes" = "1", 
+        "no" = "0")
+    ) |>
+  tableLikert(
+    lowerBound = "1 = not at all",
+    upperBound = "5 = very much",
+    byVar = "raceCulture",
+    spanVar = textForSpan
+  )
 
 ```
 
@@ -1915,6 +2014,36 @@ longerDataDeterrents |>
 
 ```
 
+```{r tableDeterrentsByDisability}
+#| label: deterrents-by-disability-stats-table
+#| tbl-cap: "Statistical summaries by disability and/or neurodivergence of responses to statements regarding deterrents to contributing."
+#| output: asis
+
+textForSpan <- get_label(visMain$disability)
+visMain |>
+  select(starts_with("deterrents"), disability)  |>
+  drop_na("disability") |> 
+  mutate(
+    disability = 
+      as.character(disability)
+    ) |>
+  mutate(
+    disability = 
+      forcats::fct_recode(
+        disability, 
+        "yes" = "1", 
+        "no" = "0")
+    ) |>
+  tableLikert(
+    lowerBound = "1 = not at all",
+    upperBound = "5 = very much",
+    byVar = "disability",
+    spanVar = textForSpan
+  )
+
+```
+
+
 ---
 
 ##### English as dominant language
@@ -1940,6 +2069,35 @@ longerDataDeterrents |>
     fillLabel = legendLabel,
     figCaption = deterrentsCaption
 )
+
+```
+
+```{r tableDeterrentsByDomLang}
+#| label: deterrents-by-domlang-stats-table
+#| tbl-cap: "Statistical summaries by whether the respondents' dominant written language is English of responses to statements regarding deterrents to contributing."
+#| output: asis
+
+textForSpan <- get_label(visMain$domLangEnglish)
+visMain |>
+  select(starts_with("deterrents"), domLangEnglish)  |>
+  drop_na("domLangEnglish") |> 
+  mutate(
+    domLangEnglish = 
+      as.character(domLangEnglish)
+    ) |>
+  mutate(
+    domLangEnglish = 
+      forcats::fct_recode(
+        domLangEnglish, 
+        "yes" = "1", 
+        "no" = "0")
+    ) |>
+  tableLikert(
+    lowerBound = "1 = not at all",
+    upperBound = "5 = very much",
+    byVar = "domLangEnglish",
+    spanVar = textForSpan
+  )
 
 ```
 
@@ -2000,7 +2158,9 @@ visMain |>
   select(workshopsOnContributing)  |>
   tableLikert(
     lowerBound = "1 = Strongly disagree",
-    upperBound = "5 = Strongly agree"
+    upperBound = "5 = Strongly agree",
+    byVar = NULL,
+    spanVar = NULL
   )
 
 ```
@@ -2038,6 +2198,8 @@ visMain |>
 
 ```
 
+
+
 ---
 
 #### other EDI variables
@@ -2065,6 +2227,7 @@ longerDataSimple |>
   )
 
 ```
+
 
 ---
 
@@ -2305,7 +2468,9 @@ visMain |>
   select(c("psychopyDocumentationEasy", "trustCodeWillBeEnforced")) |> 
   tableLikert(
     lowerBound = "1 = Strongly disagree",
-    upperBound = "7 = Strongly agree"
+    upperBound = "7 = Strongly agree",
+    byVar = NULL,
+    spanVar = NULL
   )
 
 ```

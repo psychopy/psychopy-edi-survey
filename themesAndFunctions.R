@@ -349,11 +349,11 @@ invisible(capture.output(print(p)))
 ## Tables
 
 ### Likert table
-tableLikert <- function(.x, lowerBound, upperBound) {
+tableLikert <- function(.x, lowerBound, upperBound, byVar, spanVar) {
   p <- 
     gtsummary::tbl_summary(
       .x,
-      by = NULL,
+      by = byVar,
       type = everything() ~ "continuous2",
       statistic = all_continuous() ~ c(
         "{mean}",
@@ -363,7 +363,8 @@ tableLikert <- function(.x, lowerBound, upperBound) {
         "{min}, {max}"
       ),
       digits = list(everything() ~ c(1,2,1,1,1,0,0)),
-      missing = "no"
+      missing = "no",
+      label = byVar ~ sjlabelled::get_label(byVar)
     ) |>
     gtsummary::add_n(
       statistic = "{N_nonmiss} ({N_miss})",
@@ -379,6 +380,8 @@ tableLikert <- function(.x, lowerBound, upperBound) {
         ")"),
       n = "**n (NA)**"
     ) |>
+    modify_spanning_header(all_stat_cols() ~ spanVar) |>
+    add_stat_label() |>
     gtsummary::as_flex_table()
   flextable::flextable_to_rmd(p)
 }
