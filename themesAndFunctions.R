@@ -349,19 +349,27 @@ invisible(capture.output(print(p)))
 ## Tables
 
 ### Likert table
-tableLikert <- function(.x, lowerBound, upperBound, byVar, spanVar) {
+tableLikert <- function(
+    .x,
+    lowerBound,
+    upperBound,
+    byVar,
+    spanVar,
+    footNote
+    ) {
   p <- 
     gtsummary::tbl_summary(
       .x,
       by = byVar,
       type = everything() ~ "continuous2",
-      statistic = all_continuous() ~ c(
-        "{mean}",
-        "{sd}",
-        "{median}",
-        "{p25}, {p75}",
-        "{min}, {max}"
-      ),
+      statistic =
+          all_continuous() ~ c(
+            "{mean}",
+            "{sd}",
+            "{median}",
+            "{p25}, {p75}",
+            "{min}, {max}"
+            ),
       digits = list(everything() ~ c(1,2,1,1,1,0,0)),
       missing = "no",
       label = byVar ~ sjlabelled::get_label(byVar)
@@ -380,8 +388,106 @@ tableLikert <- function(.x, lowerBound, upperBound, byVar, spanVar) {
         ")"),
       n = "**n (NA)**"
     ) |>
-    modify_spanning_header(all_stat_cols() ~ spanVar) |>
-    add_stat_label() |>
+    gtsummary::modify_spanning_header(all_stat_cols() ~ spanVar) |>
+    #gtsummary::modify_caption(spanVar) |>
+    gtsummary::add_stat_label() |>
+    gtsummary::modify_footnote(
+      all_stat_cols() ~ footNote
+    ) |>
     gtsummary::as_flex_table()
   flextable::flextable_to_rmd(p)
+}
+
+### Likert table individual
+tableLikertInd <- function(
+    .x,
+    lowerBound,
+    upperBound,
+    byVar,
+    captionVar,
+    footNote
+) {
+  p <- 
+    gtsummary::tbl_summary(
+      .x,
+      by = byVar,
+      type = everything() ~ "continuous2",
+      statistic =
+        all_continuous() ~ c(
+          "{mean}",
+          "{sd}",
+          "{median}",
+          "{p25}, {p75}",
+          "{min}, {max}"
+        ),
+      digits = list(everything() ~ c(1,2,1,1,1,0,0)),
+      missing = "no",
+      label = byVar ~ sjlabelled::get_label(byVar)
+    ) |>
+    gtsummary::add_n(
+      statistic = "{N_nonmiss} ({N_miss})",
+      col_label = "n (NA)",
+      footnote = FALSE,
+      last = FALSE) |>
+    gtsummary::modify_header(
+      label = paste0(
+        "**Statement** (",
+        lowerBound,
+        "; ",
+        upperBound,
+        ")"),
+      n = "**n (NA)**"
+    ) |>
+   #gtsummary::modify_caption(captionVar) |>
+    gtsummary::add_stat_label() |>
+    gtsummary::modify_footnote(
+      all_stat_cols() ~ footNote
+    ) |>
+    gtsummary::as_flex_table() |>
+    flextable::set_caption(caption = captionVar) |>
+  flextable::flextable_to_rmd(p)
+}
+
+### Likert table no print (for stacking)
+tableLikertForStack <- function(
+    .x,
+    lowerBound,
+    upperBound,
+    byVar,
+    spanVar,
+    footNote
+) {
+  gtsummary::tbl_summary(
+      .x,
+      by = byVar,
+      type = everything() ~ "continuous2",
+      statistic =
+          all_continuous() ~ c(
+            "{mean}",
+            "{sd}",
+            "{median}",
+            "{p25}, {p75}",
+            "{min}, {max}"
+            ),
+      digits = list(everything() ~ c(1,2,1,1,1,0,0)),
+      missing = "no",
+      label = byVar ~ sjlabelled::get_label(byVar)
+    ) |>
+    gtsummary::add_n(
+      statistic = "{N_nonmiss} ({N_miss})",
+      col_label = "n (NA)",
+      footnote = FALSE,
+      last = FALSE) |>
+    gtsummary::modify_header(
+      label = paste0(
+        "**Statement** (",
+        lowerBound,
+        "; ",
+        upperBound,
+        ")"),
+      n = "**n (NA)**"
+    ) |>
+    gtsummary::modify_spanning_header(all_stat_cols() ~ spanVar) |>
+    gtsummary::add_stat_label() |>
+    gtsummary::modify_footnote(all_stat_cols() ~ footNote)
 }

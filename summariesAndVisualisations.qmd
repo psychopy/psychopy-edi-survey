@@ -393,7 +393,8 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = NULL,
-    spanVar <- NULL
+    spanVar <- NULL,
+    footNote <- NULL
   )
 
 ```
@@ -595,7 +596,7 @@ Below, we describe the numbers in the figure above, but in the order in which th
   - ***Neutral***: `r length(which(visMain$nonHeteroOthersLikeMe == 4))`, or `r round(length(which(visMain$nonHeteroOthersLikeMe == 4))/length(which(!is.na(visMain$nonHeteroOthersLikeMe))),3)*100`%\
   - Generally ***agreed***: `r length(which(visMain$nonHeteroOthersLikeMe == 5))+length(which(visMain$nonHeteroOthersLikeMe == 6))+length(which(visMain$nonHeteroOthersLikeMe == 7))`, or `r round((length(which(visMain$nonHeteroOthersLikeMe == 5))+length(which(visMain$nonHeteroOthersLikeMe == 6))+length(which(visMain$nonHeteroOthersLikeMe == 7)))/length(which(!is.na(visMain$nonHeteroOthersLikeMe))),3)*100`%
 
-##### central tendency
+  ##### central tendency
 
 ```{r tableOfSexualityStats}
 #| label: nonhetero-stats-table
@@ -608,7 +609,8 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = NULL,
-    spanVar <- NULL
+    spanVar <- NULL,
+    footNote <- NULL
   )
   
 ```
@@ -822,7 +824,8 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = NULL,
-    spanVar <- NULL
+    spanVar <- NULL,
+    footNote <- NULL
   )
 
 ```
@@ -1036,7 +1039,8 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = NULL,
-    spanVar <- NULL
+    spanVar <- NULL,
+    footNote <- NULL
   )
 
 ```
@@ -1249,7 +1253,8 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = NULL,
-    spanVar <- NULL
+    spanVar <- NULL,
+    footNote <- NULL
   )
 
 ```
@@ -1802,7 +1807,8 @@ visMain |>
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
     byVar = NULL,
-    spanVar <- NULL
+    spanVar <- NULL,
+    footNote <- NULL
   )
 
 ```
@@ -1859,6 +1865,10 @@ longerDataDeterrents |>
 #| tbl-cap: "Statistical summaries by gender of responses to statements regarding deterrents to contributing."
 #| output: asis
 
+textForFootnote <- paste0(
+  "There was/were ", 
+  sum(is.na(visMain$gender)),
+  " extra missing values in this table due to non-responses to this particular EDI variable.")
 textForSpan <- get_label(visMain$gender)
 visMain |>
   select(starts_with("deterrents"), gender)  |>
@@ -1867,7 +1877,8 @@ visMain |>
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
     byVar = "gender",
-    spanVar = textForSpan
+    spanVar = textForSpan,
+    footNote <- textForFootnote
   )
 
 ```
@@ -1905,6 +1916,10 @@ longerDataDeterrents |>
 #| tbl-cap: "Statistical summaries by sexual orientation of responses to statements regarding deterrents to contributing."
 #| output: asis
 
+textForFootnote <- paste0(
+  "There was/were ", 
+  sum(is.na(visMain$nonHeteroCommunity)),
+  " extra missing values in this table due to non-responses to this particular EDI variable.")
 textForSpan <- get_label(visMain$nonHeteroCommunity)
 visMain |>
   select(starts_with("deterrents"), nonHeteroCommunity)  |>
@@ -1924,7 +1939,8 @@ visMain |>
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
     byVar = "nonHeteroCommunity",
-    spanVar = textForSpan
+    spanVar = textForSpan,
+    footNote <- textForFootnote
   )
 
 ```
@@ -1962,6 +1978,10 @@ longerDataDeterrents |>
 #| tbl-cap: "Statistical summaries by race and/or culture of responses to statements regarding deterrents to contributing."
 #| output: asis
 
+textForFootnote <- paste0(
+  "There was/were ", 
+  sum(is.na(visMain$raceCulture)),
+  " extra missing values in this table due to non-responses to this particular EDI variable.")
 textForSpan <- get_label(visMain$raceCulture)
 visMain |>
   select(starts_with("deterrents"), raceCulture)  |>
@@ -1981,7 +2001,8 @@ visMain |>
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
     byVar = "raceCulture",
-    spanVar = textForSpan
+    spanVar = textForSpan,
+    footNote <- textForFootnote
   )
 
 ```
@@ -2019,6 +2040,10 @@ longerDataDeterrents |>
 #| tbl-cap: "Statistical summaries by disability and/or neurodivergence of responses to statements regarding deterrents to contributing."
 #| output: asis
 
+textForFootnote <- paste0(
+  "There was/were ", 
+  sum(is.na(visMain$disability)),
+  " extra missing values in this table due to non-responses to this particular EDI variable.")
 textForSpan <- get_label(visMain$disability)
 visMain |>
   select(starts_with("deterrents"), disability)  |>
@@ -2038,7 +2063,8 @@ visMain |>
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
     byVar = "disability",
-    spanVar = textForSpan
+    spanVar = textForSpan,
+    footNote <- textForFootnote
   )
 
 ```
@@ -2051,7 +2077,6 @@ visMain |>
 ```{r plotDeterrentsLikertByDisability}
 #| label: deterrents-likert-plot-by-langdom
 #| fig-alt: "Boxplots of responses by whether English is the respondent's dominant written language to the the following question: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?.'" 
-
 legendLabel <- "English is dominant\nwritten language"
 longerDataDeterrents |>
   select(domLangEnglish, deterrent, response) |>
@@ -2077,6 +2102,10 @@ longerDataDeterrents |>
 #| tbl-cap: "Statistical summaries by whether the respondents' dominant written language is English of responses to statements regarding deterrents to contributing."
 #| output: asis
 
+textForFootnote <- paste0(
+  "There was/were ", 
+  sum(is.na(visMain$disability)),
+  " extra missing values in this table due to non-responses to this particular EDI variable.")
 textForSpan <- get_label(visMain$domLangEnglish)
 visMain |>
   select(starts_with("deterrents"), domLangEnglish)  |>
@@ -2096,7 +2125,8 @@ visMain |>
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
     byVar = "domLangEnglish",
-    spanVar = textForSpan
+    spanVar = textForSpan,
+    footNote <- textForFootnote
   )
 
 ```
@@ -2160,7 +2190,8 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "5 = Strongly agree",
     byVar = NULL,
-    spanVar = NULL
+    spanVar = NULL,
+    footNote <- NULL
   )
 
 ```
@@ -2171,12 +2202,17 @@ visMain |>
 
 ### interactions
 
-#### gender
-
 ```{r plotWkShpsLikertByGender}
 #| label: workshop-likert-plot-by-gender
-#| fig-alt: "Boxplots of responses by gender to the question regarding whether the participant felt there engagement would increase with contributor workshops." 
+#| fig-alt: "Boxplots of responses by gender to the question regarding whether the participant felt their engagement would increase with contributor workshops." 
 
+# WORK MORE ON THIS NA THING
+
+figCaptionText <- paste0(
+  "Notes: \n1. A response of 1 indicates 'Strongly disagree' \n2. A response of 5 indicates 'Strongly agree'\n3. The mean is represented by the diamond\n4. There were ",
+  nrow(visMain)-sum(complete.cases(visMain[,c("gender","workshopsOnContributing")])),
+  " observations that were dropped due to having missing values for either variable."
+)
 legendLabel <- "Gender"
 visMain |>
   select(gender, workshopsOnContributing) |>
@@ -2193,20 +2229,18 @@ visMain |>
     tickLabels = likertValues,
     pointFill = "darkgrey",
     wrapVar = NULL,
-    figCaption = "Notes: \n1. A response of 1 indicates 'Strongly disagree' \n2. A response of 5 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
+    figCaption = figCaptionText
     )
 
 ```
 
 
-
 ---
 
-#### other EDI variables
 
 ```{r plotWkShpsLikertByOtherEDIs}
 #| label: workshop-likert-plot-by-other-edis
-#| fig-alt: "Boxplots of responses by EDI variables other than gender to the question regarding whether the participant felt there engagement would increase with contributor workshops." 
+#| fig-alt: "Boxplots of responses by EDI variables other than gender to the question regarding whether the participant felt their engagement would increase with contributor workshops." 
 
 legendLabel <- "Member of\nEDI group"
 longerDataSimple |>
@@ -2228,6 +2262,109 @@ longerDataSimple |>
 
 ```
 
+```{r tableWorkshopsByGender}
+#| label: workshops-by-gender-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by gender."
+#| output: asis
+
+textForSpan <- get_label(visMain$gender)
+visMain |>
+  select(workshopsOnContributing, gender)  |>
+  mutate(gender = forcats::fct_na_value_to_level(gender, level = "missing")) |>
+  tableLikert(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "5 = Strongly agree",
+    byVar = "gender",
+    spanVar = textForSpan,
+    footNote <- NULL
+  )
+
+```
+
+
+```{r tableWorkshopsBySexuality}
+#| label: workshops-by-sexuality-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by sexual orientation."
+#| output: asis
+
+textForSpan <- get_label(visMain$nonHeteroCommunity)
+visMain |>
+  select(workshopsOnContributing, nonHeteroCommunity)  |>
+  mutate(nonHeteroCommunity = as.character(nonHeteroCommunity)) |>
+  mutate(nonHeteroCommunity = forcats::fct_recode(nonHeteroCommunity, "yes" = "1", "no" = "0")) |>
+  mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "missing")) |>
+  tableLikert(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "5 = Strongly agree",
+    byVar = "nonHeteroCommunity",
+    spanVar = textForSpan,
+    footNote <- NULL
+  )
+
+```
+
+```{r tableWorkshopsByRace}
+#| label: workshops-by-race-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by race and/or culture."
+#| output: asis
+
+textForSpan <- get_label(visMain$raceCulture)
+visMain |>
+  select(workshopsOnContributing, raceCulture)  |>
+  mutate(raceCulture = as.character(raceCulture)) |>
+  mutate(raceCulture = forcats::fct_recode(raceCulture, "yes" = "1", "no" = "0")) |>
+  mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "missing")) |>
+  tableLikert(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "5 = Strongly agree",
+    byVar = "raceCulture",
+    spanVar = textForSpan,
+    footNote <- NULL
+  )
+
+```
+
+```{r tableWorkshopsByDisability}
+#| label: workshops-by-disability-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by disability and/or neurodivergence."
+#| output: asis
+
+textForSpan <- get_label(visMain$disability)
+visMain |>
+  select(workshopsOnContributing, disability)  |>
+  mutate(disability = as.character(disability)) |>
+  mutate(disability = forcats::fct_recode(disability, "yes" = "1", "no" = "0")) |>
+  mutate(disability = forcats::fct_na_value_to_level(disability, level = "missing")) |>
+  tableLikert(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "5 = Strongly agree",
+    byVar = "disability",
+    spanVar = textForSpan,
+    footNote <- NULL
+  )
+
+```
+
+```{r tableWorkshopsByDomLangEng}
+#| label: workshops-by-domlangenglish-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by written language dominance."
+#| output: asis
+
+textForSpan <- get_label(visMain$domLangEnglish)
+visMain |>
+  select(workshopsOnContributing, domLangEnglish)  |>
+  mutate(domLangEnglish = as.character(domLangEnglish)) |>
+  mutate(domLangEnglish = forcats::fct_recode(domLangEnglish, "yes" = "1", "no" = "0")) |>
+  mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "missing")) |>
+  tableLikert(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "5 = Strongly agree",
+    byVar = "domLangEnglish",
+    spanVar = textForSpan,
+    footNote <- NULL
+  )
+
+```
 
 ---
 
@@ -2470,7 +2607,8 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = NULL,
-    spanVar = NULL
+    spanVar = NULL,
+    footNote <- NULL
   )
 
 ```
