@@ -21,7 +21,7 @@ number-sections: true
 number-depth: 4
 ---
 
-# (Install) and attache packages
+# (Install) and attach packages
 
 ```{r getAndAttachPackages}
 #| message: false
@@ -722,11 +722,9 @@ d15 <- d14 |>
 
 ```
 
-# Add labels
+# Convert to factors
 
-## change `TRUE`/`FALSE` to `1`/`0`
-
-```{r changeBooleanToBinary}
+```{r convertToFactors}
 # Convert these to numeric before giving them variable labels
 # (sjPlot seems to have trouble with logical vectors and labels)
 # The problem is that applying the as.numeric function strips the
@@ -753,18 +751,97 @@ YesNoQuestions <- c(
           "awareOfCodeOfConduct"
           )
 
-
 d16 <- d15 |>
   mutate(
     across(
-      all_of(YesNoQuestions), 
-      ~ as.numeric(.)
-      )
-    ) 
+      all_of(YesNoQuestions),
+      ~ as.character(.)
+    )
+  ) |>
+  mutate(
+    across(
+      all_of(YesNoQuestions),
+      ~ as.factor(.)
+    )
+  ) |>
+  mutate(
+    across(
+      all_of(YesNoQuestions),
+      ~ fct_recode(., "Yes" = "TRUE", "No" = "FALSE")
+    )
+  ) |>
+  mutate(
+    across(
+      all_of(YesNoQuestions),
+      ~ fct_na_value_to_level(.)
+    )
+  ) |>
+  mutate(
+    across(
+      all_of(YesNoQuestions),
+      ~ fct_relevel(., "Yes", "No")
+    )
+  )
+
+contribQuestions <- c(
+  "contribImprvDoc",
+  "contribSuppOthers",
+  "contribFixBugs",
+  "contribAddFeatures",
+  "contribProvTransl",
+  "contribOther"
+)
+
+d17 <- d16 |>
+  mutate(
+    across(
+      all_of(contribQuestions),
+      ~ as.character(.)
+    )
+  ) |>
+  mutate(
+    across(
+      all_of(contribQuestions),
+      ~ as.factor(.)
+    )
+  ) |>
+  mutate(
+    across(
+      all_of(contribQuestions),
+      ~ fct_recode(., Selected = "1", Unselected = "0")
+    )
+  ) |>
+  mutate(
+    across(
+      all_of(contribQuestions),
+      ~ fct_na_value_to_level(.)
+    )
+  ) |>
+  mutate(
+    across(
+      all_of(contribQuestions),
+      ~ fct_relevel(., "Selected", "Unselected")
+    )
+  )
+
+# OLD CODE TO TEST ON ONE VARIABLE
+  # mutate(nonHeteroCommunity = as.character(nonHeteroCommunity)) |>
+  # mutate(nonHeteroCommunity = fct_recode(nonHeteroCommunity, "Yes" = "TRUE", "No" = "FALSE")) |>
+  # mutate(nonHeteroCommunity = fct_na_value_to_level(nonHeteroCommunity))
+  
+
+# d16 <- d15a |> LEGACY BEFORE CONVERSION TO FACTORS
+#   mutate(
+#     across(
+#       all_of(YesNoQuestions), 
+#       ~ as.numeric(.)
+#       )
+#     ) 
 
 # A similar problem seems to occur with renaming factor levels
 # Convert original factor levels into natural-language levels
-d17 <- d16 |> 
+
+d18 <- d17 |> 
   mutate(
     careerStatus = 
       recode(careerStatus, 
@@ -774,52 +851,101 @@ d17 <- d16 |>
              techJunior = "Technical - junior",
              techSenior = "Technical - senior"
              )
+    ) |>
+  mutate(careerStatus = as.factor(careerStatus)) |>
+  mutate(careerStatus = fct_na_value_to_level(careerStatus)) |>
+  mutate(careerStatus = fct_relevel(
+    careerStatus,
+    "Researcher - early career",
+    "Researcher - mid career",
+    "Researcher - senior",
+    "Technical - junior",
+    "Technical - senior"
     )
-
-
-d18 <- d17 |> 
-  mutate(
-    engagement = 
-      recode(
-        engagement,
-        userOcc = "Occasional user",
-        userFreq = "Frequent user",
-        contribOcc = "Occasional contributor",
-        contribFreq = "Frequent contributor",
-        senDev = "Senior developer"
-        )
-    )
-
-# put the factors in the right order
-
-d18$engagement <- fct_relevel(
-  d18$engagement,
-  "Occasional user",
-  "Frequent user",
-  "Occasional contributor",
-  "Frequent contributor",
-  "Senior developer"
   )
 
 d19 <- d18 |> 
   mutate(
-    gender = 
-      recode(gender, 
-             man = "man",
-             woman = "woman",
-             notListed = "not listed"
+    engagement = 
+      recode(engagement,
+             userOcc = "Occasional user",
+             userFreq = "Frequent user",
+             contribOcc = "Occasional contributor",
+             contribFreq = "Frequent contributor",
+             senDev = "Senior developer"
              )
+    ) |>
+  mutate(engagement = as.factor(engagement)) |>
+  mutate(engagement = fct_na_value_to_level(engagement)) |>
+  mutate(engagement = fct_relevel(
+    engagement,
+    "Occasional user",
+    "Frequent user",
+    "Occasional contributor",
+    "Frequent contributor",
+    "Senior developer"
+    )
+  )
+
+# LEGACY BEFORE TURNING THINGS TO FACTORS
+# d18 <- d17 |> 
+#   mutate(
+#     engagement = 
+#       recode(
+#         engagement,
+#         userOcc = "Occasional user",
+#         userFreq = "Frequent user",
+#         contribOcc = "Occasional contributor",
+#         contribFreq = "Frequent contributor",
+#         senDev = "Senior developer"
+#         )
+#     )
+# 
+# # put the factors in the right order
+# 
+# d18$engagement <- fct_relevel(
+#   d18$engagement,
+#   "Occasional user",
+#   "Frequent user",
+#   "Occasional contributor",
+#   "Frequent contributor",
+#   "Senior developer"
+#   )
+
+d20 <- d19 |> 
+  mutate(
+    gender = as.factor(gender)
+    ) |>
+  mutate(
+    gender = 
+      recode(
+        gender, 
+        man = "man",
+        woman = "woman",
+        notListed = "not listed"
+        )
+    ) |>
+  mutate(
+    gender = fct_na_value_to_level(gender)
+    ) |>
+  mutate(
+    gender = fct_relevel(
+      gender,
+      "man",
+      "woman",
+      "not listed"
+      )
     )
 
 ```
 
-## add variable labels
+# Add variable labels
 
 ```{r associateSurveyQuestions}
 
 # this chunk uses the sjlabelled package
 
-d20 <- d19 |>
+d21 <- d20 |>
   var_labels(
     # informed consent
     readAndUnderstood = 
@@ -1003,7 +1129,7 @@ d20 <- d19 |>
 
 ```
 
-## add value labels
+# Add value labels
 
 ```{r addValueLabels}
 
@@ -1019,11 +1145,11 @@ howDeterred <- c(
   )
 
 # Apply them
-d21 <- d20 |>
+d22 <- d21 |>
   mutate(
     across(
       starts_with("deterrents"),
-      ~ sjlabelled::set_labels(., labels=howDeterred)
+      ~ sjlabelled::set_labels(., labels = howDeterred)
       )
     )
 
@@ -1039,7 +1165,7 @@ extentAgree7 <- c(
   )
 
 # Apply them
-d22 <- d21 |>
+d23 <- d22 |>
   mutate(
     across(
       ends_with(
@@ -1056,7 +1182,7 @@ d22 <- d21 |>
           "CodeWillBeEnforced"
           )
         ),
-      ~ sjlabelled::set_labels(., labels=extentAgree7
+      ~ sjlabelled::set_labels(., labels = extentAgree7
     )
   ) 
 )
@@ -1071,54 +1197,54 @@ extentAgree5 <- c(
   )
 
 # Apply them
-d23 <- d22 |>
+d24 <- d23 |>
   mutate(
     across(
       ends_with(
         c("OnContributing")
         ),
-      ~ sjlabelled::set_labels(., labels=extentAgree5
+      ~ sjlabelled::set_labels(., labels = extentAgree5
     )
   ) 
 )
 
 # Provide labels for the as.numeric-transformed boolean questions
-booleanYesNo <- 
-  c(
-    `No` = 0, 
-    `Yes` = 1
-    )
+# booleanYesNo <- 
+#   c(
+#     `No` = 0, 
+#     `Yes` = 1
+#     )
 
 # Apply them
-d24 <- d23 |>
-  mutate(
-    across(
-      all_of(YesNoQuestions), 
-      ~ sjlabelled::set_labels(., labels=booleanYesNo)))
+# d25 <- d24 |>
+#   mutate(
+#     across(
+#       all_of(YesNoQuestions), 
+#       ~ sjlabelled::set_labels(., labels=booleanYesNo)))
 
 # create a vector of the contribution questions
 
-contribQuestions <- c(
-  "contribImprvDoc",
-  "contribSuppOthers",
-  "contribFixBugs",
-  "contribAddFeatures",
-  "contribProvTransl",
-  "contribOther")
+# contribQuestions <- c(
+#   "contribImprvDoc",
+#   "contribSuppOthers",
+#   "contribFixBugs",
+#   "contribAddFeatures",
+#   "contribProvTransl",
+#   "contribOther")
 
 # Provide labels for the as.numeric-transformed boolean questions
-booleanSelected <- 
-  c(
-    `Not selected` = 0, 
-    `Selected` = 1
-    )
+# booleanSelected <- 
+#   c(
+#     `Not selected` = 0, 
+#     `Selected` = 1
+#     )
 
 # Apply them
-d25 <- d24 |>
-  mutate(
-    across(
-      all_of(contribQuestions), 
-      ~ sjlabelled::set_labels(., labels=booleanSelected)))
+# d26 <- d25 |>
+#   mutate(
+#     across(
+#       all_of(contribQuestions), 
+#       ~ sjlabelled::set_labels(., labels=booleanSelected)))
 
 
 
@@ -1146,7 +1272,7 @@ Export one .tsv and one .rds file
 ```{r renameFinal}
 
 # rename the last data frame object
-tidiedData <- d25
+tidiedData <- d24
 
 # remove old data frames
 rm(list = c(paste0("d0",c(1:9))))
@@ -1203,35 +1329,35 @@ longerDataSimple <- tidiedData %>%
          trustCodeWillBeEnforced,
          )
 
-longerDataSimple <-
-  longerDataSimple %>%
-  mutate(
-    across(
-      c(
-        nonHeteroCommunity,
-        raceCulture,
-        disability,
-        domLangEnglish,
-        awareOfCodeOfConduct
-        ),
-      as.character
-      )
-    )
+# longerDataSimple <-
+#   longerDataSimple %>%
+#   mutate(
+#     across(
+#       c(
+#         nonHeteroCommunity,
+#         raceCulture,
+#         disability,
+#         domLangEnglish,
+#         awareOfCodeOfConduct
+#         ),
+#       as.character
+#       )
+#     )
 
-longerDataSimple <-
-  longerDataSimple %>%
-  mutate(
-    across(
-      c(
-        nonHeteroCommunity,
-        raceCulture,
-        disability,
-        domLangEnglish,
-        awareOfCodeOfConduct
-        ),
-      ~forcats::fct_recode(.x, "yes" = "1", "no" = "0")
-      )
-    )
+# longerDataSimple <-
+#   longerDataSimple %>%
+#   mutate(
+#     across(
+#       c(
+#         nonHeteroCommunity,
+#         raceCulture,
+#         disability,
+#         domLangEnglish,
+#         awareOfCodeOfConduct
+#         ),
+#       ~forcats::fct_recode(.x, "yes" = "1", "no" = "0")
+#       )
+#     )
 
 longerDataSimple <-
   longerDataSimple %>%
@@ -1270,6 +1396,19 @@ longerDataSimple$ediVar <-
   )
 
 longerDataSimple <- longerDataSimple |>
+  mutate(
+    across(
+      c(
+        "careerStatus",
+        "engagement",
+        "awareOfCodeOfConduct",
+        "ediVar",
+        "response"), 
+      forcats::fct_na_value_to_level
+      )
+    )
+
+longerDataSimple <- longerDataSimple |>
   var_labels(
     ediVar =
       "Dimension of diversity",
@@ -1285,6 +1424,111 @@ longerDataSimple <- longerDataSimple |>
 ```{r longerDataSimple_ToRDS}
 
 saveRDS(longerDataSimple, "longerDataSimple.rds")
+
+```
+
+# DELETE?: Format 'yes's and no's for some interactions
+
+```{r formatYesAndNosWide}
+#| eval: false
+
+# wideDataSimple <- tidiedData |>
+#     select(
+#       gender,   
+#       nonHeteroCommunity,
+#       raceCulture,
+#       disability,
+#       domLangEnglish,
+#       careerStatus,
+#       engagement
+#       )
+
+# wideDataSimple <-
+#   wideDataSimple |>
+#   mutate(
+#     across(
+#       c(
+#         nonHeteroCommunity,
+#         raceCulture,
+#         disability,
+#         domLangEnglish
+#         ),
+#       as.character
+#       )
+#     )
+
+# wideDataSimple <-
+#   wideDataSimple |>
+#   mutate(
+#     across(
+#       c(
+#         gender,
+#         nonHeteroCommunity,
+#         raceCulture,
+#         disability,
+#         domLangEnglish,
+#         careerStatus,
+#         engagement
+#         ), 
+#       as.factor
+#       )
+#     )
+
+# wideDataSimple <-
+#   wideDataSimple %>%
+#   mutate(
+#     across(
+#       c(
+#         nonHeteroCommunity,
+#         raceCulture,
+#         disability,
+#         domLangEnglish
+#         ),
+#       ~forcats::fct_recode(.x, "yes" = "1", "no" = "0")
+#       )
+#     )
+
+# wideDataSimple <-
+#   wideDataSimple |>
+#   mutate(
+#     across(
+#       c(
+#         gender,
+#         nonHeteroCommunity,
+#         raceCulture,
+#         disability,
+#         domLangEnglish,
+#         careerStatus,
+#         engagement
+#         ), 
+#       forcats::fct_na_value_to_level
+#       )
+#     )
+
+# wideDataSimple <- wideDataSimple |>
+#   var_labels(
+#     nonHeteroCommunity = 
+#       "Do you, or might others who know you well, consider you somehow NOT to be part of the heterosexual community?",
+#     gender = 
+#        "Which gender do you identify most with?",
+#     raceCulture = 
+#       "Do you, or might others who know you well, consider you part of a race and/or culture that is potentially discriminated against?",
+#     disability = 
+#       "Do you, or might others who know you well, consider you disabled and/or neurodivergent (i.e., visible or invisible; e.g., blind, paralysed, cerebral palsy, ASD, ADHD)?",
+#     domLangEnglish = 
+#       "Is your dominant (preferred) written language English?",
+#     careerStatus = 
+#       "Roughly speaking, what is your career status?",
+#     engagement = 
+#       "What best describes your role/usage of PsychoPy? (Note: “Contributor” refers to any form of contribution, whether to the code, the documentation or supporting other users)"
+#     )
+
+```
+
+```{r wideDataSimple_ToRDS}
+#| eval: false
+
+#saveRDS(wideDataSimple, "wideDataSimple.rds")
 
 ```
 
@@ -1307,7 +1551,7 @@ longerDataContributions <-
     cols = starts_with("contrib"),
     names_to = "contributionType",
     names_prefix = "contrib",
-    values_to = "selected"
+    values_to = "choices"
   )
 
 
@@ -1334,13 +1578,13 @@ longerDataContributions$contributionType <- fct_relevel(
 
 longerDataContributions <-
   longerDataContributions %>%
-  mutate(., selected = as.character(selected)) %>%
-  mutate(., selected = fct_recode(selected, "selected" = "1", "not selected" = "0"))
+  mutate(., choices = as.character(choices)) %>%
+  mutate(., choices = fct_recode(choices, "selected" = "1", "not selected" = "0"))
 
 longerDataContributions <-
   longerDataContributions %>%
-  mutate(across(!c(gender, contributionType, selected), as.character)) %>%
-  mutate(across(!c(gender, contributionType, selected),
+  mutate(across(!c(gender, contributionType, choices), as.character)) %>%
+  mutate(across(!c(gender, contributionType, choices),
               ~ fct_recode(.x, "yes" = "1", "no" = "0")))
 
 longerDataContributions <- longerDataContributions |>
@@ -1357,8 +1601,8 @@ longerDataContributions <- longerDataContributions |>
       "Is your dominant (preferred) written language English?",
     contributionType = 
       "Ways of contributing to PsychoPy",
-    selected = 
-      "Selected by respondent"
+    choices = 
+      "Respondent choice"
   )
 
 ```
