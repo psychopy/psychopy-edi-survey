@@ -46,3 +46,6 @@ vignettes/*.pdf
 *.tsv
 *.rds
 /archive
+
+# other stuff
+/old
