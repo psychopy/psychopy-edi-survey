@@ -1,5 +1,4 @@
 project:
   title: "ediSurveys"
-
-
-
+  type: website
+  output-dir: docs
