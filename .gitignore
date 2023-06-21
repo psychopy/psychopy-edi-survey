@@ -48,3 +48,5 @@ vignettes/*.pdf
 
 # other stuff
 /old
+
+/.quarto/
