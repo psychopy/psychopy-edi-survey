@@ -43,7 +43,6 @@ vignettes/*.pdf
 
 # Any data
 *.csv
-*.tsv
 *.rds
 /archive
 
