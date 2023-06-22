@@ -3135,6 +3135,7 @@ allPackages <-
     pkgs <- grateful::cite_packages(
       pkgs = allPackages,
       output = "table", 
+      out.dir = getwd(),
       cite.tidyverse = F,
       bib.file = "grateful-refs-sumandvis.bib",
       Rmd.file = "grateful-report-sumandvis.Rmd",

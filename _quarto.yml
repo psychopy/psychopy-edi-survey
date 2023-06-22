@@ -2,3 +2,17 @@ project:
   title: "ediSurveys"
   type: website
   output-dir: docs
+  render: 
+    - index.qmd
+    - codebook.qmd
+  
+website:
+  title: "EDI survey"
+  navbar:
+    background: primary
+    search: true
+    left:
+      - text: "Main report"
+        file: index.html
+      - text: "Codebook"
+        file: codebook.html

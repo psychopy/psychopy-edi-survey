@@ -1730,6 +1730,7 @@ allPackages <-
     pkgs <- grateful::cite_packages(
       pkgs = allPackages,
       output = "table", 
+      out.dir = getwd(),
       cite.tidyverse = F,
       bib.file = "grateful-refs-tidying.bib",
       Rmd.file = "grateful-report-tidying.Rmd",

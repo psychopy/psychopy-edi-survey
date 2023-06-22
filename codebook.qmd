@@ -66,6 +66,7 @@ codebook_items(data)
         "remotes"
         ),
       output = "table", 
+      out.dir = getwd(),
       citation.style = apa.csl,
       cite.tidyverse = F,
       bib.file = "grateful-refs-codebook.bib",
