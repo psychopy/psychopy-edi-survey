@@ -46,6 +46,10 @@ data <- readRDS("tidyLabeledSurveyData.rds")
 
 # Codebook
 
+::: {.callout-important}
+Important: The `.pdf` download does not work properly. For a good `.pdf`, please choose `Print` then adjust the settings to print to pdf.
+:::
+
 ```{r generateCodebook}
 
 codebook_items(data)
