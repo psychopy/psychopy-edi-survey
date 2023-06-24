@@ -44,6 +44,8 @@ data <- readRDS("tidyLabeledSurveyData.rds")
               
 ```
 
+# Table
+
 ::: {.callout-warning}
 The `.pdf` download does not work properly. For a good `.pdf`, please choose `Print` then adjust the settings to print to pdf.
 :::
