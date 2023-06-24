@@ -527,7 +527,7 @@
     },
     "emmeans": {
       "Package": "emmeans",
-      "Version": "1.8.6",
+      "Version": "1.8.7",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -540,7 +540,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "4d048b0b6eb757e092641610b989af5b"
+      "Hash": "7412cca497dbab0bcf8a645d245c85b0"
     },
     "estimability": {
       "Package": "estimability",
@@ -1061,7 +1061,7 @@
     },
     "labelled": {
       "Package": "labelled",
-      "Version": "2.11.0",
+      "Version": "2.12.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1074,7 +1074,7 @@
         "tidyr",
         "vctrs"
       ],
-      "Hash": "bf5e8a9e9a64b779a338a81c54c2a2a3"
+      "Hash": "1ec27c624ece6c20431e9249bd232797"
     },
     "later": {
       "Package": "later",
@@ -1501,7 +1501,7 @@
     },
     "psych": {
       "Package": "psych",
-      "Version": "2.3.3",
+      "Version": "2.3.6",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1514,7 +1514,7 @@
         "parallel",
         "stats"
       ],
-      "Hash": "4faaecc12b2eea148097ab5d657e0db5"
+      "Hash": "458f21cdb24a71340615df3393e8fab1"
     },
     "purrr": {
       "Package": "purrr",
