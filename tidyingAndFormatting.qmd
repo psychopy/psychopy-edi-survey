@@ -131,7 +131,7 @@ d03 <- d02 |>
 
 ### addition
 
-The `responseId` variable from *Pavlovia* provides unique IDs, but they're pretty unweildy for analysis, so they're being supplemented here with the rownames associated by *R* upon importing the data. This will be called `ID`. This also gives us the survey-completion order of the participants in the survey.
+The `responseId` variable from *Pavlovia* provides unique IDs, but they're pretty unwieldy for analysis, so they're being supplemented here with the rownames associated by *R* upon importing the data. This will be called `ID`. This also gives us the survey-completion order of the participants in the survey.
 
 ```{r makeRownamesVar}
 
