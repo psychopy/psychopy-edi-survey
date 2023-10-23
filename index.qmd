@@ -1,7 +1,9 @@
 ---
 title: "Summaries of initial survey responses"
 subtitle: "Equity, diversity, and inclusion in the PsychoPy community"
-author: "Patrick Bolger"
+author: 
+  name: "Patrick Bolger, PhD | Community Development Champion"
+  affiliation: "School of Psychology at the University of Nottingham"
 date: now
 date-format: "D MMM YYYY, h:mm a"
 execute: 
