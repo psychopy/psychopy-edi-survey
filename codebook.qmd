@@ -20,8 +20,8 @@ bibliography: bibs/grateful-refs-codebook.bib
 csl: apa.csl
 ---
 
-```{r getPackages}
-
+```{r}
+#| label: getPackages
 #| include: false
 
 # Install these packages as you need them
@@ -37,7 +37,8 @@ library(knitr)
 
 ```
 
-```{r readTidiedLabeledData}
+```{r}
+#| label: readTidiedLabeledData
 #| include: false
 
 data <- readRDS("data/tidyLabeledSurveyData.rds")
@@ -50,7 +51,8 @@ data <- readRDS("data/tidyLabeledSurveyData.rds")
 The `.pdf` download does not work properly. For a good `.pdf`, please choose `Print` then adjust the settings to print to pdf.
 :::
 
-```{r generateCodebook}
+```{r}
+#| label: retrieveCodebookItems
 
 codebook_items(data)
 
@@ -58,9 +60,9 @@ codebook_items(data)
 
 # Major *R* packages used
 
-```{r citePackages}
-    #| results: asis
-
+```{r}
+#| label: citePackages
+#| results: asis
 
     pkgs <- cite_packages(
       pkgs = c(
