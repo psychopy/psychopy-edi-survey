@@ -300,7 +300,7 @@ visMain |>
 
 ##### descriptions
 
-If participants chose ***yes*** as an answer above, they were given the opportunity to describe their gender, though doing so was optional. For those who did, the table below lists the descriptions they provided. The "NA" in the table refers to those who either did not see the question or chose not to supply a description.
+If participants chose ***not listed*** as an answer above, they were given the opportunity to describe their gender, though doing so was optional. For those who did, the table below lists the descriptions they provided. The "NA" in the table refers to those who either did not see the question or chose not to supply a description. 
 
 The question was as follows:
 
