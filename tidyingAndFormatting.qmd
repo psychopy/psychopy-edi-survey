@@ -1,5 +1,5 @@
 ---
-title: "Tidying"
+title: "Tidying and Formatting"
 author: "Patrick Bolger"
 date: now
 date-format: "D MMM YYYY, h:mm a"
@@ -15,7 +15,7 @@ format:
     mainfont: arvo
     page-layout: full
 editor: source
-bibliography: grateful-refs-tidying.bib
+bibliography: bibs/grateful-refs-tidying.bib
 csl: apa.csl
 number-sections: true
 number-depth: 4
@@ -71,7 +71,7 @@ Get the data in from the .csv file from *Pavlovia*.
 # `read_csv` is from the readr package
 
 d01 <- read_csv(
-  "responses_776cc413-2716-4170-987c-6f9b4658a726_RUNNING_2023-10-10101.csv",
+  "data/responses_776cc413-2716-4170-987c-6f9b4658a726_RUNNING_2023-10-10101.csv",
   col_types =
     cols(
       `deterrents.Lack of interest` = 
@@ -1288,7 +1288,7 @@ rm(list = c(paste0("d2",c(0:4))))
 # save the one for OSF
 write_tsv(
   tidiedData,
-  "anonymousSurveyData.tsv"
+  "data/anonymousSurveyData.tsv"
   )
 
 ```
@@ -1298,7 +1298,7 @@ write_tsv(
 # save the one use in analysis and visualisation
 saveRDS(
   tidiedData,
-  "tidyLabeledSurveyData.rds"
+  "data/tidyLabeledSurveyData.rds"
   )
 
 ```
@@ -1423,7 +1423,7 @@ longerDataSimple <- longerDataSimple |>
 
 ```{r longerDataSimple_ToRDS}
 
-saveRDS(longerDataSimple, "longerDataSimple.rds")
+saveRDS(longerDataSimple, "data/longerDataSimple.rds")
 
 ```
 
@@ -1528,7 +1528,7 @@ saveRDS(longerDataSimple, "longerDataSimple.rds")
 ```{r wideDataSimple_ToRDS}
 #| eval: false
 
-#saveRDS(wideDataSimple, "wideDataSimple.rds")
+#saveRDS(wideDataSimple, "data/wideDataSimple.rds")
 
 ```
 
@@ -1609,7 +1609,7 @@ longerDataContributions <- longerDataContributions |>
 
 ```{r savelongerDataContributionsToRDS}
 
-saveRDS(longerDataContributions, "longerDataContributions.rds")
+saveRDS(longerDataContributions, "data/longerDataContributions.rds")
 
 ```
 
@@ -1707,7 +1707,7 @@ longerDataDeterrents <- longerDataDeterrents |>
 
 ```{r savelongerDataDeterrentsToRDS}
 
-saveRDS(longerDataDeterrents, "longerDataDeterrents.rds")
+saveRDS(longerDataDeterrents, "data/longerDataDeterrents.rds")
 
 ```
 
@@ -1732,9 +1732,9 @@ allPackages <-
       output = "table", 
       out.dir = getwd(),
       cite.tidyverse = F,
-      bib.file = "grateful-refs-tidying.bib",
-      Rmd.file = "grateful-report-tidying.Rmd",
-      out.name = "grateful-citations-tidying"
+      bib.file = "bibs/grateful-refs-tidying.bib"#,
+#      Rmd.file = "bibs/grateful-report-tidying.Rmd",
+#      out.name = "grateful-citations-tidying"
       )
     knitr::kable(pkgs)
 

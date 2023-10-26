@@ -42,11 +42,16 @@ vignettes/*.pdf
 .DS_Store
 
 # Any data
-*.csv
-*.rds
+data/*.csv
+data/*.rds
 /archive
 
-# other stuff
-/old
+# Any notes
+notes/_*.md
 
+# other stuff
+tidyingAndFormatting.html
+codebook.html
+index.html
+/old
 /.quarto/

@@ -25,7 +25,7 @@ format:
     smooth-scroll: true
     
 editor: source
-bibliography: grateful-refs-sumandvis.bib
+bibliography: bibs/grateful-refs-sumandvis.bib
 csl: apa.csl
 ---
 
@@ -106,7 +106,7 @@ showtext_auto()
 # The data imported here was pre-processed in another *R* script.
 
 # Read in the data that was saved as .rds output in tidyingAndFormatting.qmd
-visMain <- readRDS("tidyLabeledSurveyData.rds")
+visMain <- readRDS("data/tidyLabeledSurveyData.rds")
               
 ```
 
@@ -296,7 +296,7 @@ visMain |>
 
 ```
 
-
+<!-- {{< include notes/_genderWhich.md >}} -->
 
 ##### descriptions
 
@@ -1147,9 +1147,9 @@ These are covered in the subsections below.
 # These are for some of the interactions between EDI variables
 # and background variables
 
-longerDataSimple <- readRDS("longerDataSimple.rds")
-longerDataContributions <- readRDS("longerDataContributions.rds")
-longerDataDeterrents <- readRDS("longerDataDeterrents.rds")
+longerDataSimple <- readRDS("data/longerDataSimple.rds")
+longerDataContributions <- readRDS("data/longerDataContributions.rds")
+longerDataDeterrents <- readRDS("data/longerDataDeterrents.rds")
 
 ```
 
@@ -1539,7 +1539,7 @@ It is important to keep in mind that participants may be counted as *yes* or *no
 
 ```{r importContributionsLong}
 
-longerDataContributions <- readRDS("longerDataContributions.rds")
+longerDataContributions <- readRDS("data/longerDataContributions.rds")
 contributeLabel <- get_label(longerDataContributions$contributionType)
 contributeCaption <- "Notes:\n1. Respondents could select more than one contribution type.\n2. 'Unselected' is equivalent to 'NA'"
 
@@ -3139,9 +3139,9 @@ allPackages <-
       output = "table", 
       out.dir = getwd(),
       cite.tidyverse = F,
-      bib.file = "grateful-refs-sumandvis.bib",
-      Rmd.file = "grateful-report-sumandvis.Rmd",
-      out.name = "grateful-citations-sumandvis"
+      bib.file = "bibs/grateful-refs-sumandvis.bib"#,
+      #Rmd.file = "bibs/grateful-report-sumandvis.Rmd",
+      #out.name = "grateful-citations-sumandvis"
       )
     knitr::kable(pkgs)
 

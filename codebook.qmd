@@ -16,7 +16,7 @@ format:
     page-layout: full
     self-contained: true
 editor: source
-bibliography: grateful-refs-codebook.bib
+bibliography: bibs/grateful-refs-codebook.bib
 csl: apa.csl
 ---
 
@@ -40,7 +40,7 @@ library(knitr)
 ```{r readTidiedLabeledData}
 #| include: false
 
-data <- readRDS("tidyLabeledSurveyData.rds")
+data <- readRDS("data/tidyLabeledSurveyData.rds")
               
 ```
 
@@ -73,9 +73,9 @@ codebook_items(data)
       out.dir = getwd(),
       citation.style = apa.csl,
       cite.tidyverse = F,
-      bib.file = "grateful-refs-codebook.bib",
-      Rmd.file = "grateful-report-codebook.Rmd",
-      out.name = "grateful-citations-codebook"
+      bib.file = "bibs/grateful-refs-codebook.bib"#,
+#      Rmd.file = "bibs/grateful-report-codebook.Rmd",
+      #out.name = "grateful-citations-codebook"
       )
     knitr::kable(pkgs)
 
