@@ -73,17 +73,11 @@ neededPackages <-
 # The code directly below installs R packages 
 # Uncomment the code directly below if you 
 # don't already have them installed.
+
 #install.packages(neededPackages)
-
-# The grateful package isn't available on CRAN, so it needs to be
-# downloaded and installed directly from GitHub.
-# Uncomment the code directly below in order to do so.
-
-#install.packages("remotes"); library(remotes); remotes::install_github("Pakillo/grateful")
 
 #Attach the packages
 invisible(lapply(neededPackages, require, character.only=T))
-#library(grateful)
 
 ```
 
@@ -131,12 +125,12 @@ This report summarises the findings of a survey sent out to the *PsychoPy* commu
 
 
 ::: {.callout-note title="Funding"}
-The development of the survey was funded by a grant from the [Essential Open Source Software for Science](https://chanzuckerberg.com/eoss/) program at the [Chan-Zuckerberg Initiative](https://chanzuckerberg.com/), or CZI. Here is the [project page at CZI](https://chanzuckerberg.com/eoss/proposals/raising-diversity-and-internationalization-in-psychopy/).
+The development of the survey was funded by a grant from the <a href="https://chanzuckerberg.com/eoss/" target="_blank">Essential Open Source Software for Science</a> program at the <a href="https://chanzuckerberg.com/" target="_blank">Chan-Zuckerberg Initiative</a>, or CZI. Here is the <a href="https://chanzuckerberg.com/eoss/proposals/raising-diversity-and-internationalization-in-psychopy/" target="_blank">project page at CZI</a>.
 :::
 
 It was the first, baseline version, of two identical surveys to be sent out. The second will be sent out in 2024.
 
-It was sent out as an *announcement* to the [PsychoPy User Forum](https://discourse.psychopy.org/) on the [Discourse platform](https://discourse.org/). It was also sent out by email to a list of authors generated through a cited-reference search on the [Web of Science](https://clarivate.com/products/scientific-and-academic-research/research-discovery-and-workflow-solutions/webofscience-platform/). Specifically, these authors published multiple research studies citing one or more papers authored (or co-authored) by Jonathan Peirce over the past two decades about *PsychoPy*.
+It was sent out as an *announcement* to the <a href="https://discourse.psychopy.org/" target="_blank">PsychoPy User Forum</a> on the <a href="https://discourse.org/" target="_blank">Discourse platform</a>. It was also sent out by email to a list of authors generated through a cited-reference search on the <a href="https://clarivate.com/products/scientific-and-academic-research/research-discovery-and-workflow-solutions/webofscience-platform/" target="_blank">Web of Science</a>. Specifically, these authors published multiple research studies citing one or more papers authored (or co-authored) by Jonathan Peirce over the past two decades about *PsychoPy*.
 
 The survey contained between 25-75 questions, depending on how participants responded. 
 
@@ -373,6 +367,8 @@ visMain |>
 ::: {.callout-important}
 Important: The question directly above regarding gender determined whether or not the participant saw the respective items directly below regarding *treatment (by others)*, *self-regard*, and *isolation*.
 :::
+
+<!-- {{< include notes/_genderAffected.md >}} -->
 
 ---
 
@@ -2407,7 +2403,7 @@ visMain |>
 
 ## guidance
 
-The third group of items on the survey collected information about documentation and the participants' awareness of and experience with the [Code of Conduct](https://github.com/psychopy/psychopy/blob/dev/code-of-conduct.md).
+The third group of items on the survey collected information about documentation and the participants' awareness of and experience with the <a href="https://github.com/psychopy/psychopy/blob/dev/code-of-conduct.md" target="_blank">Code of Conduct</a>.
 
 There were three questions concerning each of the following:
 
@@ -3060,7 +3056,7 @@ allPackages <-
 
 ## Color-blindness check
 
-The custom palettes used in this report (which are based on the colors used at [Open Science Tools, Ltd.](https://opensciencetools.org/)) are simulated through various forms of color blindness below to ensure that most people can distinguish the colors on the figures.
+The custom palettes used in this report (which are based on the colors used at <a href="https://opensciencetools.org/" target="_blank">Open Science Tools, Ltd.</a>) are simulated through various forms of color blindness below to ensure that most people can distinguish the colors on the figures.
 
 ### two colors
 
