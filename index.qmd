@@ -13,10 +13,13 @@ format:
     toc: true
     toc-title: Contents
     toc-depth: 5
+    link-external-icon: true
+    link-external-newwindow: true
     embed-resources: true
     code-fold: true
     code-summary: "Show the code"
     theme: cerulean
+    linkcolor: "#EB692A"
     mainfont: arvo
     page-layout: full
     fig-width: 11
@@ -125,12 +128,12 @@ This report summarises the findings of a survey sent out to the *PsychoPy* commu
 
 
 ::: {.callout-note title="Funding"}
-The development of the survey was funded by a grant from the <a href="https://chanzuckerberg.com/eoss/" target="_blank">Essential Open Source Software for Science</a> program at the <a href="https://chanzuckerberg.com/" target="_blank">Chan-Zuckerberg Initiative</a>, or CZI. Here is the <a href="https://chanzuckerberg.com/eoss/proposals/raising-diversity-and-internationalization-in-psychopy/" target="_blank">project page at CZI</a>.
+The development of the survey was funded by a grant from the [Essential Open Source Software for Science](https://chanzuckerberg.com/eoss/) program at the [Chan Zuckerberg Inititiative](https://chanzuckerberg.com/). Here is the [project page at CZI](https://chanzuckerberg.com/eoss/proposals/raising-diversity-and-internationalization-in-psychopy/).
 :::
 
 It was the first, baseline version, of two identical surveys to be sent out. The second will be sent out in 2024.
 
-It was sent out as an *announcement* to the <a href="https://discourse.psychopy.org/" target="_blank">PsychoPy User Forum</a> on the <a href="https://discourse.org/" target="_blank">Discourse platform</a>. It was also sent out by email to a list of authors generated through a cited-reference search on the <a href="https://clarivate.com/products/scientific-and-academic-research/research-discovery-and-workflow-solutions/webofscience-platform/" target="_blank">Web of Science</a>. Specifically, these authors published multiple research studies citing one or more papers authored (or co-authored) by Jonathan Peirce over the past two decades about *PsychoPy*.
+It was sent out as an *announcement* to the [PsychoPy User Forum](https://discourse.psychopy.org/) on the [Discourse platform](https://discourse.org/). It was also sent out by email to a list of authors generated through a cited-reference search on the [Web of Science](https://clarivate.com/products/scientific-and-academic-research/research-discovery-and-workflow-solutions/webofscience-platform/). Specifically, these authors published multiple research studies citing one or more papers authored (or co-authored) by Jonathan Peirce over the past two decades about *PsychoPy*.
 
 The survey contained between 25-75 questions, depending on how participants responded. 
 
@@ -2403,7 +2406,8 @@ visMain |>
 
 ## guidance
 
-The third group of items on the survey collected information about documentation and the participants' awareness of and experience with the <a href="https://github.com/psychopy/psychopy/blob/dev/code-of-conduct.md" target="_blank">Code of Conduct</a>.
+The third group of items on the survey collected information about documentation and the participants' awareness of and experience with the [Code of Conduct](https://github.com/psychopy/psychopy/blob/dev/code-of-conduct.md).
+
 
 There were three questions concerning each of the following:
 
@@ -3056,7 +3060,7 @@ allPackages <-
 
 ## Color-blindness check
 
-The custom palettes used in this report (which are based on the colors used at <a href="https://opensciencetools.org/" target="_blank">Open Science Tools, Ltd.</a>) are simulated through various forms of color blindness below to ensure that most people can distinguish the colors on the figures.
+The custom palettes used in this report (which are based on the colors used at [Open Science Tools, Ltd.](https://opensciencetools.org/) are simulated through various forms of color blindness below to ensure that most people can distinguish the colors on the figures.
 
 ### two colors
 
@@ -3100,5 +3104,4 @@ palette_bivariate_plot(ostColours6)
 #palette_check(ostColours6)
 
 ```
-
 

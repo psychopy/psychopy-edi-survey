@@ -11,7 +11,8 @@ format:
     toc-depth: 2
     toc-float: true
     embed-resources: true
-    theme: minty
+    theme: cerulean
+    linkcolor: "#EB692A"
     mainfont: arvo
     page-layout: full
     self-contained: true

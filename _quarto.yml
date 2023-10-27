@@ -8,8 +8,9 @@ project:
   
 website:
   title: "EDI survey"
+  site-url: https://psychopy.github.io/psychopy-edi-survey/
   navbar:
-    background: primary
+    background: "#26DCF0"
     search: true
     left:
       - text: "Main report"
