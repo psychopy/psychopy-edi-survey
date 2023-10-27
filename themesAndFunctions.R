@@ -5,7 +5,7 @@
 sjPlot::set_theme(
   geom.label.size = 5,
   axis.angle.x = 10, 
-  base = theme_blank(base_family = "arvo"),
+  base = theme_blank(base_family = "raleway"),
   plot.backcol = "grey95",
   panel.gridcol = "grey95",
   plot.bordercol = "grey95",
@@ -15,7 +15,7 @@ sjPlot::set_theme(
 
 ## for the flextable outputs from gtsummary
 flextable::set_flextable_defaults(
-  font.family = "arvo",
+  font.family = "raleway",
   font.size = 12,
   arraystretch = 1,
   theme_fun = "theme_zebra"

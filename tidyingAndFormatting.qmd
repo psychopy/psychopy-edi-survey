@@ -12,11 +12,11 @@ format:
     code-fold: true
     code-summary: "Show the code"
     theme: flatly
-    mainfont: arvo
+    mainfont: raleway
     page-layout: full
 editor: source
 bibliography: bibs/grateful-refs-tidying.bib
-csl: apa.csl
+csl: bibs/apa.csl
 number-sections: true
 number-depth: 4
 ---

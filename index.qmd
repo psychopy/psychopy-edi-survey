@@ -6,30 +6,8 @@ author:
   affiliation: "School of Psychology at the University of Nottingham"
 date: now
 date-format: "D MMM YYYY, h:mm a"
-execute: 
-  echo: false
-format: 
-  html:
-    toc: true
-    toc-title: Contents
-    toc-depth: 5
-    link-external-icon: true
-    link-external-newwindow: true
-    embed-resources: true
-    code-fold: true
-    code-summary: "Show the code"
-    theme: cerulean
-    linkcolor: "#EB692A"
-    mainfont: arvo
-    page-layout: full
-    fig-width: 11
-    fig-height: 8
-    fig_retina: 1
-    smooth-scroll: true
-    
-editor: source
 bibliography: bibs/grateful-refs-sumandvis.bib
-csl: apa.csl
+csl: bibs/apa.csl
 ---
 
 ```{r}
@@ -86,14 +64,14 @@ invisible(lapply(neededPackages, require, character.only=T))
 
 
 ```{r}
-#| label: getFontArvo 
+#| label: getFontRaleway 
 #| output: false
 
-## use *arvo* font throughout
+## use *raleway* font throughout
 
 ## an active internet connection is required for this step
 
-font_add_google("Arvo", "arvo")
+font_add_google("Raleway", "raleway")
 showtext_auto()
 
 ```

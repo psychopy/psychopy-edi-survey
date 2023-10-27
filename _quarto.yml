@@ -9,11 +9,42 @@ project:
 website:
   title: "EDI survey"
   site-url: https://psychopy.github.io/psychopy-edi-survey/
+  favicon: images/ostFavicon.png
   navbar:
     background: "#26DCF0"
+    logo-alt: "Image for Open Science Tools, Ltd."
     search: true
     left:
       - text: "Main report"
         file: index.html
       - text: "Codebook"
         file: codebook.html
+        
+format:
+  html:
+    embed-resources: true
+    self-contained: true
+    theme: 
+      - cerulean
+      - custom.scss
+    mainfont: raleway
+    toc: true
+    toc-title: Contents
+    toc-depth: 5
+    toc-float: true
+    page-layout: full
+    fig-width: 11
+    fig-height: 8
+    fig_retina: 1
+    smooth-scroll: true
+    link-external-icon: true
+    link-external-newwindow: true
+    code-fold: true
+    code-summary: "Show the code"
+ 
+csl: bibs/apa.csl
+
+execute: 
+  echo: false
+  
+editor: source

@@ -1,0 +1,28 @@
+/*-- scss:defaults --*/
+
+// Import fonts
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;800&display=swap');
+
+// colors
+
+$ostBlue:   #26DCF0;
+$ostOrange: #EB692A;
+$ostYellow: #F7F11C;
+
+// Base document colors
+
+$navbar-bg: $ostBlue; // navbar
+$navbar-hl: $ostYellow; // navbar foreground elements
+$navbar-fg: $ostOrange; // navbar foreground elements
+$link-color: $ostOrange; //hyperlinks
+
+$callout-color-note: $ostBlue;
+$callout-color-warning: $ostOrange;
+$callout-color-important: $ostOrange;
+
+
+/*-- scss:rules --*/
+
+h1, h2, h3, h4, h5, h6 { // headings
+  color: $ostOrange;
+}

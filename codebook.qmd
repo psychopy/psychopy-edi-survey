@@ -1,24 +1,9 @@
 ---
 title: "Codebook"
 subtitle: "Equity, diversity, and inclusion in the PsychoPy community"
-author: "Patrick Bolger"
 date: now
 date-format: "D MMM YYYY, h:mm a"
-echo: false
-format: 
-  html:
-    toc: true
-    toc-depth: 2
-    toc-float: true
-    embed-resources: true
-    theme: cerulean
-    linkcolor: "#EB692A"
-    mainfont: arvo
-    page-layout: full
-    self-contained: true
-editor: source
 bibliography: bibs/grateful-refs-codebook.bib
-csl: apa.csl
 ---
 
 ```{r}
