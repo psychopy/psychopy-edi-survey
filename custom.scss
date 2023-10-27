@@ -5,16 +5,19 @@
 
 // colors
 
-$ostBlue:   #26DCF0;
-$ostOrange: #EB692A;
-$ostYellow: #F7F11C;
+$ostBlue:     #26DCF0;
+$ostOrange:   #EB692A;
+$ostYellow:   #F7F11C;
+$whisperGrey: #FAFAFA;
+
 
 // Base document colors
 
-$navbar-bg: $ostBlue; // navbar
-$navbar-hl: $ostYellow; // navbar foreground elements
-$navbar-fg: $ostOrange; // navbar foreground elements
-$link-color: $ostOrange; //hyperlinks
+$navbar-bg:   $ostBlue; // navbar
+$navbar-hl:   $ostYellow; // navbar foreground elements
+$navbar-fg:   $ostOrange; // navbar foreground elements
+$link-color:  $ostOrange; // hyperlinks
+$body-bg:     $whisperGrey; // background
 
 $callout-color-note: $ostBlue;
 $callout-color-warning: $ostOrange;
