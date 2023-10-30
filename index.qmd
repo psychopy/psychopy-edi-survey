@@ -1398,7 +1398,7 @@ longerDataSimple |>
     ostColours = ostColours2rev,
     figCaption = NULL,
     figTitle = engagementLabel,
-    titleAdjust = -120
+    titleAdjust = -202
   )
 
 
