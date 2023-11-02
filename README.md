@@ -4,7 +4,7 @@ This repository stores the anonymised data and data analyses for the survey sent
 
 Assuming you have access to the raw `.csv` file,[^1] the `.qmd` files must be run in a particular order in order to render the appropriate output. Run the `tidyingAndFormatting.qmd` file first. Then run both `summariesAndVisualisations.qmd` and `codebook.qmd`, but not necessarily in that order. 
 
-If you do not have access to the raw `.csv` file, then you just need to run `Render Website` under the `Build` tab in *RStudio*.
+If you do not have access to the raw `.csv` file, then you just need either to run `Render Website` (under the `Build` tab in *RStudio* or run `quarto render` in the *Terminal*.
 
 These files are designed to render `.html` output, nothing else.
 
