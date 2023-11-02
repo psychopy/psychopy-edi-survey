@@ -2,7 +2,9 @@
 
 This repository stores the anonymised data and data analyses for the survey sent out by *PsychoPy* to gauge equity, diversity, and inclusion among its own user base. But the raw data is not stored here.
 
-Assuming you somehow have access to the raw data, the `.qmd` files must be run in a particular order in order to render the appropriate output. Run the `tidyingAndFormatting.qmd` file first. Then run both `summariesAndVisualisations.qmd` and `codebook.qmd`, but not necessarily in that order. These files are designed to render `.html` output, nothing else.
+Assuming you somehow have access to the raw data, the `.qmd` files must be run in a particular order in order to render the appropriate output. Run the `tidyingAndFormatting.qmd` file first.^[Note that this won't work unless you have the raw `.csv` file] Then run both `summariesAndVisualisations.qmd` and `codebook.qmd`, but not necessarily in that order. These files are designed to render `.html` output, nothing else.
+
+In the code cell labelled *getAndAttachPackages* in each `qmd` file, there is a small block of convenience code to install packages that you need, but you have not yet installed. This block of code must be un-commented before it will function.
 
 The link to the report itself is as follows:
 
