@@ -29,8 +29,9 @@ number-depth: 4
 #| warning: false
 #| include: false
 
-# list the needed packages
-neededPackages <- c(
+# list the required packages
+
+packagesRequired <- c(
   "readr", 
   "dplyr", 
   "stringr", 
@@ -44,18 +45,20 @@ neededPackages <- c(
   "gtsummary",
   "DT",
   "knitr",
-  "xfun"
+  "xfun",
+  "grateful"
   )
 
-# The code directly below installs R packages 
-# Uncomment the code if you don't already have them installed
-#install.packages(neededPackages)
-#install.packages("remotes")
-#library(remotes)
-#remotes::install_github("Pakillo/grateful")
 
-# attach them
-invisible(lapply(neededPackages, require, character.only=T))
+# Uncomment the code below to install any packages you're missing from the 
+# list in packagesRequired
+
+# packagesInstalled <- installed.packages()[,"Package"]
+# packagesMissing <- packagesRequired[!(packagesRequired %in% packagesInstalled)]
+# if(length(packagesMissing)) install.packages(packagesMissing, repos = getCRANmirrors()[1,"URL"])
+
+# attach the packages
+invisible(lapply(packagesRequired, require, character.only=T))
 
 ```
 
@@ -69,7 +72,7 @@ Get the data in from the .csv file from *Pavlovia*.
 
 ```{r}
 #| label: importData
-#| 
+
 # `read_csv` is from the readr package
 
 d01 <- read_csv(
@@ -1744,30 +1747,18 @@ saveRDS(longerDataDeterrents, "data/longerDataDeterrents.rds")
 ```
 
 
-# *R* packages used
+# Main *R* packages used
 
 ```{r}
 #| label: citePackages
 #| results: asis
 
-allPackages <- 
-  append(
-    neededPackages,
-    c(
-      "grateful", 
-      "remotes",
-      "renv"
-      )
-    )
-
     pkgs <- grateful::cite_packages(
-      pkgs = allPackages,
+      pkgs = packagesRequired,
       output = "table", 
       out.dir = getwd(),
       cite.tidyverse = F,
-      bib.file = "bibs/grateful-refs-tidying.bib"#,
-#      Rmd.file = "bibs/grateful-report-tidying.Rmd",
-#      out.name = "grateful-citations-tidying"
+      bib.file = "bibs/grateful-refs-tidying.bib"
       )
     knitr::kable(pkgs)
 

@@ -1,7 +1,7 @@
 ---
 title: "Codebook"
 subtitle: "Equity, diversity, and inclusion in the PsychoPy community"
-date: now
+ndate: now
 date-format: "D MMM YYYY, h:mm a"
 bibliography: bibs/grateful-refs-codebook.bib
 ---
@@ -10,16 +10,24 @@ bibliography: bibs/grateful-refs-codebook.bib
 #| label: getPackages
 #| include: false
 
-# Install these packages as you need them
-#
-# install.packages("codebook")
-# install.packages("knitr")
-# install.packages("remotes"); remotes::install_github("Pakillo/grateful")
+# list the required packages
 
-#Attach them
-library(codebook)
-library(grateful)
-library(knitr)
+packagesRequired <- c(
+  "codebook", 
+  "grateful", 
+  "knitr"
+  )
+
+
+# Uncomment the code below to install any packages you're missing from the 
+# list in packagesRequired
+
+# packagesInstalled <- installed.packages()[,"Package"]
+# packagesMissing <- packagesRequired[!(packagesRequired %in% packagesInstalled)]
+# if(length(packagesMissing)) install.packages(packagesMissing, repos = getCRANmirrors()[1,"URL"])
+
+# attach the packages
+invisible(lapply(packagesRequired, require, character.only=T))
 
 ```
 
@@ -44,26 +52,19 @@ codebook_items(data)
 
 ```
 
-# Major *R* packages used
+# Main *R* packages used
 
 ```{r}
 #| label: citePackages
 #| results: asis
 
     pkgs <- cite_packages(
-      pkgs = c(
-        "codebook",
-        "grateful",
-        "knitr",
-        "remotes"
-        ),
+      pkgs = packagesRequired,
       output = "table", 
       out.dir = getwd(),
       citation.style = apa.csl,
       cite.tidyverse = F,
-      bib.file = "bibs/grateful-refs-codebook.bib"#,
-#      Rmd.file = "bibs/grateful-report-codebook.Rmd",
-      #out.name = "grateful-citations-codebook"
+      bib.file = "bibs/grateful-refs-codebook.bib"
       )
     knitr::kable(pkgs)
 

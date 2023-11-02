@@ -24,41 +24,49 @@ options(warn=-1)
 #| warning: false
 #| message: false
 
-# List the packages needed for this file
-neededPackages <- 
+# list the required packages
+
+packagesRequired <-
   c(
+    "colorblindcheck",
+    "cowplot",
     "dplyr",
-    "purrr",
-    "tidyr",
+    "DT",
+    "flextable",
     "forcats",
-    "sysfonts",
+    "ggplot2",
+    "ggtext",
+    "grateful",
+    "gtsummary",
+    "knitr",
+    "magrittr",
+    "purrr",
+    "readr",
+    "rmarkdown",
     "showtext",
-    "sjPlot",
     "sjlabelled",
     "sjmisc",
-    "DT",
-    "knitr",
-    "gtsummary",
-    "xfun",
+    "sjPlot",
     "stringr",
-    "flextable",
-    "renv",
-    "ggplot2",
+    "sysfonts",
     "systemfonts",
-    "magrittr",
-    "ggtext",
-    "colorblindcheck",
-    "grateful"
+    "summarytools",
+    "tibble",
+    "tidyr",
+    "tidyselect",
+    "xfun"
     )
 
-# The code directly below installs R packages 
-# Uncomment the code directly below if you 
-# don't already have them installed.
 
-#install.packages(neededPackages)
+# Uncomment the code below to install any packages you're missing from the 
+# list in packagesRequired
 
-#Attach the packages
-invisible(lapply(neededPackages, require, character.only=T))
+# packagesInstalled <- installed.packages()[,"Package"]
+# packagesMissing <- packagesRequired[!(packagesRequired %in% packagesInstalled)]
+# if(length(packagesMissing)) install.packages(packagesMissing, repos = getCRANmirrors()[1,"URL"])
+
+# attach the packages
+invisible(lapply(packagesRequired, require, character.only=T))
 
 ```
 
@@ -267,7 +275,7 @@ visMain |>
 
 ##### descriptions
 
-If participants chose ***not listed*** as an answer above, they were given the opportunity to describe their gender, though doing so was optional. For those who did, the table below lists the descriptions they provided. The "NA" in the table refers to those who either did not see the question or chose not to supply a description. 
+If participants chose ***not listed*** as an answer above, they were given the opportunity to describe their gender in their own words, though doing so was optional. For those who did, the table below lists the descriptions they provided. The "NA" in the table refers to those who either did not see the question or chose not to supply a description. 
 
 The question was as follows:
 
@@ -303,6 +311,8 @@ visMain |>
 
 ```
 
+
+<!-- {{< include notes/_genderDesc.md >}} -->
 
 ---
 
@@ -3005,28 +3015,18 @@ visMain |>
 
 ---
 
-# *R* Packages used
+# Main *R* Packages used
 
 ```{r}
 #| label: citePackages
 #| results: asis
 
-allPackages <- 
-  append(
-    neededPackages,
-    c(
-      "remotes"
-      )
-    )
-
     pkgs <- grateful::cite_packages(
-      pkgs = allPackages,
+      pkgs = packagesRequired,
       output = "table", 
       out.dir = getwd(),
       cite.tidyverse = F,
-      bib.file = "bibs/grateful-refs-sumandvis.bib"#,
-      #Rmd.file = "bibs/grateful-report-sumandvis.Rmd",
-      #out.name = "grateful-citations-sumandvis"
+      bib.file = "bibs/grateful-refs-sumandvis.bib"
       )
     knitr::kable(pkgs)
 
