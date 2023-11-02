@@ -7,7 +7,7 @@ bibliography: bibs/grateful-refs-codebook.bib
 ---
 
 ```{r}
-#| label: getPackages
+#| label: getAndAttachPackages
 #| include: false
 
 # list the required packages

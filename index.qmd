@@ -19,7 +19,7 @@ options(warn=-1)
 
 
 ```{r}
-#| label: getPackages 
+#| label: getAndAttachPackages 
 #| output: false
 #| warning: false
 #| message: false
