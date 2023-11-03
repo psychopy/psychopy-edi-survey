@@ -101,7 +101,8 @@ ostFreqPlot <-
   function(
     .x, 
     ostColour, 
-    sorting) {
+    sorting
+    ) {
   p <- 
     sjPlot::plot_frq(
       .x,
@@ -115,7 +116,8 @@ ostFreqPlot <-
       show.values = T,
       drop.empty = F
     )
-  invisible(capture.output(print(p)))
+  #invisible(capture.output(print(p)))
+  .GlobalEnv$p <- p
   }
 
 ### function for stacked Likert plot

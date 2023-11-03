@@ -34,6 +34,7 @@ packagesRequired <-
     "DT",
     "flextable",
     "forcats",
+    "gdata",
     "ggplot2",
     "ggtext",
     "grateful",
@@ -251,6 +252,8 @@ visMain |>
     ostColour = ostBlue,
     sorting = "none"
   )
+gdata::mv("p", "GnWh") # p is sent to the global env. from the function
+suppressWarnings(print(GnWh))
 
 ```
 
@@ -335,6 +338,8 @@ visMain |>
     ostColour = ostOrange,
     sorting = "none"
   )
+gdata::mv("p", "GnFa") # p is sent to the global env. from the function
+suppressWarnings(print(GnFa))
 
 ```
 
@@ -358,6 +363,15 @@ visMain |>
 ::: {.callout-important}
 Important: The question directly above regarding gender determined whether or not the participant saw the respective items directly below regarding *treatment (by others)*, *self-regard*, and *isolation*.
 :::
+
+#### cowplots
+
+```{r}
+
+suppressWarnings(cowplot::plot_grid(GnWh, GnFa, nrow = 2))
+
+```
+
 
 <!-- {{< include notes/_genderAffected.md >}} -->
 
@@ -427,6 +441,8 @@ visMain |>
     ostColour = ostYellow,
     sorting = "none"
   )
+gdata::mv("p", "NhId") # p is sent to the global env. from the function
+suppressWarnings(print(NhId))
 
 ```
 
@@ -507,6 +523,8 @@ visMain |>
     ostColour = ostBlue,
     sorting = "none"
   )
+gdata::mv("p", "NhFa") # p is sent to the global env. from the function
+suppressWarnings(print(NhFa))
 
 ```
 
@@ -597,6 +615,8 @@ visMain |>
     ostColour = ostOrange,
     sorting = "none"
   )
+gdata::mv("p", "RcId") # p is sent to the global env. from the function
+suppressWarnings(print(RcId))
 
 ```
 
@@ -679,6 +699,8 @@ visMain |>
     ostColour = ostYellow,
     sorting = "none"
   )
+gdata::mv("p", "RcFa") # p is sent to the global env. from the function
+suppressWarnings(print(RcFa))
 
 ```
 
@@ -772,6 +794,8 @@ visMain |>
     ostColour = ostBlue,
     sorting = "none"
   )
+gdata::mv("p", "DnId") # p is sent to the global env. from the function
+suppressWarnings(print(DnId))
 
 ```
 
@@ -854,6 +878,8 @@ visMain |>
     ostColour = ostOrange,
     sorting = "none"
   )
+gdata::mv("p", "DnFa") # p is sent to the global env. from the function
+suppressWarnings(print(DnFa))
 
 ```
 
@@ -947,6 +973,9 @@ visMain |>
     ostColour = ostYellow,
     sorting = "none"
   )
+gdata::mv("p", "DlWe") # p is sent to the global env. from the function
+suppressWarnings(print(DlWe))
+
 
 ```
 
@@ -1028,6 +1057,8 @@ visMain |>
     ostColour = ostBlue,
     sorting = "none"
   )
+gdata::mv("p", "DlFa") # p is sent to the global env. from the function
+suppressWarnings(print(DlFa))
 
 ```
 
@@ -1150,6 +1181,8 @@ visMain |>
     ostColour = ostBlue, 
     sorting = "desc"
     )
+gdata::mv("p", "CsWh") # p is sent to the global env. from the function
+suppressWarnings(print(CsWh))
 
 ```
 
@@ -1329,6 +1362,8 @@ visMain |>
     ostColour = ostOrange, 
     sorting = "desc"
     )
+gdata::mv("p", "PsEt") # p is sent to the global env. from the function
+suppressWarnings(print(PsEt))
 
 ```
 
@@ -2183,6 +2218,8 @@ longerDataSimple |>
     ostColour = ostYellow,
     sorting = "none"
   )
+gdata::mv("p", "CtWk") # p is sent to the global env. from the function
+suppressWarnings(print(CtWk))
 
 ```
 
@@ -2430,6 +2467,8 @@ visMain |>
     ostColour = ostOrange,
     sorting = "none"
   )
+gdata::mv("p", "AwCc") # p is sent to the global env. from the function
+suppressWarnings(print(AwCc))
 
 ```
 
@@ -2595,6 +2634,8 @@ visMain |>
     ostColour = ostOrange,
     sorting = "none"
   )
+gdata::mv("p", "DcEs") # p is sent to the global env. from the function
+suppressWarnings(print(DcEs))
 
 ```
 
@@ -2814,6 +2855,8 @@ visMain |>
     ostColour = ostYellow,
     sorting = "none"
   )
+gdata::mv("p", "TrEn") # p is sent to the global env. from the function
+suppressWarnings(print(TrEn))
 
 ```
 
