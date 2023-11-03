@@ -364,15 +364,6 @@ visMain |>
 Important: The question directly above regarding gender determined whether or not the participant saw the respective items directly below regarding *treatment (by others)*, *self-regard*, and *isolation*.
 :::
 
-#### cowplots
-
-```{r}
-
-suppressWarnings(cowplot::plot_grid(GnWh, GnFa, nrow = 2))
-
-```
-
-
 <!-- {{< include notes/_genderAffected.md >}} -->
 
 ---
@@ -393,6 +384,8 @@ The exact questions are listed in the verbal summary after the visualisation.
 visMain |> 
   select(genderNegPerc:genderOthersLikeMe) |> 
   stackedLikertGroups(likertTitle = "Gender")
+gdata::mv("p", "GnLk") # p is sent to the global env. from the function
+suppressWarnings(print(GnLk))
 
 ```
 
@@ -567,6 +560,8 @@ The exact questions are listed in the verbal summary after the visualisation.
 visMain |>
   select(nonHeteroNegPerc:nonHeteroOthersLikeMe) |> 
   stackedLikertGroups(likertTitle = "Non-heterosexuality")
+gdata::mv("p", "NhLk") # p is sent to the global env. from the function
+suppressWarnings(print(NhLk))
 
 ```
 
@@ -743,7 +738,10 @@ The exact questions are listed in the verbal summary after the visualisation.
 visMain |>
   select(raceCultureNegPerc:raceCultureOthersLikeMe) |> 
   stackedLikertGroups(
-    likertTitle = "Race(s) and/or Culture(s)")
+    likertTitle = "Race(s) and/or Culture(s)"
+    )
+gdata::mv("p", "RcLk") # p is sent to the global env. from the function
+suppressWarnings(print(RcLk))
 
 ```
 
@@ -922,6 +920,8 @@ The exact questions are listed in the verbal summary after the visualisation.
 visMain |>
   select(disabilityNegPerc:disabilityOthersLikeMe) |> 
   stackedLikertGroups(likertTitle = "Disability and/or neurodivergence")
+gdata::mv("p", "DnLk") # p is sent to the global env. from the function
+suppressWarnings(print(DnLk))
 
 ```
 
@@ -1100,8 +1100,9 @@ The exact questions are listed in the verbal summary after the visualisation.
 
 visMain |>
   select(domLangNegPerc:domLangOthersLikeMe) |> 
-  stackedLikertGroups(
-    likertTitle = "Dominant Language")
+  stackedLikertGroups(likertTitle = "Dominant Language")
+gdata::mv("p", "DlLk") # p is sent to the global env. from the function
+suppressWarnings(print(DlLk))
 
 ```
 
@@ -1224,6 +1225,8 @@ contingencyPlot(
   contingGrp = "gender",
   colours = ostColours4na
   )
+gdata::mv("p", "Cs_Gn") # p is sent to the global env. from the function
+suppressWarnings(print(Cs_Gn))
 
 ```
 
@@ -1265,6 +1268,8 @@ longerDataSimple |>
     figTitle = careerStatusLabel,
     titleAdjust = -202
   )
+gdata::mv("p", "Cs_Id") # p is sent to the global env. from the function
+suppressWarnings(print(Cs_Id))
 
 ```
 
@@ -1362,8 +1367,8 @@ visMain |>
     ostColour = ostOrange, 
     sorting = "desc"
     )
-gdata::mv("p", "PsEt") # p is sent to the global env. from the function
-suppressWarnings(print(PsEt))
+gdata::mv("p", "EnTp") # p is sent to the global env. from the function
+suppressWarnings(print(EnTp))
 
 ```
 
@@ -1403,6 +1408,8 @@ contingencyPlot(
   contingGrp = "gender",
   colours = ostColours4na
   )
+gdata::mv("p", "En_Gn") # p is sent to the global env. from the function
+suppressWarnings(print(En_Gn))
 
 ```
 
@@ -1445,7 +1452,8 @@ longerDataSimple |>
     figTitle = engagementLabel,
     titleAdjust = -202
   )
-
+gdata::mv("p", "En_Id") # p is sent to the global env. from the function
+suppressWarnings(print(En_Id))
 
 ```
 
@@ -1558,6 +1566,8 @@ longerDataContributions |>
     wrapVar = contributionType,
     ostColours = ostColours2rev
   )
+gdata::mv("p", "CtWy") # p is sent to the global env. from the function
+suppressWarnings(print(CtWy))
 
 ```
 
@@ -1622,6 +1632,8 @@ longerDataContributions |>
     figCaption = contributeCaption,
     titleAdjust = NULL
   )
+gdata::mv("p", "Ct_Gn") # p is sent to the global env. from the function
+suppressWarnings(print(Ct_Gn))
 
 ```
 
@@ -1665,6 +1677,8 @@ longerDataContributions |>
     figTitle = contributeLabel,
     figCaption = contributeCaption
   )
+gdata::mv("p", "Ct_Nh") # p is sent to the global env. from the function
+suppressWarnings(print(Ct_Nh))
 
 ```
 
@@ -1708,6 +1722,8 @@ longerDataContributions |>
     figTitle = contributeLabel,
     figCaption = contributeCaption
   )
+gdata::mv("p", "Ct_Rc") # p is sent to the global env. from the function
+suppressWarnings(print(Ct_Rc))
 
 ```
 
@@ -1751,6 +1767,8 @@ longerDataContributions |>
     figTitle = contributeLabel,
     figCaption = contributeCaption
   )
+gdata::mv("p", "Ct_Dn") # p is sent to the global env. from the function
+suppressWarnings(print(Ct_Dn))
 
 ```
 
@@ -1794,6 +1812,8 @@ longerDataContributions |>
     figTitle = contributeLabel,
     figCaption = contributeCaption
   )
+gdata::mv("p", "Ct_Dl") # p is sent to the global env. from the function
+suppressWarnings(print(Ct_Dl))
 
 ```
 
@@ -1856,6 +1876,8 @@ visMain |>
     colours = ostColours5,
     figTitle = "Deterrents to contributing for everyone"
     )
+gdata::mv("p", "DtCt") # p is sent to the global env. from the function
+suppressWarnings(print(DtCt))
 
 ```
 
@@ -1919,6 +1941,8 @@ longerDataDeterrents |>
     fillLabel = legendLabel,
     figCaption = "1 = Strongly disagree; 5 = Strongly agree" #deterrentsCaption
     )
+gdata::mv("p", "Dt_Gn") # p is sent to the global env. from the function
+suppressWarnings(print(Dt_Gn))
 
 ```
 
@@ -1978,6 +2002,9 @@ longerDataDeterrents |>
     fillLabel = legendLabel,
     figCaption = "1 = Strongly disagree; 5 = Strongly agree" #deterrentsCaption
 )
+gdata::mv("p", "Dt_Nh") # p is sent to the global env. from the function
+suppressWarnings(print(Dt_Nh))
+
 ```
 
 ###### table
@@ -2037,6 +2064,8 @@ longerDataDeterrents |>
     fillLabel = legendLabel,
     figCaption = deterrentsCaption
 )
+gdata::mv("p", "Dt_Rc") # p is sent to the global env. from the function
+suppressWarnings(print(Dt_Rc))
 
 ```
 
@@ -2095,6 +2124,8 @@ longerDataDeterrents |>
     fillLabel = legendLabel,
     figCaption = deterrentsCaption
 )
+gdata::mv("p", "Dt_Dn") # p is sent to the global env. from the function
+suppressWarnings(print(Dt_Dn))
 
 ```
 
@@ -2153,6 +2184,8 @@ longerDataDeterrents |>
     fillLabel = legendLabel,
     figCaption = deterrentsCaption
 )
+gdata::mv("p", "Dt_Dl") # p is sent to the global env. from the function
+suppressWarnings(print(Dt_Dl))
 
 ```
 
@@ -2280,6 +2313,8 @@ visMain |>
     wrapVar = NULL,
     figCaption = figCaptionText
     )
+gdata::mv("p", "Wk_Gn") # p is sent to the global env. from the function
+suppressWarnings(print(Wk_Gn))
 
 ```
 
@@ -2331,6 +2366,8 @@ longerDataSimple |>
     wrapVar = ediVar,
     figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 5 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
   )
+gdata::mv("p", "Wk_Id") # p is sent to the global env. from the function
+suppressWarnings(print(Wk_Id))
 
 ```
 
@@ -2467,8 +2504,8 @@ visMain |>
     ostColour = ostOrange,
     sorting = "none"
   )
-gdata::mv("p", "AwCc") # p is sent to the global env. from the function
-suppressWarnings(print(AwCc))
+gdata::mv("p", "CcAw") # p is sent to the global env. from the function
+suppressWarnings(print(CcAw))
 
 ```
 
@@ -2507,6 +2544,8 @@ contingencyPlot(
   contingGrp = "gender",
   colours = ostColours4na
   )
+gdata::mv("p", "Cc_Gn") # p is sent to the global env. from the function
+suppressWarnings(print(Cc_Gn))
 
 ```
 
@@ -2548,6 +2587,8 @@ longerDataSimple |>
     figTitle = codeOfConductLabel,
     titleAdjust = NULL
   )
+gdata::mv("p", "Cc_Id") # p is sent to the global env. from the function
+suppressWarnings(print(Cc_Id))
 
 ```
 
@@ -2697,6 +2738,8 @@ visMain |>
     wrapVar = NULL,
     figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
   )
+gdata::mv("p", "Dc_Gn") # p is sent to the global env. from the function
+suppressWarnings(print(Dc_Gn))
 
 ```
 
@@ -2746,6 +2789,8 @@ longerDataSimple |>
     wrapVar = ediVar,
     figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
   )
+gdata::mv("p", "Dc_Id") # p is sent to the global env. from the function
+suppressWarnings(print(Dc_Id))
 
 ```
 
@@ -2916,6 +2961,8 @@ visMain |>
     wrapVar = NULL,
     figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
   )
+gdata::mv("p", "Tr_Gn") # p is sent to the global env. from the function
+suppressWarnings(print(Tr_Gn))
 
 ```
 
@@ -2966,6 +3013,8 @@ longerDataSimple |>
     wrapVar = ediVar,
     figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
   )
+gdata::mv("p", "Tr_Id") # p is sent to the global env. from the function
+suppressWarnings(print(Tr_Id))
 
 ```
 

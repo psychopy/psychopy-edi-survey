@@ -116,7 +116,6 @@ ostFreqPlot <-
       show.values = T,
       drop.empty = F
     )
-  #invisible(capture.output(print(p)))
   .GlobalEnv$p <- p
   }
 
@@ -145,7 +144,7 @@ stackedLikertGroups <- function(.x, likertTitle) {
       show.prc.sign = T,
       rel_heights = c(5,2,2)
     )
-  invisible(capture.output(print(p)))
+  .GlobalEnv$p <- p
 }
 
 ### function for stacked frequencies
@@ -167,7 +166,7 @@ stackedFrequencies <-
         show.prc = F,
         show.n = T
       )
-    invisible(capture.output(print(p)))
+    .GlobalEnv$p <- p
   }
 
 ### function for  plot contingency
@@ -191,7 +190,7 @@ contingencyPlot <-
     vjust = "inward",
     expand.grid = T
     )
-  invisible(capture.output(print(p)))
+  .GlobalEnv$p <- p
   }
 
 ### function for plotting wrapped frequencies
@@ -220,7 +219,7 @@ wrappedFreqPlot <- function(
       ) +
     scale_fill_manual(values=ostColours) +
     facet_wrap(wrapVar, ncol = 2)
-  invisible(capture.output(print(p)))
+  .GlobalEnv$p <- p
 }
 
 ### function for plotting wrapped frequency interactions
@@ -276,7 +275,7 @@ wrappedStackedFreqPlot <- function(
       fill = fillLabel,
       caption = figCaption
     )
-invisible(capture.output(print(p)))
+  .GlobalEnv$p <- p
 }
 
 
@@ -348,7 +347,7 @@ interactionBoxplot <- function(
       ncol = 2,
       labeller = label_wrap_gen(width=75)
       )
-invisible(capture.output(print(p)))
+  .GlobalEnv$p <- p
 }
 
 ## Tables
