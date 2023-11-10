@@ -369,7 +369,7 @@ Important: The question directly above regarding gender determined whether or no
 
 #### treatment, self-regard, isolation
 
-The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$genderAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their gender identity has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. 
+The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$genderAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their gender identity has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$genderNegPerc))))`** provided responses, seen below.
 
 The exact questions are listed in the verbal summary after the visualisation.
 
@@ -545,7 +545,7 @@ Important: The question directly above regarding sexual orientation determined w
 
 #### treatment, self-regard, isolation
 
-The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$nonHeteroAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their sexual orientation has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community.
+The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$nonHeteroAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their sexual orientation has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$nonHeteroNegPerc))))`** provided responses, seen below.
 
 The exact questions are listed in the verbal summary after the visualisation.
 
@@ -723,7 +723,7 @@ Important: The question directly above regarding race and/our culture determined
 
 #### treatment, self-regard, isolation
 
-The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$raceCultureAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their racial and/or cultural identity has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community.
+The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$raceCultureAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their racial and/or cultural identity has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$raceCultureNegPerc))))`** provided responses, seen below.
 
 The exact questions are listed in the verbal summary after the visualisation.
 
@@ -905,7 +905,7 @@ Important: The question directly above regarding disability and/or neurodivergen
 
 #### treatment, self-regard, isolation
 
-The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$disabilityAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their disability and/or neurodivergence has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community.
+The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$disabilityAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their disability and/or neurodivergence has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$disabilityNegPerc))))`** provided responses, seen below.
 
 The exact questions are listed in the verbal summary after the visualisation.
 
@@ -1086,7 +1086,7 @@ Important: The question directly above regarding language dominance in written E
 
 #### treatment, self-regard, isolation
 
-The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$domLangAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their language dominance has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community.
+The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$domLangAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their language dominance has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$domLangNegPerc))))`** provided responses, seen below.
 
 The exact questions are listed in the verbal summary after the visualisation.
 
