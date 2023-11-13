@@ -1,0 +1,3 @@
+::: {.callout-note title="grouped interactions"}
+In the figure below, the following four variables are presented as a grouup in a 2x2 panel, from left to right, then top to bottom : *sexual orientation*, *race/culture*, *disability/neurodivergence*, and *written-English language dominance*.
+:::

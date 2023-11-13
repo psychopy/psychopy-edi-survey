@@ -168,7 +168,8 @@ The one EDI questions that everyone saw had to do with whether they identified w
 If they answered *yes* to any particular EDI question (or any response for *gender*), two more questions appeared. The first invited them to supply more specific information about that particular aspect of their identity, but only if they wanted to. The second had to do with whether they felt that this particular aspect of their identity had affected their interactions in the *PsychoPy*<sup>&reg;</sup> community.
 
 Importantly, this latter question determined whether participants saw a further eight questions regarding that particular identity. If they answered *yes*, they saw those questions a little bit later in the survey. If they answered *no*, they did not. 
-This has an important implication. Namely, although one may identify or be associated with a particular identity, that does not necessarily mean that one feels that it had affected one's interactions in the *PsychoPy*<sup>&reg;</sup> community. Indeed, there were many participants throughout the survey who felt that althought they are associated with a particular identity, it had not affected their interactions.
+
+This has an important implication. Namely, although one may identify or be associated with a particular identity, that does not necessarily mean that one feels that it had affected one's interactions in the *PsychoPy*<sup>&reg;</sup> community. Indeed, there were many participants throughout the survey who felt that although they are associated with a particular identity, it had not affected their interactions.
 
 Recall that for the dimension of *gender*, everyone saw the question concerning whether they felt that their interactions had suffered as a result of gender. This is because everyone has a gender identity, so there was no logical way of excluding anyone from seeing the subsequent community-interaction question.
 
@@ -182,7 +183,7 @@ Ultimately however, it makes more sense to present the data summaries in a diffe
 - *Professional & PsychoPy background*\
 - *PsychoPy Guidance*
 
-Each background and guidance variable is presented in isolation first, but then followed by each possible two-way interaction with the EDI variables of *gender*, *sexual orientation*, *race/culture*, *disability/neurodivergence*, and *written-English language dominance*. 
+Each background and guidance variable is presented in isolation first, but then followed by two-way interactions with the EDI variables of *gender*, *sexual orientation*, *race/culture*, *disability/neurodivergence*, and *written-English language dominance*. In some cases, the interactions with the latter four EDI variables are presented in a single figure.
 
 To the extent possible, each summary is available as a link in the sidebar. However, some interactions were grouped together and don't have links, *per se*. Most commonly, interactions with *gender* are linked, followed by interactions with *other EDI variables*.
 
@@ -273,8 +274,6 @@ visMain |>
 
 ```
 
-<!-- {{< include notes/_genderWhich.md >}} -->
-
 ##### descriptions
 
 If participants chose ***not listed*** as an answer above, they were given the opportunity to describe their gender in their own words, though doing so was optional. For those who did, the table below lists the descriptions they provided. The "NA" in the table refers to those who either did not see the question or chose not to supply a description. 
@@ -313,8 +312,6 @@ visMain |>
 
 ```
 
-
-<!-- {{< include notes/_genderDesc.md >}} -->
 
 ---
 
@@ -363,8 +360,6 @@ visMain |>
 Important: The question directly above regarding gender determined whether or not the participant saw the respective items directly below regarding *treatment (by others)*, *self-regard*, and *isolation*.
 :::
 
-<!-- {{< include notes/_genderAffected.md >}} -->
-
 ---
 
 #### treatment, self-regard, isolation
@@ -408,7 +403,7 @@ visMain |>
 ```
 
 
-<!-- {{< include notes/_genderLikert.md >}} -->
+<!-- {{< include notes/_gender.md >}} -->
 
 ---
 
@@ -584,7 +579,7 @@ visMain |>
 ```
 
 
-<!-- {{< include notes/_nonheteroLikert.md >}} -->
+<!-- {{< include notes/_nonhetero.md >}} -->
 
 ---
 
@@ -764,11 +759,9 @@ visMain |>
 ```
 
 
-<!-- {{< include notes/_racecultureLikert.md >}} -->
+<!-- {{< include notes/_raceculture.md >}} -->
 
 ---
-
-
 
 ### disability / neurodivergence
 
@@ -945,7 +938,7 @@ visMain |>
 ```
 
 
-<!-- {{< include notes/_disabilityLikert.md >}} -->
+<!-- {{< include notes/_disability.md >}} -->
 
 ---
 
@@ -1125,7 +1118,7 @@ visMain |>
 ```
 
 
-<!-- {{< include notes/_disabilityLikert.md >}} -->
+<!-- {{< include notes/_domlang.md >}} -->
 
 ---
 
@@ -1246,6 +1239,8 @@ visMain |>
 
 ##### other EDI dimensions
 
+{{< include interactionNotes.qmd >}}
+
 ###### figure
 
 ```{r}
@@ -1332,6 +1327,8 @@ visMain |>
     )
 
 ```
+
+<!-- {{< include notes/_careerStatusInteractions.md >}} -->
 
 ---
 
@@ -1430,6 +1427,8 @@ visMain |>
 ---
 
 ##### other EDI variables
+
+{{< include interactionNotes.qmd >}}
 
 ###### figure
 
@@ -1609,6 +1608,8 @@ visMain |>
 ---
 
 #### interactions
+
+{{< include interactionNotes.qmd >}}
 
 ##### gender
 
@@ -2342,6 +2343,8 @@ visMain |>
 
 ##### other EDI dimensions
 
+{{< include interactionNotes.qmd >}}
+
 ###### figure
 
 ```{r}
@@ -2565,6 +2568,8 @@ visMain |>
 
 ##### other EDI dimensions
 
+{{< include interactionNotes.qmd >}}
+
 ###### figure
 
 ```{r}
@@ -2764,6 +2769,8 @@ visMain |>
 ```
 
 ##### other EDI dimensions
+
+{{< include interactionNotes.qmd >}}
 
 ###### figure
 
@@ -2988,6 +2995,8 @@ visMain |>
 
 
 ##### other EDI variables
+
+{{< include interactionNotes.qmd >}}
 
 ###### figure
 
