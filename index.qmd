@@ -1255,7 +1255,7 @@ longerDataSimple |>
   wrappedStackedFreqPlot(
     xVar = careerStatus,
     fillVar = response,
-    fillLabel = "Member of\nEDI group",
+    fillLabel = "Member of\nrespective\nEDI group",
     wrapVar = ediVar,
     ostColours = ostColours2rev,
     figCaption = NULL,
@@ -1443,7 +1443,7 @@ longerDataSimple |>
   wrappedStackedFreqPlot(
     xVar = engagement,
     fillVar = response,
-    fillLabel = "Member of\nEDI group",
+    fillLabel = "Member of\nrespective\nEDI group",
     wrapVar = ediVar,
     ostColours = ostColours2rev,
     figCaption = NULL,
@@ -2351,7 +2351,7 @@ visMain |>
 #| label: workshop-likert-plot-by-other-edis
 #| fig-alt: "Boxplots of responses by EDI variables other than gender to the question regarding whether the participant felt their engagement would increase with contributor workshops." 
 
-legendLabel <- "Member of\nEDI group"
+legendLabel <- "Member of\nrespective\nEDI group"
 longerDataSimple |>
   drop_na(workshopsOnContributing) |>
   drop_na(response) |>
@@ -2584,7 +2584,7 @@ longerDataSimple |>
   wrappedStackedFreqPlot(
     xVar = awareOfCodeOfConduct,
     fillVar = response,
-    fillLabel = "Member of\nEDI group",
+    fillLabel = "Member of\nrespective\nEDI group",
     wrapVar = ediVar,
     ostColours = ostColours2rev,
     figCaption = NULL,
@@ -2778,7 +2778,7 @@ visMain |>
 #| label: doceasy-likert-plot-by-other-edis
 #| fig-alt: "Boxplots of responses by EDI variables other than gender to the question regarding whether the participants felt the documentation for PsychoPy was easily find-able, searchable, and accessible." 
 
-legendLabel <- "Member of\nEDI group"
+legendLabel <- "Member of\nrespective\nEDI group"
 longerDataSimple |>
   drop_na(psychopyDocumentationEasy) |>
   drop_na(response) |>
@@ -3004,7 +3004,7 @@ visMain |>
 #| label: enforcementtrust-likert-plot-by-other-edis
 #| fig-alt: "Boxplots of responses by EDI dimensions other than gender to trust that the Code of Conduct would be enforced." 
 
-legendLabel <- "Member of\nEDI group"
+legendLabel <- "Member of\nrespective\nEDI group"
 longerDataSimple |>
   drop_na(trustCodeWillBeEnforced) |>
   drop_na(response) |>
