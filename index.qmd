@@ -58,7 +58,7 @@ packagesRequired <-
     )
 
 
-# Uncomment the code below to install any packages you're missing from the 
+# Un-comment the code below to install any packages you're missing from the 
 # list in packagesRequired
 
 # packagesInstalled <- installed.packages()[,"Package"]
@@ -148,7 +148,7 @@ Below are the full survey categories in more detail, roughly in order of the ori
   - language dominance\
 - *PsychoPy* Guidance\
   - awareness of *Code of Conduct*\
-  - findability, searchability, & accessibility of documentation\
+  - find-ability, searchability, & accessibility of documentation\
   - trust in enforcement of *Code of Conduct*
 
 ## general
@@ -175,7 +175,7 @@ Recall that for the dimension of *gender*, everyone saw the question concerning 
 
 ## order of data summaries
 
-Each of the headings in the list above above is depicted below with a visualisation, followed by a table of the data, and in the cases of identity, a table of labels that some participants optionally supplied to describe themselves on that particular EDI variable.
+Each of the headings in the list above above is depicted below with a visualization, followed by a table of the data, and in the cases of identity, a table of labels that some participants optionally supplied to describe themselves on that particular EDI variable.
 
 Ultimately however, it makes more sense to present the data summaries in a different order. Specifically, it would be informative to see how the background variables and related issues interact with the EDI variables. Therefore, the background and guidance variables are presented *after* the EDI variables, giving us a data-summary order as follows:
 
@@ -222,7 +222,7 @@ Participants could agree or disagree with each of these statements using a `1`-`
 ::: {.callout-note}
 Note that on the `1`-`7` scale for each of the statements, the number `4` is directly in the middle of the scale, which can be interpreted as neither agreeing nor disagreeing. You will see that we set responses of `4` to the side of the respective stacked frequency barplots, in yellow.
 
-Also, the barplots are sorted within each category (*treatment*, *self-regard*, and *isolation*) along descending frequency of agreement. That is, the topmost barplot within each category is the one with highest number of agreements, whereas the bottommost barplot within each category is the one with the highest number of disagreements.
+Also, the barplots are sorted within each category (*treatment*, *self-regard*, and *isolation*) along descending frequency of agreement. That is, the topmost barplot within each category is the one with highest number of agreements, whereas the bottom-most barplot within each category is the one with the highest number of disagreements.
 :::
   
 Summaries of the responses to these statements are provided below after the respective questions concerning their identity.
@@ -366,14 +366,14 @@ Important: The question directly above regarding gender determined whether or no
 
 The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$genderAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their gender identity has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$genderNegPerc))))`** provided responses, seen below.
 
-The exact questions are listed in the verbal summary after the visualisation.
+The exact questions are listed in the verbal summary after the visualization.
 
 ##### figure
 
 ```{r}
 #| label: gender-likert-plot
 #| warning: false
-#| fig-alt: "Stacked frequency barplots of responses to several statements on gender, categorized into the following: treatment by others, self-regard, and isolation." 
+#| fig-alt: "Stacked frequency barplots of responses to several statements on gender, categorised into the following: treatment by others, self-regard, and isolation." 
 
 visMain |> 
   select(genderNegPerc:genderOthersLikeMe) |> 
@@ -542,14 +542,14 @@ Important: The question directly above regarding sexual orientation determined w
 
 The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$nonHeteroAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their sexual orientation has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$nonHeteroNegPerc))))`** provided responses, seen below.
 
-The exact questions are listed in the verbal summary after the visualisation.
+The exact questions are listed in the verbal summary after the visualization.
 
 ##### figure
 
 ```{r}
 #| label: nonhetero-likert-plot
 #| warning: false
-#| fig-alt: "Stacked frequency barplots of responses to several statements on sexuality, categorized into the following: treatment by others, self-regard, and isolation." 
+#| fig-alt: "Stacked frequency barplots of responses to several statements on sexuality, categorised into the following: treatment by others, self-regard, and isolation." 
 
 visMain |>
   select(nonHeteroNegPerc:nonHeteroOthersLikeMe) |> 
@@ -720,14 +720,14 @@ Important: The question directly above regarding race and/our culture determined
 
 The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$raceCultureAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their racial and/or cultural identity has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$raceCultureNegPerc))))`** provided responses, seen below.
 
-The exact questions are listed in the verbal summary after the visualisation.
+The exact questions are listed in the verbal summary after the visualization.
 
 ##### figure
 
 ```{r}
 #| label: raceculture-likert-plot
 #| warning: false
-#| fig-alt: "Stacked frequency barplots of responses to statements on race/culture, categorized into the following: treatment by others, self-regard, and isolation." 
+#| fig-alt: "Stacked frequency barplots of responses to statements on race/culture, categorised into the following: treatment by others, self-regard, and isolation." 
 
 visMain |>
   select(raceCultureNegPerc:raceCultureOthersLikeMe) |> 
@@ -900,14 +900,14 @@ Important: The question directly above regarding disability and/or neurodivergen
 
 The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$disabilityAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their disability and/or neurodivergence has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$disabilityNegPerc))))`** provided responses, seen below.
 
-The exact questions are listed in the verbal summary after the visualisation.
+The exact questions are listed in the verbal summary after the visualization.
 
 ##### figure
 
 ```{r}
 #| label: disability-likert-plot
 #| warning: false
-#| fig-alt: "Stacked frequency barplots of responses to disability/neurodivergence, categorized into the following: treatment by others, self-regard, and isolation." 
+#| fig-alt: "Stacked frequency barplots of responses to disability/neurodivergence, categorised into the following: treatment by others, self-regard, and isolation." 
 
 visMain |>
   select(disabilityNegPerc:disabilityOthersLikeMe) |> 
@@ -1081,14 +1081,14 @@ Important: The question directly above regarding language dominance in written E
 
 The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$domLangAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their language dominance has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$domLangNegPerc))))`** provided responses, seen below.
 
-The exact questions are listed in the verbal summary after the visualisation.
+The exact questions are listed in the verbal summary after the visualization.
 
 ##### figure
 
 ```{r}
 #| label: domlang-likert-plot
 #| warning: false
-#| fig-alt: "Stacked frequency barplots of responses to language dominance, categorized by the following: treatment by others, self-regard, and isolation." 
+#| fig-alt: "Stacked frequency barplots of responses to language dominance, categorised by the following: treatment by others, self-regard, and isolation." 
 
 visMain |>
   select(domLangNegPerc:domLangOthersLikeMe) |> 
@@ -1159,7 +1159,7 @@ Participants had to choose from one of the following:
 
 #### everyone 
 
-The visualisation below presents responses in descending order of frequency.
+The visualization below presents responses in descending order of frequency.
 
 ##### figure
 
@@ -1348,7 +1348,7 @@ Participants had to choose from one of the following:
 
 #### everyone
 
-The visualisation below presents responses in descending order of frequency.
+The visualization below presents responses in descending order of frequency.
 
 ##### figure
 
@@ -1537,7 +1537,7 @@ The possible selections were as follows:
 - *Providing translations to other languages*\
 - *Other (describe)*
 
-It is important to keep in mind that participants may be counted as *yes* or *no* independently in any of the possible responses, which were converted to individual boolean variables below. If they selected the response, we assigned the value *selected*; if they did not, we assigned the value *not selected*. 
+It is important to keep in mind that participants may be counted as *yes* or *no* independently in any of the possible responses, which were converted to individual Boolean variables below. If they selected the response, we assigned the value *selected*; if they did not, we assigned the value *not selected*. 
 
 ```{r importContributionsLong}
 
@@ -1590,7 +1590,7 @@ The participants were given the option to describe those other contributions. Th
 
 ```{r}
 #| label: other-contributions-table
-#| tbl-cap: "Descriptions of other contributions to PyschoPy/JS that some participants provided"
+#| tbl-cap: "Descriptions of other contributions to PsychoPy/JS that some participants provided"
 
 visMain |> 
   select(contribOtherDesc) |>
@@ -1776,7 +1776,7 @@ suppressWarnings(print(Ct_Dn))
 
 ```{r}
 #| label: ways-of-contributing-by-disability-stats-table
-#| tbl-cap: "Summary of responses by disability and/or neuordivergence to ways of contributing"
+#| tbl-cap: "Summary of responses by disability and/or neurodivergence to ways of contributing"
 #| output: asis
 
 longerDataContributions |>
@@ -1859,7 +1859,7 @@ This section summarises, both visually and verbally, the rankings that participa
 ::: {.callout-note}
 Note that on this `1`-`5` scale, the number `3` is directly in the middle of the scale, which can be interpreted as neither agreeing nor disagreeing. We set responses of `3` to the side of the stacked frequency barplots below, in yellow.
 
-Also, the barplots are sorted along descending frequency of agreement. That is, the topmost barplot is the one with highest number of agreements, whereas the bottommost barplot is the one with the highest number of disagreements.
+Also, the barplots are sorted along descending frequency of agreement. That is, the topmost barplot is the one with highest number of agreements, whereas the bottom-most barplot is the one with the highest number of disagreements.
 :::
 
 #### everyone
@@ -2165,7 +2165,7 @@ visMain |>
 ###### figure
 
 ```{r}
-#| label: deterrents-likert-plot-by-langdom
+#| label: deterrents-likert-plot-by-domlang
 #| fig-alt: "Boxplots of responses by whether English is the respondent's dominant written language to the the following question: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?.'" 
 legendLabel <- "English is dominant\nwritten language"
 longerDataDeterrents |>
@@ -2476,7 +2476,7 @@ The third group of items on the survey collected information about documentation
 There were three questions concerning each of the following:
 
 - awareness of the *Code of Conduct*\
-- how findable, searchable, and accessible *PsychoPy*'s<sup>&reg;</sup> documentation is\
+- how find-able, searchable, and accessible *PsychoPy*'s<sup>&reg;</sup> documentation is\
 - how much they trust the *Code of Conduct* will be enforced
 
 The first was answered with a simple *yes* or *no*. The latter two were statements evaluated with a `1`-`7` Likert scale, where `1` represented *Strongly disagree*, and `7` represented *Strongly agree*.
@@ -2671,7 +2671,7 @@ The sections directly below summarise, both visually and verbally, the answer to
 ```{r}
 #| label: find-doceasy-plot
 #| warning: false
-#| fig-alt: "Barplot of agreement responses to the statement regarding findability, searchability, and accessibility of documentation."
+#| fig-alt: "Barplot of agreement responses to the statement regarding find-ability, searchability, and accessibility of documentation."
 
 visMain |>
   select(psychopyDocumentationEasy) |>
@@ -2689,7 +2689,7 @@ suppressWarnings(print(DcEs))
 
 ```{r}
 #| label: doceasy-stats-table
-#| tbl-cap: "Statistics for responses to statements regarding whether the documentation is findable, searchable, and accessible."
+#| tbl-cap: "Statistics for responses to statements regarding whether the documentation is find-able, searchable, and accessible."
 #| output: asis
 
 visMain |>
@@ -2723,7 +2723,7 @@ docEasyLabel <- get_label(visMain$psychopyDocumentationEasy)
 
 ```{r}
 #| label: doceasy-likert-plot-by-gender
-#| fig-alt: "Boxplots of responses by EDI variables by gender to the question regarding whether the participants felt the documuntation for PsychoPy was easily findable, searchable, and accessible." 
+#| fig-alt: "Boxplots of responses by EDI variables by gender to the question regarding whether the participants felt the documentation for PsychoPy was easily find-able, searchable, and accessible." 
 
 legendLabel <- "Gender"
 visMain |>
@@ -2751,7 +2751,7 @@ suppressWarnings(print(Dc_Gn))
 
 ```{r}
 #| label: doceasy-by-gender-stats-table
-#| tbl-cap: "Summary of responses by gender to finding the documentation easily findable, searchable, and accessible"
+#| tbl-cap: "Summary of responses by gender to finding the documentation easily find-able, searchable, and accessible"
 #| output: asis
 
 textForSpan <- get_label(visMain$gender)
@@ -2776,7 +2776,7 @@ visMain |>
 
 ```{r}
 #| label: doceasy-likert-plot-by-other-edis
-#| fig-alt: "Boxplots of responses by EDI variables other than gender to the question regarding whether the participants felt the documuntation for PsychoPy was easily findable, searchable, and accessible." 
+#| fig-alt: "Boxplots of responses by EDI variables other than gender to the question regarding whether the participants felt the documentation for PsychoPy was easily find-able, searchable, and accessible." 
 
 legendLabel <- "Member of\nEDI group"
 longerDataSimple |>
@@ -2804,7 +2804,7 @@ suppressWarnings(print(Dc_Id))
 
 ```{r}
 #| label: doceasy-by-sexuality-stats-table
-#| tbl-cap: "Summary of responses by sexual orientation to finding the documentation easily findable, searchable, and accessible"
+#| tbl-cap: "Summary of responses by sexual orientation to finding the documentation easily find-able, searchable, and accessible"
 #| output: asis
 
 textForSpan <- get_label(visMain$nonHeteroCommunity)
@@ -2825,7 +2825,7 @@ visMain |>
 
 ```{r}
 #| label: doceasy-by-race-stats-table
-#| tbl-cap: "Summary of responses by race and/or culture to finding the documentation easily findable, searchable, and accessible"
+#| tbl-cap: "Summary of responses by race and/or culture to finding the documentation easily find-able, searchable, and accessible"
 #| output: asis
 
 textForSpan <- get_label(visMain$raceCulture)
@@ -2846,7 +2846,7 @@ visMain |>
 
 ```{r}
 #| label: doceasy-by-disability-stats-table
-#| tbl-cap: "Summary of responses by disability and/or neurodivergence to finding the documentation easily findable, searchable, and accessible"
+#| tbl-cap: "Summary of responses by disability and/or neurodivergence to finding the documentation easily find-able, searchable, and accessible"
 #| output: asis
 
 textForSpan <- get_label(visMain$disability)
@@ -2867,7 +2867,7 @@ visMain |>
 
 ```{r}
 #| label: doceasy-by-language-dominance-stats-table
-#| tbl-cap: "Summary of responses by English-language dominance to finding the documentation easily findable, searchable, and accessible"
+#| tbl-cap: "Summary of responses by English-language dominance to finding the documentation easily find-able, searchable, and accessible"
 #| output: asis
 
 textForSpan <- get_label(visMain$domLangEnglish)
@@ -3136,14 +3136,14 @@ visMain |>
 
 # Appendix
 
-## Color-blindness check
+## Colour-blindness check
 
-The custom palettes used in this report (which are based on the colors used at [Open Science Tools, Ltd.](https://opensciencetools.org/) are simulated through various forms of color blindness below to ensure that most people can distinguish the colors on the figures.
+The custom palettes used in this report (which are based on the colours used at [Open Science Tools, Ltd.](https://opensciencetools.org/) are simulated through various forms of colour blindness below to ensure that most people can distinguish the colours on the figures.
 
-### two colors
+### two colours
 
 ```{r}
-#| label: colorblindnessCheckOst2
+#| label: colourblindnessCheckOst2
 #| warning: false
 
 palette_bivariate_plot(ostColours2)
@@ -3151,10 +3151,10 @@ palette_bivariate_plot(ostColours2)
 
 ```
 
-### three colors
+### three colours
 
 ```{r}
-#| label: colorblindnessCheckOst3
+#| label: colourblindnessCheckOst3
 #| warning: false
 
 palette_bivariate_plot(ostColours3)
@@ -3162,20 +3162,20 @@ palette_bivariate_plot(ostColours3)
 
 ```
 
-### five colors
+### five colours
 
 ```{r}
-#| label: colorblindnessCheckOst5
+#| label: colourblindnessCheckOst5
 #| warning: false
 
 palette_bivariate_plot(ostColours5)
 
 ```
 
-### six colors
+### six colours
 
 ```{r}
-#| label: colorblindnessCheckOst6
+#| label: colourblindnessCheckOst6
 #| warning: false
 
 palette_bivariate_plot(ostColours6)
