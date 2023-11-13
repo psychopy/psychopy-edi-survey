@@ -148,7 +148,7 @@ Below are the full survey categories in more detail, roughly in order of the ori
   - language dominance\
 - *PsychoPy* Guidance\
   - awareness of *Code of Conduct*\
-  - find-ability, searchability, & accessibility of documentation\
+  - findability, searchability, & accessibility of documentation\
   - trust in enforcement of *Code of Conduct*
 
 ## general
@@ -2671,7 +2671,7 @@ The sections directly below summarise, both visually and verbally, the answer to
 ```{r}
 #| label: find-doceasy-plot
 #| warning: false
-#| fig-alt: "Barplot of agreement responses to the statement regarding find-ability, searchability, and accessibility of documentation."
+#| fig-alt: "Barplot of agreement responses to the statement regarding findability, searchability, and accessibility of documentation."
 
 visMain |>
   select(psychopyDocumentationEasy) |>
