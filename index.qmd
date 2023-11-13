@@ -396,8 +396,7 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = NULL,
-    spanVar <- NULL,
-    footNote <- NULL
+    spanVar <- NULL
   )
 
 ```
@@ -572,8 +571,7 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = NULL,
-    spanVar <- NULL,
-    footNote <- NULL
+    spanVar <- NULL
   )
   
 ```
@@ -752,8 +750,7 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = NULL,
-    spanVar <- NULL,
-    footNote <- NULL
+    spanVar <- NULL
   )
 
 ```
@@ -931,8 +928,7 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = NULL,
-    spanVar <- NULL,
-    footNote <- NULL
+    spanVar <- NULL
   )
 
 ```
@@ -1111,8 +1107,7 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = NULL,
-    spanVar <- NULL,
-    footNote <- NULL
+    spanVar <- NULL
   )
 
 ```
@@ -1895,8 +1890,7 @@ visMain |>
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
     byVar = NULL,
-    spanVar <- NULL,
-    footNote <- NULL
+    spanVar <- NULL
   )
 
 ```
@@ -1948,29 +1942,22 @@ suppressWarnings(print(Dt_Gn))
 
 ###### table
 
-
 ```{r}
 #| label: deterrents-by-gender-stats-table
 #| tbl-cap: "Statistical summaries by gender of responses to statements regarding deterrents to contributing."
 #| output: asis
 
-textForFootnote <- paste0(
-  "There was/were ", 
-  sum(is.na(visMain$nonHeteroCommunity)),
-  " extra missing values in this table due to non-responses to this particular EDI variable.")
 textForSpan <- get_label(visMain$gender)
+
 visMain |>
-  select(starts_with("deterrents"), gender)  |>
-  mutate(
-    gender =
-      as.character(gender)
-     ) |>
+  select(starts_with("deterrents"), gender) |>
+  mutate(gender = as.character(gender)) |>
+  mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
   likertTable(
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
     byVar = "gender",
-    spanVar = textForSpan,
-    footNote <- textForFootnote
+    spanVar = textForSpan
   )
 
 ```
@@ -2009,29 +1996,22 @@ suppressWarnings(print(Dt_Nh))
 
 ###### table
 
-
 ```{r}
 #| label: deterrents-by-sexuality-stats-table
 #| tbl-cap: "Statistical summaries by sexual orientation of responses to statements regarding deterrents to contributing."
 #| output: asis
 
-textForFootnote <- paste0(
-  "There was/were ", 
-  sum(is.na(visMain$nonHeteroCommunity)),
-  " extra missing values in this table due to non-responses to this particular EDI variable.")
 textForSpan <- get_label(visMain$nonHeteroCommunity)
+
 visMain |>
   select(starts_with("deterrents"), nonHeteroCommunity)  |>
-  mutate(
-    nonHeteroCommunity =
-      as.character(nonHeteroCommunity)
-     ) |>
+  mutate(nonHeteroCommunity = as.character(nonHeteroCommunity)) |>
+  mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
   likertTable(
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
     byVar = "nonHeteroCommunity",
-    spanVar = textForSpan,
-    footNote <- textForFootnote
+    spanVar = textForSpan
   )
 
 
@@ -2076,23 +2056,16 @@ suppressWarnings(print(Dt_Rc))
 #| tbl-cap: "Statistical summaries by race and/or culture of responses to statements regarding deterrents to contributing."
 #| output: asis
 
-textForFootnote <- paste0(
-  "There was/were ", 
-  sum(is.na(visMain$raceCulture)),
-  " extra missing values in this table due to non-responses to this particular EDI variable.")
 textForSpan <- get_label(visMain$raceCulture)
 visMain |>
   select(starts_with("deterrents"), raceCulture)  |>
-  mutate(
-    raceCulture =
-      as.character(raceCulture)
-     ) |>
+  mutate(raceCulture = as.character(raceCulture)) |>
+  mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "NA")) |>
   likertTable(
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
     byVar = "raceCulture",
-    spanVar = textForSpan,
-    footNote <- textForFootnote
+    spanVar = textForSpan
   )
 
 ```
@@ -2136,23 +2109,17 @@ suppressWarnings(print(Dt_Dn))
 #| tbl-cap: "Statistical summaries by disability and/or neurodivergence of responses to statements regarding deterrents to contributing."
 #| output: asis
 
-textForFootnote <- paste0(
-  "There was/were ", 
-  sum(is.na(visMain$disability)),
-  " extra missing values in this table due to non-responses to this particular EDI variable.")
 textForSpan <- get_label(visMain$disability)
+
 visMain |>
   select(starts_with("deterrents"), disability)  |>
-  mutate(
-    disability = 
-      as.character(disability)
-    ) |>
+  mutate(disability = as.character(disability)) |>
+  mutate(disability = forcats::fct_na_value_to_level(disability, level = "NA")) |>
   likertTable(
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
     byVar = "disability",
-    spanVar = textForSpan,
-    footNote <- textForFootnote
+    spanVar = textForSpan
   )
 
 ```
@@ -2196,23 +2163,17 @@ suppressWarnings(print(Dt_Dl))
 #| tbl-cap: "Statistical summaries by whether the respondents' dominant written language is English of responses to statements regarding deterrents to contributing."
 #| output: asis
 
-textForFootnote <- paste0(
-  "There was/were ", 
-  sum(is.na(visMain$disability)),
-  " extra missing values in this table due to non-responses to this particular EDI variable.")
 textForSpan <- get_label(visMain$domLangEnglish)
+
 visMain |>
   select(starts_with("deterrents"), domLangEnglish)  |>
-  mutate(
-    domLangEnglish = 
-      as.character(domLangEnglish)
-    ) |>
+  mutate(domLangEnglish = as.character(domLangEnglish)) |>
+  mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "NA")) |>
   likertTable(
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
     byVar = "domLangEnglish",
-    spanVar = textForSpan,
-    footNote <- textForFootnote
+    spanVar = textForSpan
   )
 
 ```
@@ -2270,8 +2231,7 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "5 = Strongly agree",
     byVar = NULL,
-    spanVar = NULL,
-    footNote <- NULL
+    spanVar = NULL
   )
 
 ```
@@ -2328,13 +2288,12 @@ suppressWarnings(print(Wk_Gn))
 textForSpan <- get_label(visMain$gender)
 visMain |>
   select(workshopsOnContributing, gender)  |>
-  mutate(gender = forcats::fct_na_value_to_level(gender, level = "(missing)")) |>
+  mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "5 = Strongly agree",
     byVar = "gender",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```
@@ -2386,13 +2345,12 @@ textForSpan <- get_label(visMain$nonHeteroCommunity)
 visMain |>
   select(workshopsOnContributing, nonHeteroCommunity)  |>
   mutate(nonHeteroCommunity = as.character(nonHeteroCommunity)) |>
-  mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "(missing)")) |>
+  mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "5 = Strongly agree",
     byVar = "nonHeteroCommunity",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```
@@ -2409,13 +2367,12 @@ visMain |>
   select(workshopsOnContributing, raceCulture)  |>
   mutate(raceCulture = as.character(raceCulture)) |>
   mutate(raceCulture = forcats::fct_recode(raceCulture, "yes" = "1", "no" = "0")) |>
-  mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "(missing)")) |>
+  mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "5 = Strongly agree",
     byVar = "raceCulture",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```
@@ -2432,13 +2389,12 @@ visMain |>
   select(workshopsOnContributing, disability)  |>
   mutate(disability = as.character(disability)) |>
   mutate(disability = forcats::fct_recode(disability, "yes" = "1", "no" = "0")) |>
-  mutate(disability = forcats::fct_na_value_to_level(disability, level = "(missing)")) |>
+  mutate(disability = forcats::fct_na_value_to_level(disability, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "5 = Strongly agree",
     byVar = "disability",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```
@@ -2455,13 +2411,12 @@ visMain |>
   select(workshopsOnContributing, domLangEnglish)  |>
   mutate(domLangEnglish = as.character(domLangEnglish)) |>
   mutate(domLangEnglish = forcats::fct_recode(domLangEnglish, "yes" = "1", "no" = "0")) |>
-  mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "(missing)")) |>
+  mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "5 = Strongly agree",
     byVar = "domLangEnglish",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```
@@ -2476,7 +2431,7 @@ The third group of items on the survey collected information about documentation
 There were three questions concerning each of the following:
 
 - awareness of the *Code of Conduct*\
-- how find-able, searchable, and accessible *PsychoPy*'s<sup>&reg;</sup> documentation is\
+- how findable, searchable, and accessible *PsychoPy*'s<sup>&reg;</sup> documentation is\
 - how much they trust the *Code of Conduct* will be enforced
 
 The first was answered with a simple *yes* or *no*. The latter two were statements evaluated with a `1`-`7` Likert scale, where `1` represented *Strongly disagree*, and `7` represented *Strongly agree*.
@@ -2501,7 +2456,7 @@ The sections directly below summarise, both visually and verbally, the answer to
 
 visMain |> 
   select(awareOfCodeOfConduct) |> 
-  mutate(awareOfCodeOfConduct = forcats::fct_na_value_to_level(awareOfCodeOfConduct, level = "(missing)")) |>
+  mutate(awareOfCodeOfConduct = forcats::fct_na_value_to_level(awareOfCodeOfConduct, level = "NA")) |>
   ostFreqPlot(
     ostColour = ostOrange,
     sorting = "none"
@@ -2520,7 +2475,7 @@ suppressWarnings(print(CcAw))
 
 visMain |>
   select(awareOfCodeOfConduct) |>
-  mutate(awareOfCodeOfConduct = forcats::fct_na_value_to_level(awareOfCodeOfConduct, level = "(missing)")) |>
+  mutate(awareOfCodeOfConduct = forcats::fct_na_value_to_level(awareOfCodeOfConduct, level = "NA")) |>
   tbl_summary() |>
   modify_header(label = "**Question**") |>
   as_flex_table() |>
@@ -2689,7 +2644,7 @@ suppressWarnings(print(DcEs))
 
 ```{r}
 #| label: doceasy-stats-table
-#| tbl-cap: "Statistics for responses to statements regarding whether the documentation is find-able, searchable, and accessible."
+#| tbl-cap: "Statistics for responses to statements regarding whether the documentation is findable, searchable, and accessible."
 #| output: asis
 
 visMain |>
@@ -2698,8 +2653,7 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = NULL,
-    spanVar = NULL,
-    footNote <- NULL
+    spanVar = NULL
   )
 
 ```
@@ -2723,7 +2677,7 @@ docEasyLabel <- get_label(visMain$psychopyDocumentationEasy)
 
 ```{r}
 #| label: doceasy-likert-plot-by-gender
-#| fig-alt: "Boxplots of responses by EDI variables by gender to the question regarding whether the participants felt the documentation for PsychoPy was easily find-able, searchable, and accessible." 
+#| fig-alt: "Boxplots of responses by EDI variables by gender to the question regarding whether the participants felt the documentation for PsychoPy was easily findable, searchable, and accessible." 
 
 legendLabel <- "Gender"
 visMain |>
@@ -2751,19 +2705,18 @@ suppressWarnings(print(Dc_Gn))
 
 ```{r}
 #| label: doceasy-by-gender-stats-table
-#| tbl-cap: "Summary of responses by gender to finding the documentation easily find-able, searchable, and accessible"
+#| tbl-cap: "Summary of responses by gender to finding the documentation easily findable, searchable, and accessible"
 #| output: asis
 
 textForSpan <- get_label(visMain$gender)
 visMain |>
   select(psychopyDocumentationEasy, gender)  |>
-  mutate(gender = forcats::fct_na_value_to_level(gender, level = "(missing)")) |>
+  mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = "gender",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```
@@ -2776,7 +2729,7 @@ visMain |>
 
 ```{r}
 #| label: doceasy-likert-plot-by-other-edis
-#| fig-alt: "Boxplots of responses by EDI variables other than gender to the question regarding whether the participants felt the documentation for PsychoPy was easily find-able, searchable, and accessible." 
+#| fig-alt: "Boxplots of responses by EDI variables other than gender to the question regarding whether the participants felt the documentation for PsychoPy was easily findable, searchable, and accessible." 
 
 legendLabel <- "Member of\nrespective\nEDI group"
 longerDataSimple |>
@@ -2804,19 +2757,18 @@ suppressWarnings(print(Dc_Id))
 
 ```{r}
 #| label: doceasy-by-sexuality-stats-table
-#| tbl-cap: "Summary of responses by sexual orientation to finding the documentation easily find-able, searchable, and accessible"
+#| tbl-cap: "Summary of responses by sexual orientation to finding the documentation easily findable, searchable, and accessible"
 #| output: asis
 
 textForSpan <- get_label(visMain$nonHeteroCommunity)
 visMain |>
   select(psychopyDocumentationEasy, nonHeteroCommunity)  |>
-  mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "(missing)")) |>
+  mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = "nonHeteroCommunity",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```
@@ -2825,19 +2777,18 @@ visMain |>
 
 ```{r}
 #| label: doceasy-by-race-stats-table
-#| tbl-cap: "Summary of responses by race and/or culture to finding the documentation easily find-able, searchable, and accessible"
+#| tbl-cap: "Summary of responses by race and/or culture to finding the documentation easily findable, searchable, and accessible"
 #| output: asis
 
 textForSpan <- get_label(visMain$raceCulture)
 visMain |>
   select(psychopyDocumentationEasy, raceCulture)  |>
-  mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "(missing)")) |>
+  mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = "raceCulture",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```
@@ -2846,19 +2797,18 @@ visMain |>
 
 ```{r}
 #| label: doceasy-by-disability-stats-table
-#| tbl-cap: "Summary of responses by disability and/or neurodivergence to finding the documentation easily find-able, searchable, and accessible"
+#| tbl-cap: "Summary of responses by disability and/or neurodivergence to finding the documentation easily findable, searchable, and accessible"
 #| output: asis
 
 textForSpan <- get_label(visMain$disability)
 visMain |>
   select(psychopyDocumentationEasy, disability)  |>
-  mutate(disability = forcats::fct_na_value_to_level(disability, level = "(missing)")) |>
+  mutate(disability = forcats::fct_na_value_to_level(disability, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = "disability",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```
@@ -2867,19 +2817,18 @@ visMain |>
 
 ```{r}
 #| label: doceasy-by-language-dominance-stats-table
-#| tbl-cap: "Summary of responses by English-language dominance to finding the documentation easily find-able, searchable, and accessible"
+#| tbl-cap: "Summary of responses by English-language dominance to finding the documentation easily findable, searchable, and accessible"
 #| output: asis
 
 textForSpan <- get_label(visMain$domLangEnglish)
 visMain |>
   select(psychopyDocumentationEasy, domLangEnglish)  |>
-  mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "(missing)")) |>
+  mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = "domLangEnglish",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```
@@ -2924,8 +2873,7 @@ visMain |>
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = NULL,
-    spanVar = NULL,
-    footNote <- NULL
+    spanVar = NULL
   )
 
 ```
@@ -2982,13 +2930,12 @@ suppressWarnings(print(Tr_Gn))
 textForSpan <- get_label(visMain$gender)
 visMain |>
   select(trustCodeWillBeEnforced, gender)  |>
-  mutate(gender = forcats::fct_na_value_to_level(gender, level = "(missing)")) |>
+  mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = "gender",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```
@@ -3037,13 +2984,12 @@ suppressWarnings(print(Tr_Id))
 textForSpan <- get_label(visMain$nonHeteroCommunity)
 visMain |>
   select(trustCodeWillBeEnforced, nonHeteroCommunity)  |>
-  mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "(missing)")) |>
+  mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = "nonHeteroCommunity",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```
@@ -3058,13 +3004,12 @@ visMain |>
 textForSpan <- get_label(visMain$raceCulture)
 visMain |>
   select(trustCodeWillBeEnforced, raceCulture)  |>
-  mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "(missing)")) |>
+  mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = "raceCulture",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```
@@ -3079,13 +3024,12 @@ visMain |>
 textForSpan <- get_label(visMain$disability)
 visMain |>
   select(trustCodeWillBeEnforced, disability)  |>
-  mutate(disability = forcats::fct_na_value_to_level(disability, level = "(missing)")) |>
+  mutate(disability = forcats::fct_na_value_to_level(disability, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = "disability",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```
@@ -3100,13 +3044,12 @@ visMain |>
 textForSpan <- get_label(visMain$domLangEnglish)
 visMain |>
   select(trustCodeWillBeEnforced, domLangEnglish)  |>
-  mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "(missing)")) |>
+  mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "NA")) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
     byVar = "domLangEnglish",
-    spanVar = textForSpan,
-    footNote <- NULL
+    spanVar = textForSpan
   )
 
 ```

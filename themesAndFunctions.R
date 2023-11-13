@@ -353,13 +353,13 @@ interactionBoxplot <- function(
 ## Tables
 
 ### Likert table
+
 likertTable <- function(
     .data,
     lowerBound,
     upperBound,
     byVar,
-    spanVar,
-    footNote
+    spanVar
     ) {
   p <- 
     gtsummary::tbl_summary(
@@ -378,26 +378,16 @@ likertTable <- function(
       missing = "no",
       label = byVar ~ sjlabelled::get_label(byVar)
     ) %>%
-    gtsummary::add_n(
-      statistic = "{N_nonmiss} ({N_miss})",
-      col_label = "n (NA)",
-      footnote = FALSE,
-      last = FALSE
-      ) %>%
     gtsummary::modify_header(
       label = paste0(
         "**Statement** (",
         lowerBound,
         "; ",
         upperBound,
-        ")"),
-      n = "**n (NA)**"
+        ")")
     ) %>%
     gtsummary::modify_spanning_header(all_stat_cols() ~ spanVar) %>%
     gtsummary::add_stat_label() %>%
-    gtsummary::modify_footnote(
-      all_stat_cols() ~ footNote
-    ) %>%
     gtsummary::as_flex_table()
   flextable::flextable_to_rmd(p)
 }
