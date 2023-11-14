@@ -2248,12 +2248,8 @@ visMain |>
 #| label: workshop-likert-plot-by-gender
 #| fig-alt: "Boxplots of responses by gender to the question regarding whether the participant felt their engagement would increase with contributor workshops." 
 
-# WORK MORE ON THIS NA THING
-
 figCaptionText <- paste0(
-  "Notes: \n1. A response of 1 indicates 'Strongly disagree' \n2. A response of 5 indicates 'Strongly agree'\n3. The mean is represented by the diamond\n4. There were ",
-  nrow(visMain)-sum(complete.cases(visMain[,c("gender","workshopsOnContributing")])),
-  " observations that were dropped due to having missing values for either variable."
+  "Notes: \n1. A response of 1 indicates 'Strongly disagree' \n2. A response of 5 indicates 'Strongly agree'\n3. The mean is represented by the diamond."
 )
 legendLabel <- "Gender"
 visMain |>
