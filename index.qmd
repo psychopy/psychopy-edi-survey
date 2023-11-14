@@ -2436,10 +2436,6 @@ There were three questions concerning each of the following:
 
 The first was answered with a simple *yes* or *no*. The latter two were statements evaluated with a `1`-`7` Likert scale, where `1` represented *Strongly disagree*, and `7` represented *Strongly agree*.
 
-::: {.callout-note}
-As before, note that on the `1`-`7` scale, the number `4` is directly in the middle of the scale, which can be interpreted as neither agreeing nor disagreeing. Accordingly, we set responses of `4` to the side of the respective stacked frequency barplots, in yellow.
-:::
-
 ### awareness of *Code of Conduct*
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
