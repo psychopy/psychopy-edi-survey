@@ -248,7 +248,7 @@ The sections directly below summarise, both visually and verbally, the answer to
 visMain |> 
   select(gender) |> 
   mutate(gender = forcats::fct_na_value_to_level(gender, level = "(missing)")) |>
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostBlue,
     sorting = "none"
   )
@@ -330,7 +330,7 @@ The sections directly below summarise, both visually and verbally, the answer to
 visMain |> 
   select(genderAffected) |> 
   mutate(genderAffected = forcats::fct_na_value_to_level(genderAffected, level = "(missing)")) |>
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostOrange,
     sorting = "none"
   )
@@ -423,7 +423,7 @@ The second EDI category is *sexual orientation*. As above, we present the respon
 visMain |> 
   select(nonHeteroCommunity) |> 
   mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "(missing)")) |>
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostYellow,
     sorting = "none"
   )
@@ -505,7 +505,7 @@ The sections directly below summarise, both visually and verbally, the answer to
 visMain |> 
   select(nonHeteroAffected) |> 
   mutate(nonHeteroAffected = forcats::fct_na_value_to_level(nonHeteroAffected, level = "(missing)")) |>
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostBlue,
     sorting = "none"
   )
@@ -598,7 +598,7 @@ The third EDI category is *race* and/or *culture*. As before, we present the res
 visMain |> 
   select(raceCulture) |> 
   mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "(missing)")) |>
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostOrange,
     sorting = "none"
   )
@@ -682,7 +682,7 @@ The sections directly below summarise, both visually and verbally, the answer to
 visMain |> 
   select(raceCultureAffected) |> 
   mutate(raceCultureAffected = forcats::fct_na_value_to_level(raceCultureAffected, level = "(missing)")) |>
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostYellow,
     sorting = "none"
   )
@@ -777,7 +777,7 @@ The fourth EDI category is *disability* and/or *neurodivergence*. As above, we p
 visMain |> 
   select(disability) |> 
   mutate(disability = forcats::fct_na_value_to_level(disability, level = "(missing)")) |>
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostBlue,
     sorting = "none"
   )
@@ -861,7 +861,7 @@ The sections directly below summarise, both visually and verbally, the answer to
 visMain |> 
   select(disabilityAffected) |> 
   mutate(disabilityAffected = forcats::fct_na_value_to_level(disabilityAffected, level = "(missing)")) |>
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostOrange,
     sorting = "none"
   )
@@ -957,7 +957,7 @@ The fifth EDI category is *written-English language dominance*. As before, we pr
 visMain |> 
   select(domLangEnglish) |> 
   mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "(missing)")) |>
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostYellow,
     sorting = "none"
   )
@@ -1041,7 +1041,7 @@ The sections directly below summarise, both visually and verbally, the answer to
 visMain |> 
   select(domLangAffected) |> 
   mutate(domLangAffected = forcats::fct_na_value_to_level(domLangAffected, level = "(missing)")) |>
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostBlue,
     sorting = "none"
   )
@@ -1165,7 +1165,7 @@ The visualization below presents responses in descending order of frequency.
 visMain |>
   select(careerStatus) |>
   mutate(careerStatus = forcats::fct_na_value_to_level(careerStatus, level = "(missing)")) |>
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostBlue, 
     sorting = "desc"
     )
@@ -1354,7 +1354,7 @@ The visualization below presents responses in descending order of frequency.
 visMain |>
   select(engagement) |>
   mutate(engagement = forcats::fct_na_value_to_level(engagement, level = "(missing)")) |>
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostOrange, 
     sorting = "desc"
     )
@@ -2208,7 +2208,7 @@ likertValues <- get_labels(longerDataSimple$workshopsOnContributing)
 
 longerDataSimple |> 
   select(workshopsOnContributing) |> 
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostYellow,
     sorting = "none"
   )
@@ -2449,7 +2449,7 @@ The sections directly below summarise, both visually and verbally, the answer to
 visMain |> 
   select(awareOfCodeOfConduct) |> 
   mutate(awareOfCodeOfConduct = forcats::fct_na_value_to_level(awareOfCodeOfConduct, level = "NA")) |>
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostOrange,
     sorting = "none"
   )
@@ -2622,7 +2622,7 @@ The sections directly below summarise, both visually and verbally, the answer to
 
 visMain |>
   select(psychopyDocumentationEasy) |>
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostOrange,
     sorting = "none"
   )
@@ -2843,7 +2843,7 @@ The sections directly below summarise, both visually and verbally, the answer to
 
 visMain |> 
   select(trustCodeWillBeEnforced) |> 
-  ostFreqPlot(
+  freqPlot(
     ostColour = ostYellow,
     sorting = "none"
   )

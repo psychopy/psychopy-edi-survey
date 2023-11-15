@@ -97,7 +97,7 @@ ostColours7 <-
 ## Plots
 
 ### function for frequency plots 
-ostFreqPlot <- 
+freqPlot <- 
   function(
     .x, 
     ostColour, 
