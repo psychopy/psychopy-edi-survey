@@ -1,5 +1,10 @@
 # themes
 
+## font
+
+font_add_google("Raleway", "raleway")
+showtext_auto()
+
 ## set a general theme for sjPlot
 
 sjPlot::set_theme(
