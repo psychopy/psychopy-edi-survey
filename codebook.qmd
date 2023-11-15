@@ -15,7 +15,9 @@ bibliography: bibs/grateful-refs-codebook.bib
 packagesRequired <- c(
   "codebook", 
   "grateful", 
-  "knitr"
+  "knitr",
+  "showtext",
+  "sysfonts"
   )
 
 
@@ -28,6 +30,17 @@ packagesRequired <- c(
 
 # attach the packages
 invisible(lapply(packagesRequired, require, character.only=T))
+
+```
+
+```{r}
+#| label: getFontRaleway 
+#| output: false
+## use *raleway* font throughout
+## an active internet connection is required for this step
+
+font_add_google("Raleway", "raleway")
+showtext_auto()
 
 ```
 

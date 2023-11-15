@@ -1,9 +1,57 @@
+# install and/or attach packages
+
+# packagesRequired <-
+#   c(
+#     "codebook",
+#     "colorblindcheck",
+#     "dplyr",
+#     "DT",
+#     "flextable",
+#     "forcats",
+#     "gdata",
+#     "ggplot2",
+#     "ggtext",
+#     "grateful",
+#     "gtsummary",
+#     "knitr",
+#     "magrittr",
+#     "purrr",
+#     "readr",
+#     "rmarkdown",
+#     "showtext",
+#     "sjlabelled",
+#     "sjmisc",
+#     "sjPlot",
+#     "stringr",
+#     "sysfonts",
+#     "systemfonts",
+#     "summarytools",
+#     "tibble",
+#     "tidyr",
+#     "tidyselect",
+#     "xfun"
+#   )
+
+# Un-comment the code below to install any packages you're missing from the 
+# list in packagesRequired
+
+# packagesInstalled <- installed.packages()[,"Package"]
+# packagesMissing <- packagesRequired[!(packagesRequired %in% packagesInstalled)]
+# if(length(packagesMissing)) install.packages(packagesMissing, repos = getCRANmirrors()[1,"URL"])
+
+# attach the packages
+# invisible(lapply(packagesRequired, require, character.only=T))
+
+# get the data
+
+# visMain <- readRDS("data/tidyLabeledSurveyData.rds")
+
 # themes
 
 ## font
 
-font_add_google("Raleway", "raleway")
-showtext_auto()
+# sysfonts::font_add_google("Raleway", "raleway")
+# showtext::showtext_auto()
 
 ## set a general theme for sjPlot
 

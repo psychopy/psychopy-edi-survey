@@ -70,6 +70,17 @@ invisible(lapply(packagesRequired, require, character.only=T))
 
 ```
 
+```{r}
+#| label: getFontRaleway 
+#| output: false
+## use *raleway* font throughout
+## an active internet connection is required for this step
+
+font_add_google("Raleway", "raleway")
+showtext_auto()
+
+```
+
 
 ```{r}
 #| label: readTidiedData 
@@ -223,7 +234,7 @@ The first EDI category is *gender*. We present the responses to the issue of ide
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
->`r get_label(visMain$gender)`
+>`r sjlabelled::get_label(visMain$gender)`
 
 ##### figure
 
@@ -266,7 +277,7 @@ If participants chose ***not listed*** as an answer above, they were given the o
 
 The question was as follows:
 
->`r get_label(visMain$genderDesc)`
+>`r sjlabelled::get_label(visMain$genderDesc)`
 
 ```{r}
 #| label: gender-desc-table
@@ -305,7 +316,7 @@ visMain |>
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
->`r get_label(visMain$genderAffected)`
+>`r sjlabelled::get_label(visMain$genderAffected)`
 
 ##### figure
 
@@ -443,7 +454,7 @@ If participants chose ***yes*** as an answer above, they were given the opportun
 
 The question was as follows:
 
->`r get_label(visMain$nonHeteroDesc)`
+>`r sjlabelled::get_label(visMain$nonHeteroDesc)`
 
 ```{r}
 #| label: nonhetero-desc-table
@@ -480,7 +491,7 @@ visMain |>
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
->`r get_label(visMain$nonHeteroAffected)`
+>`r sjlabelled::get_label(visMain$nonHeteroAffected)`
 
 ##### figure
 
@@ -618,7 +629,7 @@ If participants chose ***yes*** as an answer above, they were given the opportun
 
 The question was as follows:
 
->`r get_label(visMain$raceCultureDesc)`
+>`r sjlabelled::get_label(visMain$raceCultureDesc)`
 
 ```{r}
 #| label: raceculture-desc-table
@@ -656,7 +667,7 @@ visMain |>
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
->`r get_label(visMain$raceCultureAffected)`
+>`r sjlabelled::get_label(visMain$raceCultureAffected)`
 
 ##### figure
 
@@ -797,7 +808,7 @@ If participants chose ***yes*** as an answer above, they were given the opportun
 
 The question was as follows:
 
->`r get_label(visMain$disabilityDesc)`
+>`r sjlabelled::get_label(visMain$disabilityDesc)`
 
 
 ```{r}
@@ -836,7 +847,7 @@ visMain |>
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
->`r get_label(visMain$disabilityAffected)`
+>`r sjlabelled::get_label(visMain$disabilityAffected)`
 
 ##### figure
 
@@ -978,7 +989,7 @@ If participants chose ***no*** as an answer above, they were given the opportuni
 
 The question was as follows:
 
->`r get_label(visMain$domLangDesc)`
+>`r sjlabelled::get_label(visMain$domLangDesc)`
 
 ```{r}
 #| label: domlang-desc-table
@@ -1016,7 +1027,7 @@ visMain |>
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
->`r get_label(visMain$domLangAffected)`
+>`r sjlabelled::get_label(visMain$domLangAffected)`
 
 ##### figure
 
@@ -1128,7 +1139,7 @@ longerDataDeterrents <- readRDS("data/longerDataDeterrents.rds")
 
 This section summarises, both visually and verbally, the answer to the following question:
 
->`r get_label(visMain$careerStatus)`
+>`r sjlabelled::get_label(visMain$careerStatus)`
 
 Participants had to choose from one of the following:
 
@@ -1228,7 +1239,7 @@ visMain |>
 #| label: career-status-by-other-edis-plot
 #| fig-alt: "Wrapped, stacked frequency barplots of the responses by EDI variables other than gender to the following question: 'Roughly speaking, what is your career status?'"
 
-careerStatusLabel <- get_label(longerDataSimple$careerStatus)
+careerStatusLabel <- sjlabelled::get_label(longerDataSimple$careerStatus)
 
 longerDataSimple |>
   #drop_na(response) |>
@@ -1317,7 +1328,7 @@ visMain |>
 
 This section summarises, both visually and verbally, the responses to the following prompt:
 
->`r get_label(visMain$engagement)`
+>`r sjlabelled::get_label(visMain$engagement)`
 
 Participants had to choose from one of the following:
 
@@ -1416,7 +1427,7 @@ visMain |>
 ```{r}
 #| label: figEngagementByOtherVars
 
-engagementLabel <- get_label(longerDataSimple$careerStatus)
+engagementLabel <- sjlabelled::get_label(longerDataSimple$careerStatus)
 
 longerDataSimple |>
   #drop_na(response) |>
@@ -1523,7 +1534,7 @@ It is important to keep in mind that participants may be counted as *yes* or *no
 ```{r importContributionsLong}
 
 longerDataContributions <- readRDS("data/longerDataContributions.rds")
-contributeLabel <- get_label(longerDataContributions$contributionType)
+contributeLabel <- sjlabelled::get_label(longerDataContributions$contributionType)
 contributeCaption <- "Notes:\n1. Respondents could select more than one contribution type.\n2. 'Unselected' is equivalent to 'NA'"
 
 ```
@@ -1889,7 +1900,7 @@ visMain |>
 ```{r}
 #| label: createDeterrentsLabel
 
-deterrentsLabel <- get_label(longerDataDeterrents$deterrent)
+deterrentsLabel <- sjlabelled::get_label(longerDataDeterrents$deterrent)
 deterrentsCaption <- "Notes: \n1. A response of 1 indicates 'not at all' \n2. A response of 5 indicates 'very much'\n3. The mean is represented by the diamond"
 
 ```
@@ -1933,7 +1944,7 @@ suppressWarnings(print(Dt_Gn))
 #| tbl-cap: "Statistical summaries by gender of responses to statements regarding deterrents to contributing."
 #| output: asis
 
-textForSpan <- get_label(visMain$gender)
+textForSpan <- sjlabelled::get_label(visMain$gender)
 
 visMain |>
   select(starts_with("deterrents"), gender) |>
@@ -1987,7 +1998,7 @@ suppressWarnings(print(Dt_Nh))
 #| tbl-cap: "Statistical summaries by sexual orientation of responses to statements regarding deterrents to contributing."
 #| output: asis
 
-textForSpan <- get_label(visMain$nonHeteroCommunity)
+textForSpan <- sjlabelled::get_label(visMain$nonHeteroCommunity)
 
 visMain |>
   select(starts_with("deterrents"), nonHeteroCommunity)  |>
@@ -2042,7 +2053,7 @@ suppressWarnings(print(Dt_Rc))
 #| tbl-cap: "Statistical summaries by race and/or culture of responses to statements regarding deterrents to contributing."
 #| output: asis
 
-textForSpan <- get_label(visMain$raceCulture)
+textForSpan <- sjlabelled::get_label(visMain$raceCulture)
 visMain |>
   select(starts_with("deterrents"), raceCulture)  |>
   mutate(raceCulture = as.character(raceCulture)) |>
@@ -2095,7 +2106,7 @@ suppressWarnings(print(Dt_Dn))
 #| tbl-cap: "Statistical summaries by disability and/or neurodivergence of responses to statements regarding deterrents to contributing."
 #| output: asis
 
-textForSpan <- get_label(visMain$disability)
+textForSpan <- sjlabelled::get_label(visMain$disability)
 
 visMain |>
   select(starts_with("deterrents"), disability)  |>
@@ -2149,7 +2160,7 @@ suppressWarnings(print(Dt_Dl))
 #| tbl-cap: "Statistical summaries by whether the respondents' dominant written language is English of responses to statements regarding deterrents to contributing."
 #| output: asis
 
-textForSpan <- get_label(visMain$domLangEnglish)
+textForSpan <- sjlabelled::get_label(visMain$domLangEnglish)
 
 visMain |>
   select(starts_with("deterrents"), domLangEnglish)  |>
@@ -2171,7 +2182,7 @@ visMain |>
 
 This section summarises, both visually and verbally, the answer to the following question:
 
->`r get_label(visMain$workshopsOnContributing)`
+>`r sjlabelled::get_label(visMain$workshopsOnContributing)`
 
 Participants provided answers on a `1`-`5` Likert scale, where `1` indicated *Strongly disagree* and a `5` indicated *Strongly agree*.
 
@@ -2182,8 +2193,8 @@ Participants provided answers on a `1`-`5` Likert scale, where `1` indicated *St
 ```{r}
 #| label: workshopLabels
 
-workshopLabel <- get_label(longerDataSimple$workshopsOnContributing)
-likertValues <- get_labels(longerDataSimple$workshopsOnContributing)
+workshopLabel <- sjlabelled::get_label(longerDataSimple$workshopsOnContributing)
+likertValues <- sjlabelled::get_labels(longerDataSimple$workshopsOnContributing)
 
 ```
 
@@ -2267,7 +2278,7 @@ suppressWarnings(print(Wk_Gn))
 #| tbl-cap: "Summary of responses to desire for workshops by gender."
 #| output: asis
 
-textForSpan <- get_label(visMain$gender)
+textForSpan <- sjlabelled::get_label(visMain$gender)
 visMain |>
   select(workshopsOnContributing, gender)  |>
   mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
@@ -2323,7 +2334,7 @@ suppressWarnings(print(Wk_Id))
 #| tbl-cap: "Summary of responses to desire for workshops by sexual orientation."
 #| output: asis
 
-textForSpan <- get_label(visMain$nonHeteroCommunity)
+textForSpan <- sjlabelled::get_label(visMain$nonHeteroCommunity)
 visMain |>
   select(workshopsOnContributing, nonHeteroCommunity)  |>
   mutate(nonHeteroCommunity = as.character(nonHeteroCommunity)) |>
@@ -2344,7 +2355,7 @@ visMain |>
 #| tbl-cap: "Summary of responses to desire for workshops by race and/or culture."
 #| output: asis
 
-textForSpan <- get_label(visMain$raceCulture)
+textForSpan <- sjlabelled::get_label(visMain$raceCulture)
 visMain |>
   select(workshopsOnContributing, raceCulture)  |>
   mutate(raceCulture = as.character(raceCulture)) |>
@@ -2366,7 +2377,7 @@ visMain |>
 #| tbl-cap: "Summary of responses to desire for workshops by disability and/or neurodivergence."
 #| output: asis
 
-textForSpan <- get_label(visMain$disability)
+textForSpan <- sjlabelled::get_label(visMain$disability)
 visMain |>
   select(workshopsOnContributing, disability)  |>
   mutate(disability = as.character(disability)) |>
@@ -2388,7 +2399,7 @@ visMain |>
 #| tbl-cap: "Summary of responses to desire for workshops by written-English language dominance."
 #| output: asis
 
-textForSpan <- get_label(visMain$domLangEnglish)
+textForSpan <- sjlabelled::get_label(visMain$domLangEnglish)
 visMain |>
   select(workshopsOnContributing, domLangEnglish)  |>
   mutate(domLangEnglish = as.character(domLangEnglish)) |>
@@ -2422,7 +2433,7 @@ The first was answered with a simple *yes* or *no*. The latter two were statemen
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
->`r get_label(visMain$awareOfCodeOfConduct)`
+>`r sjlabelled::get_label(visMain$awareOfCodeOfConduct)`
 
 #### everyone
 
@@ -2509,7 +2520,7 @@ visMain |>
 #| label: codeofconduct-awareness-by-edivars-plot
 #| fig-alt: "Contingency barplot of responses by EDI variable (except gender) to the following question: 'I am aware of the community Code of Conduct' If participants chose to respond, they could respond with either 'yes' or 'no.'"
 
-codeOfConductLabel <- get_label(longerDataSimple$awareOfCodeOfConduct)
+codeOfConductLabel <- sjlabelled::get_label(longerDataSimple$awareOfCodeOfConduct)
 
 longerDataSimple |>
   drop_na(response) |>
@@ -2595,7 +2606,7 @@ visMain |>
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
->`r get_label(visMain$psychopyDocumentationEasy)`
+>`r sjlabelled::get_label(visMain$psychopyDocumentationEasy)`
 
 #### everyone
 
@@ -2644,7 +2655,7 @@ visMain |>
 ```{r}
 #| label: findabilityLabels
 
-docEasyLabel <- get_label(visMain$psychopyDocumentationEasy)
+docEasyLabel <- sjlabelled::get_label(visMain$psychopyDocumentationEasy)
 
 ```
 
@@ -2686,7 +2697,7 @@ suppressWarnings(print(Dc_Gn))
 #| tbl-cap: "Summary of responses by gender to finding the documentation easily findable, searchable, and accessible"
 #| output: asis
 
-textForSpan <- get_label(visMain$gender)
+textForSpan <- sjlabelled::get_label(visMain$gender)
 visMain |>
   select(psychopyDocumentationEasy, gender)  |>
   mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
@@ -2738,7 +2749,7 @@ suppressWarnings(print(Dc_Id))
 #| tbl-cap: "Summary of responses by sexual orientation to finding the documentation easily findable, searchable, and accessible"
 #| output: asis
 
-textForSpan <- get_label(visMain$nonHeteroCommunity)
+textForSpan <- sjlabelled::get_label(visMain$nonHeteroCommunity)
 visMain |>
   select(psychopyDocumentationEasy, nonHeteroCommunity)  |>
   mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
@@ -2758,7 +2769,7 @@ visMain |>
 #| tbl-cap: "Summary of responses by race and/or culture to finding the documentation easily findable, searchable, and accessible"
 #| output: asis
 
-textForSpan <- get_label(visMain$raceCulture)
+textForSpan <- sjlabelled::get_label(visMain$raceCulture)
 visMain |>
   select(psychopyDocumentationEasy, raceCulture)  |>
   mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "NA")) |>
@@ -2778,7 +2789,7 @@ visMain |>
 #| tbl-cap: "Summary of responses by disability and/or neurodivergence to finding the documentation easily findable, searchable, and accessible"
 #| output: asis
 
-textForSpan <- get_label(visMain$disability)
+textForSpan <- sjlabelled::get_label(visMain$disability)
 visMain |>
   select(psychopyDocumentationEasy, disability)  |>
   mutate(disability = forcats::fct_na_value_to_level(disability, level = "NA")) |>
@@ -2798,7 +2809,7 @@ visMain |>
 #| tbl-cap: "Summary of responses by English-language dominance to finding the documentation easily findable, searchable, and accessible"
 #| output: asis
 
-textForSpan <- get_label(visMain$domLangEnglish)
+textForSpan <- sjlabelled::get_label(visMain$domLangEnglish)
 visMain |>
   select(psychopyDocumentationEasy, domLangEnglish)  |>
   mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "NA")) |>
@@ -2816,7 +2827,7 @@ visMain |>
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
->`r get_label(visMain$trustCodeWillBeEnforced)`
+>`r sjlabelled::get_label(visMain$trustCodeWillBeEnforced)`
 
 #### everyone
 
@@ -2863,7 +2874,7 @@ visMain |>
 ```{r}
 #| label: trustCodeLabels
 
-trustCodeLabel <- get_label(visMain$trustCodeWillBeEnforced)
+trustCodeLabel <- sjlabelled::get_label(visMain$trustCodeWillBeEnforced)
 
 ```
 
@@ -2905,7 +2916,7 @@ suppressWarnings(print(Tr_Gn))
 #| tbl-cap: "Summary of responses by gender to trust that the Code of Conduct would be enforced"
 #| output: asis
 
-textForSpan <- get_label(visMain$gender)
+textForSpan <- sjlabelled::get_label(visMain$gender)
 visMain |>
   select(trustCodeWillBeEnforced, gender)  |>
   mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
@@ -2959,7 +2970,7 @@ suppressWarnings(print(Tr_Id))
 #| tbl-cap: "Summary of responses by sexual orientation to trust that the Code of Conduct would be enforced"
 #| output: asis
 
-textForSpan <- get_label(visMain$nonHeteroCommunity)
+textForSpan <- sjlabelled::get_label(visMain$nonHeteroCommunity)
 visMain |>
   select(trustCodeWillBeEnforced, nonHeteroCommunity)  |>
   mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
@@ -2979,7 +2990,7 @@ visMain |>
 #| tbl-cap: "Summary of responses by race and/or culture to trust that the Code of Conduct would be enforced"
 #| output: asis
 
-textForSpan <- get_label(visMain$raceCulture)
+textForSpan <- sjlabelled::get_label(visMain$raceCulture)
 visMain |>
   select(trustCodeWillBeEnforced, raceCulture)  |>
   mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "NA")) |>
@@ -2999,7 +3010,7 @@ visMain |>
 #| tbl-cap: "Summary of responses by disability and/or neurodivergence to trust that the Code of Conduct would be enforced"
 #| output: asis
 
-textForSpan <- get_label(visMain$disability)
+textForSpan <- sjlabelled::get_label(visMain$disability)
 visMain |>
   select(trustCodeWillBeEnforced, disability)  |>
   mutate(disability = forcats::fct_na_value_to_level(disability, level = "NA")) |>
@@ -3019,7 +3030,7 @@ visMain |>
 #| tbl-cap: "Summary of responses by language dominance in written English to trust that the Code of Conduct would be enforced"
 #| output: asis
 
-textForSpan <- get_label(visMain$domLangEnglish)
+textForSpan <- sjlabelled::get_label(visMain$domLangEnglish)
 visMain |>
   select(trustCodeWillBeEnforced, domLangEnglish)  |>
   mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "NA")) |>
