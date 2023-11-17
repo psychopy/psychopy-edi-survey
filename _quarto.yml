@@ -8,25 +8,30 @@ project:
   
 website:
   title: "EDI survey"
+  description: "Visualisations of the responses to the survey regarding equity, diversity, and inclusion among users and contributors at PsychoPy."
   site-url: https://psychopy.github.io/psychopy-edi-survey/
+  repo-url: https://github.com/psychopy/psychopy-edi-survey
+  repo-subdir: docs
   favicon: images/ostFavicon.png
+  body-header: "(Powered by [Quarto](https://quarto.org/) and [R](https://www.r-project.org/))"
+  
   navbar:
     background: "#26DCF0"
-    logo-alt: "Image for Open Science Tools, Ltd."
     search: true
     left:
       - text: "Main report"
         file: index.html
       - text: "Codebook"
         file: codebook.html
+    right: 
+      - icon: github
+        href: https://github.com/psychopy/psychopy-edi-survey
         
 format:
   html:
     embed-resources: true
     self-contained: true
-    theme: 
-      - cerulean
-      - custom.scss
+    theme: [cerulean, custom.scss]
     mainfont: raleway
     toc: true
     toc-title: Contents
