@@ -1427,7 +1427,7 @@ visMain |>
 ```{r}
 #| label: figEngagementByOtherVars
 
-engagementLabel <- get_label(longerDataSimple$careerStatus)
+engagementLabel <- paste0("What best describes your role/usage of PsychoPy?")
 
 longerDataSimple |>
   #drop_na(response) |>
