@@ -46,7 +46,9 @@ packagesRequired <- c(
   "DT",
   "knitr",
   "xfun",
-  "grateful"
+  "grateful",
+  "sysfonts",
+  "showtext"
   )
 
 
