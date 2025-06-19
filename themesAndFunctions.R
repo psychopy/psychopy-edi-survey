@@ -411,39 +411,65 @@ likertTable <- function(
     .data,
     lowerBound,
     upperBound,
-    byVar,
+    byVar = NULL,
     spanVar
-    ) {
-  p <- 
-    gtsummary::tbl_summary(
-      .data,
-      by = byVar,
-      type = everything() ~ "continuous2",
-      statistic =
-          all_continuous() ~ c(
-            "{mean}",
-            "{sd}",
-            "{median}",
-            "{p25}, {p75}",
-            "{min}, {max}"
-            ),
-      digits = list(everything() ~ c(1,2,1,1,1,0,0)),
-      missing = "no",
-      label = byVar ~ sjlabelled::get_label(byVar)
-    ) %>%
+) {
+  # If byVar is provided, capture and process it
+  if (!is.null(byVar)) {
+    byVar_quo <- rlang::enquo(byVar)
+    byVar_name <- rlang::as_name(byVar_quo)
+    
+    label_list <- setNames(
+      list(sjlabelled::get_label(.data[[byVar_name]])),
+      byVar_name
+    )
+    
+    p <- 
+      gtsummary::tbl_summary(
+        .data,
+        by = !!byVar_quo,
+        type = everything() ~ "continuous2",
+        statistic = all_continuous() ~ c(
+          "{mean}",
+          "{sd}",
+          "{median}",
+          "{p25}, {p75}",
+          "{min}, {max}"
+        ),
+        digits = list(everything() ~ c(1,2,1,1,1,0,0)),
+        missing = "no",
+        label = label_list
+      )
+  } else {
+    # No grouping variable
+    p <- 
+      gtsummary::tbl_summary(
+        .data,
+        type = everything() ~ "continuous2",
+        statistic = all_continuous() ~ c(
+          "{mean}",
+          "{sd}",
+          "{median}",
+          "{p25}, {p75}",
+          "{min}, {max}"
+        ),
+        digits = list(everything() ~ c(1,2,1,1,1,0,0)),
+        missing = "no"
+      )
+  }
+  
+  # Continue with formatting
+  p <- p %>%
     gtsummary::modify_header(
-      label = paste0(
-        "**Statement** (",
-        lowerBound,
-        "; ",
-        upperBound,
-        ")")
+      label = paste0("**Statement** (", lowerBound, "; ", upperBound, ")")
     ) %>%
-    gtsummary::modify_spanning_header(all_stat_cols() ~ spanVar) %>%
+    gtsummary::modify_spanning_header(all_stat_cols() ~ deparse(substitute(spanVar))) %>%
     gtsummary::add_stat_label() %>%
     gtsummary::as_flex_table()
+  
   flextable::flextable_to_rmd(p)
 }
+
 
 ### contingency tables for interactions
 contingencyTable <- function(
