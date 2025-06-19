@@ -38,8 +38,9 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# Mac files
+# Mac files (just in case the user doesn't have them in their global .gitignore)
 .DS_Store
+*.nosync
 
 # Any data
 data/*.csv
