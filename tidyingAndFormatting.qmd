@@ -93,7 +93,7 @@ Get the data in from the .csv file from *Pavlovia*.
 d01 <- read_csv(
   tk_choose.files(
     default = file.path(here::here("dataRaw")), # this doesn't seem to work for now; users have to select the "/data" subdirectory manually, hence, the caption below
-    caption = "Navigate to '/dataRaw' and choose the .csv (NOT the .tsv)",
+    caption = "Navigate to '/dataRaw' and choose the raw .csv file",
     multi = FALSE
     ),
   col_types =
