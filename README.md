@@ -2,7 +2,7 @@
 
 This repository stores the anonymised data and data analyses for the survey sent out by *PsychoPy* to gauge equity, diversity, and inclusion among its own user base. But the raw data is not stored here.
 
-Assuming you have access to the raw `.csv` file,[^1] the `.qmd` files must be run in a particular order in order to render the appropriate output. Run the `tidyingAndFormatting.qmd` file first. Then run both `summariesAndVisualisations.qmd` and `codebook.qmd`, but not necessarily in that order. 
+Assuming you have access to the raw `.csv` file,[^1] the `.qmd` files must be run in a particular order in order to render the appropriate output. Run the `tidyingAndFormatting.qmd` file first. Then run both `codebook.qmd` and `index.qmd`, but not necessarily in that order. 
 
 If you do not have access to the raw `.csv` file, then you just need either to run `Render Website` (under the `Build` tab in *RStudio* or run `quarto render` in the *Terminal*.
 
