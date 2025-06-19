@@ -1128,9 +1128,9 @@ These are covered in the subsections below.
 # These are for some of the interactions between EDI variables
 # and background variables
 
-longerDataSimple <- readRDS("data/longerDataSimple.rds")
-longerDataContributions <- readRDS("data/longerDataContributions.rds")
-longerDataDeterrents <- readRDS("data/longerDataDeterrents.rds")
+longerDataSimple <- readRDS("dataFinal/longerDataSimple.rds")
+longerDataContributions <- readRDS("dataFinal/longerDataContributions.rds")
+longerDataDeterrents <- readRDS("dataFinal/longerDataDeterrents.rds")
 
 ```
 
@@ -1536,7 +1536,7 @@ It is important to keep in mind that participants may be counted as *yes* or *no
 
 ```{r importContributionsLong}
 
-longerDataContributions <- readRDS("data/longerDataContributions.rds")
+longerDataContributions <- readRDS("dataFinal/longerDataContributions.rds")
 contributeLabel <- get_label(longerDataContributions$contributionType)
 contributeCaption <- "Notes:\n1. Respondents could select more than one contribution type.\n2. 'Unselected' is equivalent to 'NA'"
 
@@ -1956,6 +1956,7 @@ visMain |>
   likertTable(
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
+    #byVar = "gender", # HAVING TROUBLE HERE
     byVar = "gender",
     spanVar = textForSpan
   )

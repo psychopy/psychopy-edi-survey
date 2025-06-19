@@ -48,7 +48,7 @@ showtext_auto()
 #| label: readTidiedLabeledData
 #| include: false
 
-data <- readRDS("data/tidyLabeledSurveyData.rds")
+data <- readRDS("dataFinal/tidyLabeledSurveyData.rds")
               
 ```
 
