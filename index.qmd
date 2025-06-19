@@ -90,7 +90,7 @@ showtext_auto()
 # The data imported here was pre-processed in another *R* script.
 
 # Read in the data that was saved as .rds output in tidyingAndFormatting.qmd
-visMain <- readRDS("data/tidyLabeledSurveyData.rds")
+visMain <- readRDS("dataFinal/tidyLabeledSurveyData.rds")
               
 ```
 

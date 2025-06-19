@@ -48,7 +48,9 @@ packagesRequired <- c(
   "xfun",
   "grateful",
   "sysfonts",
-  "showtext"
+  "showtext",
+  "tcltk",
+  "here"
   )
 
 
@@ -89,7 +91,11 @@ Get the data in from the .csv file from *Pavlovia*.
 # `read_csv` is from the readr package
 
 d01 <- read_csv(
-  "data/responses_776cc413-2716-4170-987c-6f9b4658a726_RUNNING_2023-10-10101.csv",
+  tk_choose.files(
+    default = file.path(here::here("dataRaw")), # this doesn't seem to work for now; users have to select the "/data" subdirectory manually, hence, the caption below
+    caption = "Navigate to '/dataRaw' and choose the .csv (NOT the .tsv)",
+    multi = FALSE
+    ),
   col_types =
     cols(
       `deterrents.Lack of interest` = 
@@ -1327,7 +1333,7 @@ rm(list = c(paste0("d2",c(0:4))))
 # save the one for OSF
 write_tsv(
   tidiedData,
-  "data/anonymousSurveyData.tsv"
+  "dataFinal/anonymousSurveyData.tsv"
   )
 
 ```
@@ -1338,7 +1344,7 @@ write_tsv(
 # save the one use in analysis and visualisation
 saveRDS(
   tidiedData,
-  "data/tidyLabeledSurveyData.rds"
+  "dataFinal/tidyLabeledSurveyData.rds"
   )
 
 ```
@@ -1465,7 +1471,7 @@ longerDataSimple <- longerDataSimple |>
 ```{r}
 #| label: longerDataSimple_ToRDS
 
-saveRDS(longerDataSimple, "data/longerDataSimple.rds")
+saveRDS(longerDataSimple, "dataFinal/longerDataSimple.rds")
 
 ```
 
@@ -1572,7 +1578,7 @@ saveRDS(longerDataSimple, "data/longerDataSimple.rds")
 #| label: wideDataSimple_ToRDS
 #| eval: false
 
-#saveRDS(wideDataSimple, "data/wideDataSimple.rds")
+#saveRDS(wideDataSimple, "dataFinal/wideDataSimple.rds")
 
 ```
 
@@ -1655,7 +1661,7 @@ longerDataContributions <- longerDataContributions |>
 ```{r}
 #| label: savelongerDataContributionsToRDS
 
-saveRDS(longerDataContributions, "data/longerDataContributions.rds")
+saveRDS(longerDataContributions, "dataFinal/longerDataContributions.rds")
 
 ```
 
@@ -1755,7 +1761,7 @@ longerDataDeterrents <- longerDataDeterrents |>
 ```{r}
 #| label: savelongerDataDeterrentsToRDS
 
-saveRDS(longerDataDeterrents, "data/longerDataDeterrents.rds")
+saveRDS(longerDataDeterrents, "dataFinal/longerDataDeterrents.rds")
 
 ```
 
