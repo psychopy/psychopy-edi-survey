@@ -14,4 +14,10 @@ The link to the report itself is as follows:
 
 [https://psychopy.github.io/psychopy-edi-survey/](https://psychopy.github.io/psychopy-edi-survey/)
 
+## Note for Mac users
+
+If you are a Mac user, you may need to install [XQuartz](https://www.xquartz.org/) in order to render certain plots or use font rendering tools.
+
+You may also need to install the **Raleway** font manually if it is not already installed on your system. You can download it from [Google Fonts – Raleway](https://fonts.google.com/specimen/Raleway).
+
 [^1]: The raw `.csv` file is neither on this repository nor publicly available.
