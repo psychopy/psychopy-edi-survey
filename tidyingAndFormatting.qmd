@@ -1685,7 +1685,7 @@ longerDataContributions <- longerDataContributions |>
 #saveRDS(longerDataContributions, "dataFinal/longerDataContributions.rds")
 
 saveRDS(
-  longerDataSimple,
+  longerDataContributions,
   file.path("dataFinal", paste0("longerDataContributions_", output_base, ".rds"))
 )
 
@@ -1791,7 +1791,7 @@ longerDataDeterrents <- longerDataDeterrents |>
 #saveRDS(longerDataDeterrents, "dataFinal/longerDataDeterrents.rds")
 
 saveRDS(
-  longerDataSimple,
+  longerDataDeterrents,
   file.path("dataFinal", paste0("longerDataDeterrents_", output_base, ".rds"))
 )
 

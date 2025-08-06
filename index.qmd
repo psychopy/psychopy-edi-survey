@@ -1,14 +1,19 @@
 ---
-title: "Summaries of initial survey responses"
+title: "Summaries of survey responses"
 subtitle: "Equity, diversity, and inclusion in the PsychoPy community"
 author: 
-  name: "Patrick Bolger, PhD | Community Development Champion"
-  affiliation: "School of Psychology at the University of Nottingham"
+  - name: "Patrick Bolger, PhD | Community Development Champion"
+    affiliation: "School of Psychology at the University of Nottingham"
+  - name: "Rebecca Hirst | Chief Science Officer"
+    affiliation: "Open Science Tools"
+  - name: "Kimberley Dundas | Science Officer"
+    affiliation: "Open Science Tools"
 date: now
 date-format: "D MMM YYYY, h:mm a"
 bibliography: bibs/grateful-refs-sumandvis.bib
 csl: bibs/apa.csl
 ---
+
 
 ```{r}
 #| label: turnWarningsOff 
@@ -83,17 +88,43 @@ showtext_auto()
 
 
 ```{r}
-#| label: readTidiedData 
+#| label: readTidiedDataArchive 
 #| output: false
 
 # source of data
 # The data imported here was pre-processed in another *R* script.
 
 # Read in the data that was saved as .rds output in tidyingAndFormatting.qmd
-visMain <- readRDS("dataFinal/tidyLabeledSurveyData.rds")
+#visMain <- readRDS("dataFinal/tidyLabeledSurveyData.rds")
               
 ```
 
+```{r}
+#| label: readTidiedData 
+#| output: false
+
+# List both files
+file_paths <- list.files(
+  path = "dataFinal",
+  pattern = "^tidyLabeled_dataRaw[12]\\.rds$",
+  full.names = TRUE
+)
+
+# Check if both files exist
+if (length(file_paths) != 2) {
+  stop("Expected two files named tidyLabeled_dataRaw1.rds and tidyLabeled_dataRaw2.rds in dataFinal/")
+}
+
+# Load both and add timepoint labels
+data1 <- readRDS(file_paths[grepl("dataRaw1", file_paths)])
+data1$timepoint <- "Time 1"
+
+data2 <- readRDS(file_paths[grepl("dataRaw2", file_paths)])
+data2$timepoint <- "Time 2"
+
+# Combine into one dataset
+visMain <- dplyr::bind_rows(data1, data2)
+```
 
 ```{r}
 #| label: importCustomFunctions
@@ -105,18 +136,17 @@ source("themesAndFunctions.R")
 ```
 
 
-# introduction
+# Introduction
 
-This report summarises the findings of a survey sent out to the *PsychoPy* community between 28 November 2022 and 16 March 2023. The topic was equity, diversity, and inclusion (EDI) in the *PsychoPy* community. 
+This report summarises the findings of a survey sent out to the *PsychoPy* community between 28 November 2022 and 16 March 2023 and a follow up survey sent out between 28th November 2024 and 1st August 2025. The topic was equity, diversity, and inclusion (EDI) in the *PsychoPy* community.
 
 
 ::: {.callout-note title="Funding"}
 The development of the survey was funded by a grant from the [Essential Open Source Software for Science](https://chanzuckerberg.com/eoss/) program at the [Chan Zuckerberg Inititiative](https://chanzuckerberg.com/). Here is the [project page at CZI](https://chanzuckerberg.com/eoss/proposals/raising-diversity-and-internationalization-in-psychopy/).
 :::
 
-It was the first, baseline version, of two identical surveys to be sent out. The second will be sent out in 2024.
 
-It was sent out as an *announcement* to the [PsychoPy User Forum](https://discourse.psychopy.org/) on the [Discourse platform](https://discourse.org/). It was also sent out by email to a list of authors generated through a cited-reference search on the [Web of Science](https://clarivate.com/products/scientific-and-academic-research/research-discovery-and-workflow-solutions/webofscience-platform/). Specifically, these authors published multiple research studies citing one or more papers authored (or co-authored) by Jonathan Peirce over the past two decades about *PsychoPy*.
+Both surveys were sent out as an *announcement* to the [PsychoPy User Forum](https://discourse.psychopy.org/) on the [Discourse platform](https://discourse.org/) and were also sent out by email to a list of authors generated through a cited-reference search on the [Web of Science](https://clarivate.com/products/scientific-and-academic-research/research-discovery-and-workflow-solutions/webofscience-platform/). Specifically, these authors published multiple research studies citing one or more papers authored (or co-authored) by Jonathan Peirce over the past two decades about *PsychoPy*.
 
 The survey contained between 25-75 questions, depending on how participants responded. 
 
@@ -148,9 +178,9 @@ Below are the full survey categories in more detail, roughly in order of the ori
   - findability, searchability, & accessibility of documentation\
   - trust in enforcement of *Code of Conduct*
 
-## general
+## General
 
-## original order of presentation
+## Original order of presentation
 
 The original presentation of the survey begins with *professional and PsychoPy background* questions. It then proceeds to issues of equity, diversity, and inclusion (*EDI*) for respondents who indicated that they not only are part of a particular identity of interest, but also feel they have been affected somehow by having that identity in the *PsychoPy* community. The survey finished with a few questions about the *Code of Conduct* and *documentation*, which we will simply call *PsychoPy guidance*. Thus:
 
@@ -170,7 +200,7 @@ This has an important implication. Namely, although one may identify or be assoc
 
 Recall that for the dimension of *gender*, everyone saw the question concerning whether they felt that their interactions had suffered as a result of gender. This is because everyone has a gender identity, so there was no logical way of excluding anyone from seeing the subsequent community-interaction question.
 
-## order of data summaries
+## Order of data summaries
 
 Each of the headings in the list above above is depicted below with a visualization, followed by a table of the data, and in the cases of identity, a table of labels that some participants optionally supplied to describe themselves on that particular EDI variable.
 
@@ -188,9 +218,9 @@ Note that none of the questions required responses. This means that there will b
 
 ---
 
-# data summaries
+# Data summaries
 
-## participant EDI experience
+## Participant EDI experience
 
 The second group of items on the survey (again, presented first here) collected information about selected dimensions of equity, diversity, and inclusion, namely *gender*, *sexual orientation*, *race* and/or *culture*, *disability* and/or *neurodivergence*, and *language dominance*.
 
@@ -225,12 +255,12 @@ Also, the barplots are sorted within each category (*treatment*, *self-regard*, 
 Summaries of the responses to these statements are provided below after the respective questions concerning their identity.
 
 
-### gender
+### Gender
 
 The first EDI category is *gender*. We present the responses to the issue of identity, followed by a table of descriptions (supplied by some of the participants). This is followed by whether the participant felt affected in the *PsychoPy*<sup>&reg;</sup> community by that identity. Finally, we summarise the participants responses to items listed under *treatment* (by others), *self-regard*, and *isolation*. 
 
 
-#### identity
+#### Identity
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
@@ -251,6 +281,7 @@ visMain |>
   )
 gdata::mv("p", "GnWh") # p is sent to the global env. from the function
 suppressWarnings(print(GnWh))
+
 
 ```
 
@@ -1124,16 +1155,43 @@ Unlike the items above that directly address dimensions of equity, diversity, an
 These are covered in the subsections below.
 
 ```{r}
-#| label: importLongFiles
+#| label: importLongFilesArchive
 # These are for some of the interactions between EDI variables
 # and background variables
 
-longerDataSimple <- readRDS("dataFinal/longerDataSimple.rds")
-longerDataContributions <- readRDS("dataFinal/longerDataContributions.rds")
-longerDataDeterrents <- readRDS("dataFinal/longerDataDeterrents.rds")
+#longerDataSimple <- readRDS("dataFinal/longerDataSimple.rds")
+#longerDataContributions <- readRDS("dataFinal/longerDataContributions.rds")
+#longerDataDeterrents <- readRDS("dataFinal/longerDataDeterrents.rds")
 
 ```
 
+```{r}
+#| label: importLongFiles
+#| include: false
+
+# Helper function to load both timepoints and add `timepoint`
+load_both_timepoints <- function(base_filename) {
+  path1 <- file.path("dataFinal", paste0(base_filename, "_dataRaw1.rds"))
+  path2 <- file.path("dataFinal", paste0(base_filename, "_dataRaw2.rds"))
+
+  if (!file.exists(path1) || !file.exists(path2)) {
+    stop(paste("Missing one or both of:", path1, path2))
+  }
+
+  df1 <- readRDS(path1)
+  df1$timepoint <- "Time 1"
+
+  df2 <- readRDS(path2)
+  df2$timepoint <- "Time 2"
+
+  dplyr::bind_rows(df1, df2)
+}
+
+# Load and combine the datasets
+longerDataSimple <- load_both_timepoints("longerDataSimple")
+longerDataContributions <- load_both_timepoints("longerDataContributions")
+longerDataDeterrents <- load_both_timepoints("longerDataDeterrents")
+```
 
 ### career status
 
@@ -1536,7 +1594,7 @@ It is important to keep in mind that participants may be counted as *yes* or *no
 
 ```{r importContributionsLong}
 
-longerDataContributions <- readRDS("dataFinal/longerDataContributions.rds")
+#longerDataContributions <- readRDS("dataFinal/longerDataContributions.rds")
 contributeLabel <- get_label(longerDataContributions$contributionType)
 contributeCaption <- "Notes:\n1. Respondents could select more than one contribution type.\n2. 'Unselected' is equivalent to 'NA'"
 
