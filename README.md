@@ -1,6 +1,6 @@
 # edi-survey-code
 
-This repository stores the anonymised data and data analyses for the survey sent out by *PsychoPy* to gauge equity, diversity, and inclusion among its own user base. But the raw data is not stored here.
+This repository stores the anonymised data and data analyses for the survey sent out by *PsychoPy* to gauge equity, diversity, and inclusion among its own user base. But the raw data is not stored here for anonymity purposes - please email a member of the Open Science Tools team if you wish to access the raw data.
 
 Assuming you have access to the raw `.csv` file,[^1] the `.qmd` files must be run in a particular order in order to render the appropriate output. Run the `tidyingAndFormatting.qmd` file first. Then run both `codebook.qmd` and `index.qmd`, but not necessarily in that order. 
 
