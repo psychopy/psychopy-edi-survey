@@ -44,13 +44,26 @@ showtext_auto()
 
 ```
 
+
 ```{r}
 #| label: readTidiedLabeledData
 #| include: false
 
-data <- readRDS("dataFinal/tidyLabeledSurveyData.rds")
-              
+# Search for files in the 'dataFinal' folder that start with 'tidyLabeled_' and end with '.rds'
+matching_files <- list.files(
+  path = "dataFinal", 
+  pattern = "^tidyLabeled_.*\\.rds$", 
+  full.names = TRUE
+)
+
+# Check if any matching file is found
+if (length(matching_files) > 0) {
+  data <- readRDS(matching_files[1])
+} else {
+  stop("No file matching the pattern 'tidyLabeled_*.rds' was found in the 'dataFinal/' directory.")
+}
 ```
+
 
 # Table
 
