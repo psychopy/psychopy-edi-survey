@@ -59,7 +59,9 @@ packagesRequired <-
     "tibble",
     "tidyr",
     "tidyselect",
-    "xfun"
+    "xfun",
+    "scales",
+    "labelled"
     )
 
 
@@ -123,7 +125,11 @@ data2 <- readRDS(file_paths[grepl("dataRaw2", file_paths)])
 data2$timepoint <- "Time 2"
 
 # Combine into one dataset
-visMain <- dplyr::bind_rows(data1, data2)
+# visMain <- dplyr::bind_rows(data1, data2)
+
+# Combine datasets
+visMain <- add_rows(data1, data2)
+
 ```
 
 ```{r}
@@ -266,43 +272,78 @@ The sections directly below summarise, both visually and verbally, the answer to
 
 >`r get_label(visMain$gender)`
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: gender-plot
 #| fig-alt: "Barplot of responses to the following statement: 'Which gender do you identify most with?'"
 
-visMain |> 
-  select(gender) |> 
-  mutate(gender = forcats::fct_na_value_to_level(gender, level = "(missing)")) |>
-  freqPlot(
-    ostColour = ostBlue,
-    sorting = "none"
-  )
-gdata::mv("p", "GnWh") # p is sent to the global env. from the function
-suppressWarnings(print(GnWh))
+#visMain |> 
+#  select(gender) |> 
+#  mutate(gender = forcats::fct_na_value_to_level(gender, level = "(missing)")) |>
+#  freqPlot(
+#    ostColour = ostBlue,
+#    sorting = "none"
+#  )
+#gdata::mv("p", "GnWh") # p is sent to the global env. from the function
+#suppressWarnings(print(GnWh))
+
+
+visMain %>%
+  mutate(
+    gender = forcats::fct_na_value_to_level(gender, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) %>%
+  count(timepoint, gender) %>%
+  group_by(timepoint) %>%
+  mutate(prop = n / sum(n)) %>%
+  ggplot(aes(x = timepoint, y = prop, fill = gender)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = ostColours4) +  # adjust colors as needed
+  labs(
+    title = "Proportion of Genders at Each Timepoint",
+    x = "Timepoint",
+    y = "Proportion",
+    fill = "Gender"
+  ) +
+  theme_minimal()
 
 
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: gender-count-table
 #| tbl-cap: "Summary of responses to gender."
 #| output: asis
 
+#visMain |>
+#  select(gender) |>
+#  mutate(gender = forcats::fct_na_value_to_level(gender, level = "(missing)")) |>
+#  tbl_summary() |>
+#  modify_header(label = "**Question**") |>
+#  as_flex_table() |>
+#  flextable::flextable_to_rmd()
+
 visMain |>
-  select(gender) |>
-  mutate(gender = forcats::fct_na_value_to_level(gender, level = "(missing)")) |>
-  tbl_summary() |>
+  mutate(
+    gender = forcats::fct_na_value_to_level(gender, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) |>
+  select(timepoint, gender) |>
+  tbl_summary(
+    by = timepoint,       # <- this splits the table by timepoint
+    missing = "ifany"     # <- this ensures "(missing)" values show if present
+  ) |>
   modify_header(label = "**Question**") |>
   as_flex_table() |>
   flextable::flextable_to_rmd()
 
 ```
 
-##### descriptions
+##### Descriptions
 
 If participants chose ***not listed*** as an answer above, they were given the opportunity to describe their gender in their own words, though doing so was optional. For those who did, the table below lists the descriptions they provided. The "NA" in the table refers to those who either did not see the question or chose not to supply a description. 
 
@@ -313,71 +354,131 @@ The question was as follows:
 ```{r}
 #| label: gender-desc-table
 #| tbl-cap: Descriptions of gender identities volunteered by participants
+# 
+# visMain |> 
+#   count(genderDesc) |>
+#   arrange(desc(n)) |>
+#   datatable(
+#     class = 'cell-border stripe',
+#     colnames = c(
+#       "Feel free to describe your gender here (or not)",
+#       "count"
+#       ),
+#     options = list(
+#       columnDefs = list(
+#         list(
+#           targets = 1,
+#           render = JS(
+#             "function(data, type, row, meta) {",
+#             "return data === null ? 'NA' : data;",
+#             "}"
+#             )
+#           )
+#         )
+#       )
+#     )
 
-visMain |> 
-  count(genderDesc) |>
-  arrange(desc(n)) |>
+visMain %>%
+  mutate(timepoint = as.factor(timepoint)) %>%
+  count(genderDesc, timepoint) %>%
+  pivot_wider(
+    names_from = timepoint,
+    values_from = n,
+    values_fill = 0  # Fill missing combos with 0
+  ) %>%
   datatable(
     class = 'cell-border stripe',
     colnames = c(
       "Feel free to describe your gender here (or not)",
-      "count"
-      ),
+      "Timepoint 1", "Timepoint 2"  # Adjust based on actual timepoint values
+    ),
     options = list(
       columnDefs = list(
         list(
-          targets = 1,
+          targets = 0,  # First column (genderDesc)
           render = JS(
             "function(data, type, row, meta) {",
             "return data === null ? 'NA' : data;",
             "}"
-            )
           )
         )
       )
     )
-
+  )
 
 ```
 
 
 ---
 
-#### felt affected
+#### Felt affected
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
 >`r get_label(visMain$genderAffected)`
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: gender-affected-plot
 #| fig-alt: "Barplot of responses to: 'Do you feel that your gender status has affected your interactions with the PsychoPy community or software ecosystem?'"
 
-visMain |> 
-  select(genderAffected) |> 
-  mutate(genderAffected = forcats::fct_na_value_to_level(genderAffected, level = "(missing)")) |>
-  freqPlot(
-    ostColour = ostOrange,
-    sorting = "none"
-  )
-gdata::mv("p", "GnFa") # p is sent to the global env. from the function
-suppressWarnings(print(GnFa))
+# visMain |> 
+#   select(genderAffected) |> 
+#   mutate(genderAffected = forcats::fct_na_value_to_level(genderAffected, level = "(missing)")) |>
+#   freqPlot(
+#     ostColour = ostOrange,
+#     sorting = "none"
+#   )
+# gdata::mv("p", "GnFa") # p is sent to the global env. from the function
+# suppressWarnings(print(GnFa))
 
+visMain %>%
+  mutate(
+    genderAffected = fct_na_value_to_level(genderAffected, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) %>%
+  count(timepoint, genderAffected) %>%
+  group_by(timepoint) %>%
+  mutate(prop = n / sum(n)) %>%
+  ggplot(aes(x = timepoint, y = prop, fill = genderAffected)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = percent_format()) +
+  scale_fill_manual(values = ostColours3) +  # adjust as needed
+  labs(
+    title = "Proportion of Gender-Affected Responses by Timepoint",
+    x = "Timepoint",
+    y = "Proportion",
+    fill = "Gender Affected"
+  ) +
+  theme_minimal()
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: gender-felt-affected-count-table
 #| tbl-cap: "Summary of responses to whether participants felt affected by their gender identity."
 #| output: asis
 
+# visMain |>
+#   select(genderAffected) |>
+#   mutate(genderAffected = forcats::fct_na_value_to_level(genderAffected, level = "(missing)")) |>
+#   tbl_summary() |>
+#   modify_header(label = "**Question**") |>
+#   as_flex_table() |>
+#   flextable::flextable_to_rmd()
+
 visMain |>
-  select(genderAffected) |>
-  mutate(genderAffected = forcats::fct_na_value_to_level(genderAffected, level = "(missing)")) |>
-  tbl_summary() |>
+  mutate(
+    genderAffected = forcats::fct_na_value_to_level(genderAffected, level = "(missing)"),
+    timepoint = as.factor(timepoint)  # make sure it's a factor
+  ) |>
+  select(timepoint, genderAffected) |>
+  tbl_summary(
+    by = timepoint,
+    missing = "ifany"
+  ) |>
   modify_header(label = "**Question**") |>
   as_flex_table() |>
   flextable::flextable_to_rmd()
@@ -390,9 +491,11 @@ Important: The question directly above regarding gender determined whether or no
 
 ---
 
-#### treatment, self-regard, isolation
+#### Treatment, self-regard, isolation
 
-The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$genderAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their gender identity has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$genderNegPerc))))`** provided responses, seen below.
+The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(sum(visMain$genderAffected == "Yes" & visMain$timepoint == "Time 1", na.rm = TRUE))`** participants at *Timepoint 1* and **`r numbers_to_words(sum(visMain$genderAffected == "Yes" & visMain$timepoint == "Time 2", na.rm = TRUE))`** at *Timepoint 2* who replied ***yes*** to the question asking whether they had felt that their gender identity had affected their interactions with the *PsychoPy*<sup>&reg;</sup> community.
+
+Of those, **`r numbers_to_words(sum(!is.na(visMain$genderNegPerc) & visMain$timepoint == "Time 1"))`** participants at *Timepoint 1* and **`r numbers_to_words(sum(!is.na(visMain$genderNegPerc) & visMain$timepoint == "Time 2"))`** at *Timepoint 2* provided responses, seen below.
 
 The exact questions are listed in the verbal summary after the visualization.
 
@@ -403,28 +506,51 @@ The exact questions are listed in the verbal summary after the visualization.
 #| warning: false
 #| fig-alt: "Stacked frequency barplots of responses to several statements on gender, categorised into the following: treatment by others, self-regard, and isolation." 
 
-visMain |> 
-  select(genderNegPerc:genderOthersLikeMe) |> 
-  stackedLikertGroups(likertTitle = "Gender")
-gdata::mv("p", "GnLk") # p is sent to the global env. from the function
-suppressWarnings(print(GnLk))
+# visMain |> 
+#   select(genderNegPerc:genderOthersLikeMe) |> 
+#   stackedLikertGroups(likertTitle = "Gender")
+# gdata::mv("p", "GnLk") # p is sent to the global env. from the function
+# suppressWarnings(print(GnLk))
 
+# Timepoint 1
+GnLk1 <- visMain |> 
+  filter(timepoint == "Time 1") |> 
+  select(genderNegPerc:genderOthersLikeMe) |> 
+  stackedLikertGroups(likertTitle = "Gender – Timepoint 1")
+
+# Timepoint 2
+GnLk2 <- visMain |> 
+  filter(timepoint == "Time 2") |> 
+  select(genderNegPerc:genderOthersLikeMe) |> 
+  stackedLikertGroups(likertTitle = "Gender – Timepoint 2")
+
+# Print both (this is important for Quarto rendering)
+suppressWarnings(print(GnLk1))
+suppressWarnings(print(GnLk2))
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: gender-stats-table
 #| tbl-cap: "Statistics for responses to statements regarding gender"
 #| output: asis
 
+# visMain |>
+#   select(genderNegPerc:genderOthersLikeMe) |>
+#   likertTable(
+#     lowerBound = "1 = Strongly disagree",
+#     upperBound = "7 = Strongly agree",
+#     byVar = NULL,
+#     spanVar <- NULL
+#   )
 visMain |>
-  select(genderNegPerc:genderOthersLikeMe) |>
+  select(timepoint, genderNegPerc:genderOthersLikeMe) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
-    byVar = NULL,
-    spanVar <- NULL
+    byVar = "timepoint",   # <- this groups by timepoint
+    spanVar = NULL         # or omit if not needed
   )
 
 ```
@@ -435,51 +561,81 @@ visMain |>
 ---
 
 
-### sexual orientation
+### Sexual orientation
 
 The second EDI category is *sexual orientation*. As above, we present the responses to the issue of identity, followed by a table of descriptions (supplied by some of the participants). This is followed by whether the participant felt affected in the *PsychoPy*<sup>&reg;</sup> community by that identity. Finally, we summarise the participants responses to items listed under *treatment* (by others), *self-regard*, and *isolation*. 
 
 
-#### identity
+#### Identity
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: nonhetero-plot
 #| fig-alt: "Barplot of responses to the following: 'Do you, or might others who know you well, consider you somehow NOT to be part of the heterosexual community?'"
 
-visMain |> 
-  select(nonHeteroCommunity) |> 
-  mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "(missing)")) |>
-  freqPlot(
-    ostColour = ostYellow,
-    sorting = "none"
-  )
-gdata::mv("p", "NhId") # p is sent to the global env. from the function
-suppressWarnings(print(NhId))
+# visMain |> 
+#   select(nonHeteroCommunity) |> 
+#   mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "(missing)")) |>
+#   freqPlot(
+#     ostColour = ostYellow,
+#     sorting = "none"
+#   )
+# gdata::mv("p", "NhId") # p is sent to the global env. from the function
+# suppressWarnings(print(NhId))
 
+visMain |>
+  mutate(
+    nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) |>
+  count(timepoint, nonHeteroCommunity) |>
+  group_by(timepoint) |>
+  mutate(proportion = n / sum(n)) |>
+  ggplot(aes(x = nonHeteroCommunity, y = proportion, fill = timepoint)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_fill_manual(values = ostColours2) +  # Use your ostYellow shades
+  labs(
+    title = "Proportion of Responses: Non-Heterosexual Community Support by Timepoint",
+    x = "Response",
+    y = "Proportion of Participants",
+    fill = "Timepoint"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: sexuality-count-table
 #| tbl-cap: "Summary of responses to sexual orientation"
 #| output: asis
 
+# visMain |>
+#   select(nonHeteroCommunity) |>
+#   mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "(missing)")) |>
+#   tbl_summary() |>
+#   modify_header(label = "**Question**") |>
+#   as_flex_table() |>
+#   flextable::flextable_to_rmd()
+
 visMain |>
-  select(nonHeteroCommunity) |>
+  select(timepoint, nonHeteroCommunity) |>
   mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "(missing)")) |>
-  tbl_summary() |>
+  tbl_summary(
+    by = timepoint,  # Grouping variable
+    missing = "ifany"
+  ) |>
   modify_header(label = "**Question**") |>
   as_flex_table() |>
   flextable::flextable_to_rmd()
-
 ```
 
 ---
 
-##### descriptions
+##### Descriptions
 
 If participants chose ***yes*** as an answer above, they were given the opportunity to describe their sexual identity, though doing so was optional. For those who did, the table below lists the descriptions they provided. The "NA" in the table refers to those who either did not see the question or chose not to supply a description.
 
@@ -491,72 +647,133 @@ The question was as follows:
 #| label: nonhetero-desc-table
 #| tbl-cap: "Descriptions of sexual orientation volunteered by participants"
 
-visMain |> 
-  count(nonHeteroDesc) |>
-  arrange(desc(n)) |>
+# visMain |> 
+#   count(nonHeteroDesc) |>
+#   arrange(desc(n)) |>
+#   datatable(
+#     class = 'cell-border stripe',
+#     colnames = c(
+#       "Feel free to describe your sexual orientation here (or not)",
+#       "count"
+#       ),
+#     options = list(
+#       columnDefs = list(
+#         list(
+#           targets = 1,
+#           render = JS(
+#             "function(data, type, row, meta) {",
+#             "return data === null ? 'NA' : data;",
+#             "}"
+#             )
+#           )
+#         )
+#       )
+#     )
+
+visMain |>
+  count(timepoint, nonHeteroDesc) |>
+  pivot_wider(
+    names_from = timepoint,
+    values_from = n,
+    values_fill = 0  # Fill missing combinations with 0
+  ) |>
+  arrange(desc(`Time 1` + `Time 2`)) |>
   datatable(
     class = 'cell-border stripe',
     colnames = c(
       "Feel free to describe your sexual orientation here (or not)",
-      "count"
-      ),
+      "Time 1 count",
+      "Time 2 count"
+    ),
     options = list(
       columnDefs = list(
         list(
-          targets = 1,
+          targets = 0,  # Apply this formatting to first column (the label)
           render = JS(
             "function(data, type, row, meta) {",
             "return data === null ? 'NA' : data;",
             "}"
-            )
           )
         )
       )
     )
-
+  )
 ```
 
 ---
 
-#### felt affected
+#### Felt affected
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
 >`r get_label(visMain$nonHeteroAffected)`
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: nonhetero-affected-plot
 #| fig-alt: "Barplot of responses to the following: 'Do you feel that your sexual orientation has affected your interactions with the PsychoPy community...?'"
 
-visMain |> 
-  select(nonHeteroAffected) |> 
-  mutate(nonHeteroAffected = forcats::fct_na_value_to_level(nonHeteroAffected, level = "(missing)")) |>
-  freqPlot(
-    ostColour = ostBlue,
-    sorting = "none"
-  )
-gdata::mv("p", "NhFa") # p is sent to the global env. from the function
-suppressWarnings(print(NhFa))
+# visMain |> 
+#   select(nonHeteroAffected) |> 
+#   mutate(nonHeteroAffected = forcats::fct_na_value_to_level(nonHeteroAffected, level = "(missing)")) |>
+#   freqPlot(
+#     ostColour = ostBlue,
+#     sorting = "none"
+#   )
+# gdata::mv("p", "NhFa") # p is sent to the global env. from the function
+# suppressWarnings(print(NhFa))
 
+NhFa_plot <- visMain |>
+  mutate(
+    nonHeteroAffected = forcats::fct_na_value_to_level(nonHeteroAffected, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) |>
+  count(timepoint, nonHeteroAffected) |>
+  group_by(timepoint) |>
+  mutate(proportion = n / sum(n)) |>  # proportions within each timepoint
+  ggplot(aes(x = nonHeteroAffected, y = proportion, fill = timepoint)) +
+  geom_col(position = position_dodge(width = 0.8)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_fill_manual(values = ostColours2) +  # Use your colors
+  labs(
+    title = "Proportion of participants affected by gender, by Timepoint",
+    x = "Response",
+    y = "Proportion",
+    fill = "Timepoint"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+gdata::mv("p", "NhFa")
+suppressWarnings(print(NhFa_plot))
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: sexuality-felt-affected-count-table
 #| tbl-cap: "Summary of responses to whether participants felt affected by their sexual orientation"
 #| output: asis
 
+# visMain |>
+#   select(nonHeteroAffected) |>
+#   mutate(nonHeteroAffected = forcats::fct_na_value_to_level(nonHeteroAffected, level = "(missing)")) |>
+#   tbl_summary() |>
+#   modify_header(label = "**Question**") |>
+#   as_flex_table() |>
+#   flextable::flextable_to_rmd()
+
 visMain |>
-  select(nonHeteroAffected) |>
+  select(timepoint, nonHeteroAffected) |>
   mutate(nonHeteroAffected = forcats::fct_na_value_to_level(nonHeteroAffected, level = "(missing)")) |>
-  tbl_summary() |>
+  tbl_summary(
+    by = timepoint,  # Group summaries by timepoint
+    missing = "ifany"
+  ) |>
   modify_header(label = "**Question**") |>
   as_flex_table() |>
   flextable::flextable_to_rmd()
-
 ```
 
 ::: {.callout-important}
@@ -565,41 +782,68 @@ Important: The question directly above regarding sexual orientation determined w
 
 ---
 
-#### treatment, self-regard, isolation
+#### Treatment, self-regard, isolation
 
-The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$nonHeteroAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their sexual orientation has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$nonHeteroNegPerc))))`** provided responses, seen below.
+The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(sum(visMain$nonHeteroAffected=="Yes" & visMain$timepoint == "Time 1", na.rm = TRUE))`** participants at *Timepoint 1* and **`r numbers_to_words(sum(visMain$nonHeteroAffected=="Yes" & visMain$timepoint == "Time 2", na.rm = TRUE))`** at *Timepoint 2* who replied ***yes*** to the question asking them whether they had felt that their sexual orientation has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community.
+
+Of those, **`r numbers_to_words(sum(!is.na(visMain$nonHeteroNegPerc) & visMain$timepoint == "Time 1"))`** participants at *Timepoint 1* and **`r numbers_to_words(sum(!is.na(visMain$nonHeteroNegPerc) & visMain$timepoint == "Time 2"))`** at *Timepoint 2* provided responses, seen below.
 
 The exact questions are listed in the verbal summary after the visualization.
 
-##### figure
+
+##### Figure
 
 ```{r}
 #| label: nonhetero-likert-plot
 #| warning: false
 #| fig-alt: "Stacked frequency barplots of responses to several statements on sexuality, categorised into the following: treatment by others, self-regard, and isolation." 
+# 
+# visMain |>
+#   select(nonHeteroNegPerc:nonHeteroOthersLikeMe) |> 
+#   stackedLikertGroups(likertTitle = "Non-heterosexuality")
+# gdata::mv("p", "NhLk") # p is sent to the global env. from the function
+# suppressWarnings(print(NhLk))
 
+# Timepoint 1
 visMain |>
+  filter(timepoint == "Time 1") |>
   select(nonHeteroNegPerc:nonHeteroOthersLikeMe) |> 
-  stackedLikertGroups(likertTitle = "Non-heterosexuality")
-gdata::mv("p", "NhLk") # p is sent to the global env. from the function
-suppressWarnings(print(NhLk))
+  stackedLikertGroups(likertTitle = "Non-heterosexuality – Timepoint 1")
+gdata::mv("p", "NhLk_T1")
+suppressWarnings(print(NhLk_T1))
+
+# Timepoint 2
+visMain |>
+  filter(timepoint == "Time 2") |>
+  select(nonHeteroNegPerc:nonHeteroOthersLikeMe) |> 
+  stackedLikertGroups(likertTitle = "Non-heterosexuality – Timepoint 2")
+gdata::mv("p", "NhLk_T2")
+suppressWarnings(print(NhLk_T2))
 
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: nonhetero-stats-table
 #| tbl-cap: "Statistics for responses to statements regarding sexual orientation"
 #| output: asis
 
+# visMain |>
+#   select(nonHeteroNegPerc:nonHeteroOthersLikeMe) |>
+#   likertTable(
+#     lowerBound = "1 = Strongly disagree",
+#     upperBound = "7 = Strongly agree",
+#     byVar = NULL,
+#     spanVar <- NULL
+#   )
 visMain |>
-  select(nonHeteroNegPerc:nonHeteroOthersLikeMe) |>
+  select(timepoint, nonHeteroNegPerc:nonHeteroOthersLikeMe) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
-    byVar = NULL,
-    spanVar <- NULL
+    byVar = "timepoint",   # Group results by timepoint
+    spanVar = NULL
   )
   
 ```
@@ -609,43 +853,75 @@ visMain |>
 
 ---
 
-### race / culture
+### Race / culture
 
 The third EDI category is *race* and/or *culture*. As before, we present the responses to the issue of identity, followed by a table of descriptions (supplied by some of the participants). This is followed by whether the participant felt affected in the *PsychoPy*<sup>&reg;</sup> community by that identity. Finally, we summarise the participants responses to items listed under *treatment* (by others), *self-regard*, and *isolation*. 
 
 
 
-#### identity
+#### Identity
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: raceculture-plot
 #| fig-alt: "Barplot of responses to: 'Do you, or might others who know you well, consider you part of a race/culture that is potentially discriminated against?'"
 
+# visMain |> 
+#   select(raceCulture) |> 
+#   mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "(missing)")) |>
+#   freqPlot(
+#     ostColour = ostOrange,
+#     sorting = "none"
+#   )
+# gdata::mv("p", "RcId") # p is sent to the global env. from the function
+# suppressWarnings(print(RcId))
 visMain |> 
-  select(raceCulture) |> 
-  mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "(missing)")) |>
-  freqPlot(
-    ostColour = ostOrange,
-    sorting = "none"
-  )
-gdata::mv("p", "RcId") # p is sent to the global env. from the function
-suppressWarnings(print(RcId))
+  mutate(
+    raceCulture = fct_na_value_to_level(raceCulture, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) |>
+  count(timepoint, raceCulture) |> 
+  group_by(timepoint) |> 
+  mutate(proportion = n / sum(n)) |> 
+  ggplot(aes(x = raceCulture, y = proportion, fill = timepoint)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = percent_format()) +
+  scale_fill_manual(values = ostColours2) +
+  labs(
+    title = "Proportion of Participants Reporting Race/Culture Impact by Timepoint",
+    x = "Race/Culture Impact",
+    y = "Proportion",
+    fill = "Timepoint"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: race-count-table
 #| tbl-cap: "Summary of responses to race and/or culture"
 #| output: asis
+# 
+# visMain |>
+#   select(raceCulture) |>
+#   mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "(missing)")) |>
+#   tbl_summary() |>
+#   modify_header(label = "**Question**") |>
+#   as_flex_table() |>
+#   flextable::flextable_to_rmd()
 
 visMain |>
-  select(raceCulture) |>
-  mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "(missing)")) |>
-  tbl_summary() |>
+  mutate(
+    raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "(missing)")
+  ) |>
+  select(timepoint, raceCulture) |>
+  tbl_summary(
+    by = timepoint  # stratify by timepoint
+  ) |>
   modify_header(label = "**Question**") |>
   as_flex_table() |>
   flextable::flextable_to_rmd()
@@ -654,7 +930,7 @@ visMain |>
 
 ---
 
-##### descriptions
+##### Descriptions
 
 If participants chose ***yes*** as an answer above, they were given the opportunity to describe their race(s) and/or culture(s), though doing so was optional. For those who did, the table below lists the descriptions they provided. The "NA" in the table refers to those who either did not see the question or chose not to supply a description.
 
@@ -666,70 +942,131 @@ The question was as follows:
 #| label: raceculture-desc-table
 #| tbl-cap: Descriptions of race and/or culture volunteered by participants
 
-visMain |> 
-  count(raceCultureDesc) |>
-  arrange(desc(n)) |>
+# visMain |> 
+#   count(raceCultureDesc) |>
+#   arrange(desc(n)) |>
+#   datatable(
+#     class = 'cell-border stripe',
+#     colnames = c(
+#       "Feel free to describe your race and/or culture here (or not)",
+#       "count"
+#       ),
+#     
+#     options = list(
+#       columnDefs = list(
+#         list(
+#           targets = 1,
+#           render = JS(
+#             "function(data, type, row, meta) {",
+#             "return data === null ? 'NA' : data;",
+#             "}"
+#             )
+#           )
+#         )
+#       )
+#     )
+visMain |>
+  count(timepoint, raceCultureDesc) |>
+  pivot_wider(
+    names_from = timepoint,
+    values_from = n,
+    values_fill = 0  # Fill missing combinations with 0
+  ) |>
+  arrange(desc(`Time 1` + `Time 2`)) |>
   datatable(
     class = 'cell-border stripe',
     colnames = c(
       "Feel free to describe your race and/or culture here (or not)",
-      "count"
-      ),
-    
+      "Time 1 count",
+      "Time 2 count"
+    ),
     options = list(
       columnDefs = list(
         list(
-          targets = 1,
+          targets = 0,  # Apply this formatting to the first column
           render = JS(
             "function(data, type, row, meta) {",
             "return data === null ? 'NA' : data;",
             "}"
-            )
           )
         )
       )
     )
+  )
+
 
 ```
 
 ---
 
-#### felt affected
+#### Felt affected
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
 >`r get_label(visMain$raceCultureAffected)`
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: raceculture-affected-plot
 #| fig-alt: "Frequency barplot of responses to the following statement: 'Do you feel that your race and/or culture has affected your interactions with the PsychoPy community or software ecosystem?' If participants chose to respond, they could respond with either 'yes' or 'no.'"
 
+# 
+# visMain |> 
+#   select(raceCultureAffected) |> 
+#   mutate(raceCultureAffected = forcats::fct_na_value_to_level(raceCultureAffected, level = "(missing)")) |>
+#   freqPlot(
+#     ostColour = ostYellow,
+#     sorting = "none"
+#   )
+# gdata::mv("p", "RcFa") # p is sent to the global env. from the function
+# suppressWarnings(print(RcFa))
 
-visMain |> 
-  select(raceCultureAffected) |> 
-  mutate(raceCultureAffected = forcats::fct_na_value_to_level(raceCultureAffected, level = "(missing)")) |>
-  freqPlot(
-    ostColour = ostYellow,
-    sorting = "none"
-  )
-gdata::mv("p", "RcFa") # p is sent to the global env. from the function
-suppressWarnings(print(RcFa))
-
+visMain %>%
+  mutate(
+    raceCultureAffected = fct_na_value_to_level(raceCultureAffected, level = "(missing)"),
+    timepoint = as.factor(timepoint)  # ensure timepoint is treated as a factor
+  ) %>%
+  count(timepoint, raceCultureAffected) %>%
+  group_by(timepoint) %>%
+  mutate(prop = n / sum(n)) %>%
+  ggplot(aes(x = timepoint, y = prop, fill = raceCultureAffected)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  scale_fill_manual(values = ostColours3) +
+  labs(
+    title = "Proportion who felt race/culture affected community interaction",
+    x = "Timepoint",
+    y = "Proportion",
+    fill = "Response"
+  ) +
+  theme_minimal()
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: race-felt-affected-count-table
 #| tbl-cap: "Summary of responses to whether participants felt affected by their race and/or culture"
 #| output: asis
 
+# visMain |>
+#   select(raceCultureAffected) |>
+#   mutate(raceCultureAffected = forcats::fct_na_value_to_level(raceCultureAffected, level = "(missing)")) |>
+#   tbl_summary() |>
+#   modify_header(label = "**Question**") |>
+#   as_flex_table() |>
+#   flextable::flextable_to_rmd()
 visMain |>
-  select(raceCultureAffected) |>
-  mutate(raceCultureAffected = forcats::fct_na_value_to_level(raceCultureAffected, level = "(missing)")) |>
-  tbl_summary() |>
+  mutate(
+    raceCultureAffected = forcats::fct_na_value_to_level(raceCultureAffected, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) |>
+  select(timepoint, raceCultureAffected) |>
+  tbl_summary(
+    by = timepoint,
+    missing = "ifany"
+  ) |>
   modify_header(label = "**Question**") |>
   as_flex_table() |>
   flextable::flextable_to_rmd()
@@ -742,45 +1079,72 @@ Important: The question directly above regarding race and/our culture determined
 
 ---
 
-#### treatment, self-regard, isolation
+#### Treatment, self-regard, isolation
 
 The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$raceCultureAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their racial and/or cultural identity has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$raceCultureNegPerc))))`** provided responses, seen below.
 
 The exact questions are listed in the verbal summary after the visualization.
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: raceculture-likert-plot
 #| warning: false
 #| fig-alt: "Stacked frequency barplots of responses to statements on race/culture, categorised into the following: treatment by others, self-regard, and isolation." 
 
-visMain |>
-  select(raceCultureNegPerc:raceCultureOthersLikeMe) |> 
-  stackedLikertGroups(
-    likertTitle = "Race(s) and/or Culture(s)"
-    )
-gdata::mv("p", "RcLk") # p is sent to the global env. from the function
-suppressWarnings(print(RcLk))
+# visMain |>
+#   select(raceCultureNegPerc:raceCultureOthersLikeMe) |> 
+#   stackedLikertGroups(
+#     likertTitle = "Race(s) and/or Culture(s)"
+#     )
+# gdata::mv("p", "RcLk") # p is sent to the global env. from the function
+# suppressWarnings(print(RcLk))
 
+# Timepoint 1 plot
+visMain |>
+  filter(timepoint == "Time 1") |>
+  select(raceCultureNegPerc:raceCultureOthersLikeMe) |>
+  stackedLikertGroups(
+    likertTitle = "Race(s) and/or Culture(s) – Timepoint 1"
+  )
+gdata::mv("p", "RcLk_T1")
+suppressWarnings(print(RcLk_T1))
+
+# Timepoint 2 plot
+visMain |>
+  filter(timepoint == "Time 2") |>
+  select(raceCultureNegPerc:raceCultureOthersLikeMe) |>
+  stackedLikertGroups(
+    likertTitle = "Race(s) and/or Culture(s) – Timepoint 2"
+  )
+gdata::mv("p", "RcLk_T2")
+suppressWarnings(print(RcLk_T2))
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: raceculture-stats-table
 #| tbl-cap: "Statistics for responses to statements regarding race and/or culture"
 #| output: asis
+ 
+# visMain |>
+#   select(raceCultureNegPerc:raceCultureOthersLikeMe) |>
+#   likertTable(
+#     lowerBound = "1 = Strongly disagree",
+#     upperBound = "7 = Strongly agree",
+#     byVar = NULL,
+#     spanVar <- NULL
+#   )
 
 visMain |>
-  select(raceCultureNegPerc:raceCultureOthersLikeMe) |> 
+  select(timepoint, raceCultureNegPerc:raceCultureOthersLikeMe) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
-    byVar = NULL,
-    spanVar <- NULL
+    byVar = "timepoint",
+    spanVar = NULL
   )
-
 ```
 
 
@@ -788,43 +1152,75 @@ visMain |>
 
 ---
 
-### disability / neurodivergence
+### Disability / neurodivergence
 
 The fourth EDI category is *disability* and/or *neurodivergence*. As above, we present the responses to the issue of identity, followed by a table of descriptions (supplied by some of the participants). This is followed by whether the participant felt affected in the *PsychoPy*<sup>&reg;</sup> community by that identity. Finally, we summarise the participants responses to items listed under *treatment* (by others), *self-regard*, and *isolation*.
 
 
 
-#### identity
+#### Identity
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: disability-plot
 #| fig-alt: "Frequency barplot of responses to the following question: 'Do you, or might others who know you well, consider you disabled and/or neurodivergent (i.e., visible or invisible; e.g., blind, paralysed, cerebral palsy, ASD, ADHD)?' If participants chose to respond, they could respond with either 'yes' or 'no.'"
 
+# visMain |> 
+#   select(disability) |> 
+#   mutate(disability = forcats::fct_na_value_to_level(disability, level = "(missing)")) |>
+#   freqPlot(
+#     ostColour = ostBlue,
+#     sorting = "none"
+#   )
+# gdata::mv("p", "DnId") # p is sent to the global env. from the function
+# suppressWarnings(print(DnId))
+
 visMain |> 
-  select(disability) |> 
-  mutate(disability = forcats::fct_na_value_to_level(disability, level = "(missing)")) |>
-  freqPlot(
-    ostColour = ostBlue,
-    sorting = "none"
-  )
-gdata::mv("p", "DnId") # p is sent to the global env. from the function
-suppressWarnings(print(DnId))
+  mutate(
+    disability = forcats::fct_na_value_to_level(disability, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) |> 
+  count(timepoint, disability) |> 
+  group_by(timepoint) |> 
+  mutate(proportion = n / sum(n)) |> 
+  ggplot(aes(x = disability, y = proportion, fill = timepoint)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = ostColours2) +
+  labs(
+    title = "Proportion of Participants Reporting Disability Status by Timepoint",
+    x = "Disability Status",
+    y = "Proportion",
+    fill = "Timepoint"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: disability-count-table
 #| tbl-cap: "Summary of responses to disability and/or neurodivergence"
 #| output: asis
 
+# visMain |>
+#   select(disability) |>
+#   mutate(disability = forcats::fct_na_value_to_level(disability, level = "(missing)")) |>
+#   tbl_summary() |>
+#   modify_header(label = "**Question**") |>
+#   as_flex_table() |>
+#   flextable::flextable_to_rmd()
+
+
 visMain |>
-  select(disability) |>
   mutate(disability = forcats::fct_na_value_to_level(disability, level = "(missing)")) |>
-  tbl_summary() |>
+  select(timepoint, disability) |>
+  tbl_summary(
+    by = timepoint  # stratify by timepoint
+  ) |>
   modify_header(label = "**Question**") |>
   as_flex_table() |>
   flextable::flextable_to_rmd()
@@ -833,7 +1229,7 @@ visMain |>
 
 ---
 
-##### descriptions
+##### Descriptions
 
 If participants chose ***yes*** as an answer above, they were given the opportunity to describe their disability(-ies) and/or neurodivergence, though doing so was optional. For those who did, the table below lists the descriptions they provided. The "NA" in the table refers to those who either did not see the question or chose not to supply a description.
 
@@ -846,73 +1242,135 @@ The question was as follows:
 #| label: disability-desc-table
 #| tbl-cap: Descriptions of disability volunteered by participants
 
-visMain |> 
-  count(disabilityDesc) |>
-  arrange(desc(n)) |>
+# visMain |> 
+#   count(disabilityDesc) |>
+#   arrange(desc(n)) |>
+#   datatable(
+#     class = 'cell-border stripe',
+#     colnames = c(
+#       "Feel free to describe your disabled and/or neurodivergent status (or not)",
+#       "count"
+#       ),
+#     
+#     options = list(
+#       columnDefs = list(
+#         list(
+#           targets = 1,
+#           render = JS(
+#             "function(data, type, row, meta) {",
+#             "return data === null ? 'NA' : data;",
+#             "}"
+#             )
+#           )
+#         )
+#       )
+#     )
+
+visMain |>
+  count(timepoint, disabilityDesc) |>
+  pivot_wider(
+    names_from = timepoint,
+    values_from = n,
+    values_fill = 0  # Fill missing combinations with 0
+  ) |>
+  arrange(desc(`Time 1` + `Time 2`)) |>
   datatable(
     class = 'cell-border stripe',
     colnames = c(
       "Feel free to describe your disabled and/or neurodivergent status (or not)",
-      "count"
-      ),
-    
+      "Time 1 count",
+      "Time 2 count"
+    ),
     options = list(
       columnDefs = list(
         list(
-          targets = 1,
+          targets = 0,  # Format first column (description column)
           render = JS(
             "function(data, type, row, meta) {",
             "return data === null ? 'NA' : data;",
             "}"
-            )
           )
         )
       )
     )
-
+  )
 ```
 
 ---
 
-#### felt affected
+#### Felt affected
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
 >`r get_label(visMain$disabilityAffected)`
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: disability-affected-plot
 #| fig-alt: "Frequency barplot of responses to the following statement: 'Do you feel that your disabled and/or neurodivergent status has affected your interactions with the PsychoPy community or software ecosystem?' If participants chose to respond, they could respond with either 'yes' or 'no.'"
 
-visMain |> 
-  select(disabilityAffected) |> 
-  mutate(disabilityAffected = forcats::fct_na_value_to_level(disabilityAffected, level = "(missing)")) |>
-  freqPlot(
-    ostColour = ostOrange,
-    sorting = "none"
-  )
-gdata::mv("p", "DnFa") # p is sent to the global env. from the function
-suppressWarnings(print(DnFa))
+# visMain |> 
+#   select(disabilityAffected) |> 
+#   mutate(disabilityAffected = forcats::fct_na_value_to_level(disabilityAffected, level = "(missing)")) |>
+#   freqPlot(
+#     ostColour = ostOrange,
+#     sorting = "none"
+#   )
+# gdata::mv("p", "DnFa") # p is sent to the global env. from the function
+# suppressWarnings(print(DnFa))
+
+visMain |>
+  mutate(
+    disabilityAffected = forcats::fct_na_value_to_level(disabilityAffected, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) |>
+  count(timepoint, disabilityAffected) |>
+  group_by(timepoint) |>
+  mutate(proportion = n / sum(n)) |>
+  ggplot(aes(x = disabilityAffected, y = proportion, fill = timepoint)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = percent_format()) +
+  scale_fill_manual(values = ostColours2) +  # Adjust colors as needed
+  labs(
+    title = "Proportion Reporting Disability Affected by Timepoint",
+    x = "Disability Affected",
+    y = "Proportion",
+    fill = "Timepoint"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: disability-felt-affected-count-table
 #| tbl-cap: "Summary of responses to whether participants felt affected by their disability and/or neurodivergence"
 #| output: asis
+# 
+# visMain |>
+#   select(disabilityAffected) |>
+#   mutate(disabilityAffected = forcats::fct_na_value_to_level(disabilityAffected, level = "(missing)")) |>
+#   tbl_summary() |>
+#   modify_header(label = "**Question**") |>
+#   as_flex_table() |>
+#   flextable::flextable_to_rmd()
 
 visMain |>
-  select(disabilityAffected) |>
-  mutate(disabilityAffected = forcats::fct_na_value_to_level(disabilityAffected, level = "(missing)")) |>
-  tbl_summary() |>
+  mutate(
+    disabilityAffected = forcats::fct_na_value_to_level(disabilityAffected, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) |>
+  select(timepoint, disabilityAffected) |>
+  tbl_summary(
+    by = timepoint,
+    missing = "ifany"
+  ) |>
   modify_header(label = "**Question**") |>
   as_flex_table() |>
   flextable::flextable_to_rmd()
-
 ```
 
 ::: {.callout-important}
@@ -921,42 +1379,75 @@ Important: The question directly above regarding disability and/or neurodivergen
 
 ---
 
-#### treatment, self-regard, isolation
+#### Treatment, self-regard, isolation
 
-The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$disabilityAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their disability and/or neurodivergence has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$disabilityNegPerc))))`** provided responses, seen below.
+The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(sum(visMain$disabilityAffected == "Yes" & visMain$timepoint == "Time 1", na.rm = TRUE))`** participants at *Timepoint 1* and **`r numbers_to_words(sum(visMain$disabilityAffected == "Yes" & visMain$timepoint == "Time 2", na.rm = TRUE))`** at *Timepoint 2* who replied ***yes*** to the question asking them whether they had felt that their disability and/or neurodivergence has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community.
+
+Of those, **`r numbers_to_words(sum(!is.na(visMain$disabilityNegPerc) & visMain$timepoint == "Time 1"))`** participants at *Timepoint 1* and **`r numbers_to_words(sum(!is.na(visMain$disabilityNegPerc) & visMain$timepoint == "Time 2"))`** at *Timepoint 2* provided responses, seen below.
 
 The exact questions are listed in the verbal summary after the visualization.
 
-##### figure
+
+##### Figure
 
 ```{r}
 #| label: disability-likert-plot
 #| warning: false
 #| fig-alt: "Stacked frequency barplots of responses to disability/neurodivergence, categorised into the following: treatment by others, self-regard, and isolation." 
 
+# visMain |>
+#   select(disabilityNegPerc:disabilityOthersLikeMe) |> 
+#   stackedLikertGroups(likertTitle = "Disability and/or neurodivergence")
+# gdata::mv("p", "DnLk") # p is sent to the global env. from the function
+# suppressWarnings(print(DnLk))
+
+
+# Timepoint 1 plot
 visMain |>
-  select(disabilityNegPerc:disabilityOthersLikeMe) |> 
-  stackedLikertGroups(likertTitle = "Disability and/or neurodivergence")
-gdata::mv("p", "DnLk") # p is sent to the global env. from the function
-suppressWarnings(print(DnLk))
+  filter(timepoint == "Time 1") |>
+  select(disabilityNegPerc:disabilityOthersLikeMe) |>
+  stackedLikertGroups(
+    likertTitle = "Disability and/or neurodivergence – Timepoint 1"
+  )
+gdata::mv("p", "DnLk_T1")
+suppressWarnings(print(DnLk_T1))
+
+# Timepoint 2 plot
+visMain |>
+  filter(timepoint == "Time 2") |>
+  select(disabilityNegPerc:disabilityOthersLikeMe) |>
+  stackedLikertGroups(
+    likertTitle = "Disability and/or neurodivergence – Timepoint 2"
+  )
+gdata::mv("p", "DnLk_T2")
+suppressWarnings(print(DnLk_T2))
 
 ```
 
 
-##### table
+##### Table
 
 ```{r}
 #| label: disability-stats-table
 #| tbl-cap: "Statistics for responses to statements regarding disability"
 #| output: asis
+# 
+# visMain |>
+#   select(disabilityNegPerc:disabilityOthersLikeMe) |> 
+#   likertTable(
+#     lowerBound = "1 = Strongly disagree",
+#     upperBound = "7 = Strongly agree",
+#     byVar = NULL,
+#     spanVar <- NULL
+#   )
 
 visMain |>
-  select(disabilityNegPerc:disabilityOthersLikeMe) |> 
+  select(timepoint, disabilityNegPerc:disabilityOthersLikeMe) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
-    byVar = NULL,
-    spanVar <- NULL
+    byVar = "timepoint",
+    spanVar = NULL
   )
 
 ```
@@ -968,44 +1459,76 @@ visMain |>
 
 
 
-### written-English language dominance
+### Written-English language dominance
 
 The fifth EDI category is *written-English language dominance*. As before, we present the responses to the issue of identity, followed by a table of descriptions (supplied by some of the participants). This is followed by whether the participant felt affected in the *PsychoPy*<sup>&reg;</sup> community by that identity. Finally, we summarise the participants responses to items listed under *treatment* (by others), *self-regard*, and *isolation*.
 
 
+#### Identity
 
-#### identity
-
-##### figure
+##### Figure
 
 ```{r}
 #| label: dominant-language-plot
 #| fig-alt: "Frequency barplot of responses to the following question: 'Is your dominant (preferred) written language English?' If participants chose to respond, they could respond with either 'yes' or 'no.'"
 
+# visMain |> 
+#   select(domLangEnglish) |> 
+#   mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "(missing)")) |>
+#   freqPlot(
+#     ostColour = ostYellow,
+#     sorting = "none"
+#   )
+# gdata::mv("p", "DlWe") # p is sent to the global env. from the function
+# suppressWarnings(print(DlWe))
+
+
+
 visMain |> 
-  select(domLangEnglish) |> 
-  mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "(missing)")) |>
-  freqPlot(
-    ostColour = ostYellow,
-    sorting = "none"
-  )
-gdata::mv("p", "DlWe") # p is sent to the global env. from the function
-suppressWarnings(print(DlWe))
+  mutate(
+    domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) |> 
+  count(timepoint, domLangEnglish) |> 
+  group_by(timepoint) |> 
+  mutate(proportion = n / sum(n)) |> 
+  ggplot(aes(x = domLangEnglish, y = proportion, fill = timepoint)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = percent_format()) +
+  scale_fill_manual(values = ostColours2) +  # Make sure ostColours2 is defined with suitable colors
+  labs(
+    title = "Proportion of Participants Reporting English as Dominant Language by Timepoint",
+    x = "English as Dominant Language",
+    y = "Proportion",
+    fill = "Timepoint"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: domlang-count-table
 #| tbl-cap: "Summary of responses to written-English language dominance"
 #| output: asis
 
+# visMain |>
+#   select(domLangEnglish) |>
+#   mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "(missing)")) |>
+#   tbl_summary() |>
+#   modify_header(label = "**Question**") |>
+#   as_flex_table() |>
+#   flextable::flextable_to_rmd()
+
 visMain |>
-  select(domLangEnglish) |>
   mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "(missing)")) |>
-  tbl_summary() |>
+  select(timepoint, domLangEnglish) |>
+  tbl_summary(
+    by = timepoint  # stratify by timepoint
+  ) |>
   modify_header(label = "**Question**") |>
   as_flex_table() |>
   flextable::flextable_to_rmd()
@@ -1014,7 +1537,7 @@ visMain |>
 
 ---
 
-##### descriptions
+##### Descriptions
 
 If participants chose ***no*** as an answer above, they were given the opportunity to describe their dominant language, though doing so was optional. For those who did, the table below lists the descriptions they provided. The "NA" in the table refers to those who either did not see the question or chose not to supply a description.
 
@@ -1025,73 +1548,139 @@ The question was as follows:
 ```{r}
 #| label: domlang-desc-table
 #| tbl-cap: Non-dominant languages volunteered by participants
+# 
+# visMain |> 
+#   count(domLangDesc) |>
+#   arrange(desc(n)) |>
+#   datatable(
+#     class = 'cell-border stripe',
+#     colnames = c(
+#       "Feel free to type in your dominant language (or not)",
+#       "count"
+#       ),
+#     
+#     options = list(
+#       columnDefs = list(
+#         list(
+#           targets = 1,
+#           render = JS(
+#             "function(data, type, row, meta) {",
+#             "return data === null ? 'NA' : data;",
+#             "}"
+#             )
+#           )
+#         )
+#       )
+#     )
 
-visMain |> 
-  count(domLangDesc) |>
-  arrange(desc(n)) |>
+visMain |>
+  count(timepoint, domLangDesc) |>
+  pivot_wider(
+    names_from = timepoint,
+    values_from = n,
+    values_fill = 0  # Fill missing combinations with 0
+  ) |>
+  arrange(desc(`Time 1` + `Time 2`)) |>
   datatable(
     class = 'cell-border stripe',
     colnames = c(
       "Feel free to type in your dominant language (or not)",
-      "count"
-      ),
-    
+      "Time 1 count",
+      "Time 2 count"
+    ),
     options = list(
       columnDefs = list(
         list(
-          targets = 1,
+          targets = 0,  # Apply formatting to first column (description)
           render = JS(
             "function(data, type, row, meta) {",
             "return data === null ? 'NA' : data;",
             "}"
-            )
           )
         )
       )
     )
+  )
+
 
 ```
 
 ---
 
-#### felt affected
+#### Felt affected
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
 >`r get_label(visMain$domLangAffected)`
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: dominant-language-affected-plot
 #| fig-alt: "Frequency barplot of responses to the following statement: 'Do you feel that your dominant language has affected your interactions with the PsychoPy community or software ecosystem?' If participants chose to respond, they could respond with either 'yes' or 'no.'"
 
-visMain |> 
-  select(domLangAffected) |> 
-  mutate(domLangAffected = forcats::fct_na_value_to_level(domLangAffected, level = "(missing)")) |>
-  freqPlot(
-    ostColour = ostBlue,
-    sorting = "none"
-  )
-gdata::mv("p", "DlFa") # p is sent to the global env. from the function
-suppressWarnings(print(DlFa))
+# visMain |> 
+#   select(domLangAffected) |> 
+#   mutate(domLangAffected = forcats::fct_na_value_to_level(domLangAffected, level = "(missing)")) |>
+#   freqPlot(
+#     ostColour = ostBlue,
+#     sorting = "none"
+#   )
+# gdata::mv("p", "DlFa") # p is sent to the global env. from the function
+# suppressWarnings(print(DlFa))
+
+visMain |>
+  mutate(
+    domLangAffected = forcats::fct_na_value_to_level(domLangAffected, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) |>
+  count(timepoint, domLangAffected) |>
+  group_by(timepoint) |>
+  mutate(proportion = n / sum(n)) |>
+  ggplot(aes(x = domLangAffected, y = proportion, fill = timepoint)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = ostColours2) +  # Adjust colors as needed
+  labs(
+    title = "Proportion Reporting Language Affected by Timepoint",
+    x = "Language Affected",
+    y = "Proportion",
+    fill = "Timepoint"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: domlangEng-felt-affected-count-table
 #| tbl-cap: "Summary of responses to whether participants felt affected by their non-English written-language dominance"
 #| output: asis
 
+# visMain |>
+#   select(domLangAffected) |>
+#   mutate(domLangAffected = forcats::fct_na_value_to_level(domLangAffected, level = "(missing)")) |>
+#   tbl_summary() |>
+#   modify_header(label = "**Question**") |>
+#   as_flex_table() |>
+#   flextable::flextable_to_rmd()
+
 visMain |>
-  select(domLangAffected) |>
-  mutate(domLangAffected = forcats::fct_na_value_to_level(domLangAffected, level = "(missing)")) |>
-  tbl_summary() |>
+  mutate(
+    domLangAffected = forcats::fct_na_value_to_level(domLangAffected, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) |>
+  select(timepoint, domLangAffected) |>
+  tbl_summary(
+    by = timepoint,
+    missing = "ifany"
+  ) |>
   modify_header(label = "**Question**") |>
   as_flex_table() |>
   flextable::flextable_to_rmd()
+
 
 ```
 
@@ -1101,41 +1690,73 @@ Important: The question directly above regarding language dominance in written E
 
 ---
 
-#### treatment, self-regard, isolation
+#### Treatment, self-regard, isolation
 
-The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(length(which(visMain$domLangAffected=="Yes")))`** who replied ***yes*** to the question asking them whether they had felt that their language dominance has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community. Of those, **`r numbers_to_words(length(which(!is.na(visMain$domLangNegPerc))))`** provided responses, seen below.
+
+The following statements were seen only by the subset of participants noted above. Specifically, they were restricted to the **`r numbers_to_words(sum(visMain$domLangAffected == "Yes" & visMain$timepoint == "Time 1", na.rm = TRUE))`** participants at *Timepoint 1* and **`r numbers_to_words(sum(visMain$domLangAffected == "Yes" & visMain$timepoint == "Time 2", na.rm = TRUE))`** at *Timepoint 2* who replied ***yes*** to the question asking them whether they had felt that their language dominance has affected their interactions with the *PsychoPy*<sup>&reg;</sup> community.
+
+Of those, **`r numbers_to_words(sum(!is.na(visMain$domLangNegPerc) & visMain$timepoint == "Time 1"))`** participants at *Timepoint 1* and **`r numbers_to_words(sum(!is.na(visMain$domLangNegPerc) & visMain$timepoint == "Time 2"))`** at *Timepoint 2* provided responses, seen below.
 
 The exact questions are listed in the verbal summary after the visualization.
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: domlang-likert-plot
 #| warning: false
 #| fig-alt: "Stacked frequency barplots of responses to language dominance, categorised by the following: treatment by others, self-regard, and isolation." 
 
+# visMain |>
+#   select(domLangNegPerc:domLangOthersLikeMe) |> 
+#   stackedLikertGroups(likertTitle = "Dominant Language")
+# gdata::mv("p", "DlLk") # p is sent to the global env. from the function
+# suppressWarnings(print(DlLk))
+
+# Timepoint 1 plot
 visMain |>
-  select(domLangNegPerc:domLangOthersLikeMe) |> 
-  stackedLikertGroups(likertTitle = "Dominant Language")
-gdata::mv("p", "DlLk") # p is sent to the global env. from the function
-suppressWarnings(print(DlLk))
+  filter(timepoint == "Time 1") |>
+  select(domLangNegPerc:domLangOthersLikeMe) |>
+  stackedLikertGroups(
+    likertTitle = "Dominant Language – Timepoint 1"
+  )
+gdata::mv("p", "DlLk_T1")
+suppressWarnings(print(DlLk_T1))
+
+# Timepoint 2 plot
+visMain |>
+  filter(timepoint == "Time 2") |>
+  select(domLangNegPerc:domLangOthersLikeMe) |>
+  stackedLikertGroups(
+    likertTitle = "Dominant Language – Timepoint 2"
+  )
+gdata::mv("p", "DlLk_T2")
+suppressWarnings(print(DlLk_T2))
 
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: domlang-stats-table
 #| tbl-cap: "Statistics for responses to statements regarding dominant language"
 #| output: asis
 
+# visMain |>
+#   select(domLangNegPerc:domLangOthersLikeMe) |> 
+#   likertTable(
+#     lowerBound = "1 = Strongly disagree",
+#     upperBound = "7 = Strongly agree",
+#     byVar = NULL,
+#     spanVar <- NULL
+#   )
+
 visMain |>
-  select(domLangNegPerc:domLangOthersLikeMe) |> 
+  select(timepoint, domLangNegPerc:domLangOthersLikeMe) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
-    byVar = NULL,
-    spanVar <- NULL
+    byVar = "timepoint",
+    spanVar = NULL
   )
 
 ```
@@ -1146,7 +1767,7 @@ visMain |>
 ---
 
 
-## participant background
+## Participant background
 
 The first few items on the survey collected information about  general background demographics, including participants' career status, the role they typically play in their usage of *PsychoPy*<sup>&reg;</sup>. 
 
@@ -1193,7 +1814,7 @@ longerDataContributions <- load_both_timepoints("longerDataContributions")
 longerDataDeterrents <- load_both_timepoints("longerDataDeterrents")
 ```
 
-### career status
+### Career status
 
 This section summarises, both visually and verbally, the answer to the following question:
 
@@ -1207,42 +1828,79 @@ Participants had to choose from one of the following:
 - *Technical - junior*\
 - *Technical - senior*
 
-#### everyone 
+#### Everyone 
 
 The visualization below presents responses in descending order of frequency.
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: career-status-plot
 #| fig-alt: "Descending frequency barplot of the responses to the following question: 'Roughly speaking, what is your career status?'"
+# 
+# visMain |>
+#   select(careerStatus) |>
+#   mutate(careerStatus = forcats::fct_na_value_to_level(careerStatus, level = "(missing)")) |>
+#   freqPlot(
+#     ostColour = ostBlue, 
+#     sorting = "desc"
+#     )
+# gdata::mv("p", "CsWh") # p is sent to the global env. from the function
+# suppressWarnings(print(CsWh))
 
-visMain |>
-  select(careerStatus) |>
-  mutate(careerStatus = forcats::fct_na_value_to_level(careerStatus, level = "(missing)")) |>
-  freqPlot(
-    ostColour = ostBlue, 
-    sorting = "desc"
-    )
-gdata::mv("p", "CsWh") # p is sent to the global env. from the function
-suppressWarnings(print(CsWh))
+visMain |> 
+  mutate(
+    careerStatus = forcats::fct_na_value_to_level(careerStatus, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) |> 
+  count(timepoint, careerStatus) |> 
+  group_by(timepoint) |> 
+  mutate(proportion = n / sum(n)) |> 
+  ggplot(aes(x = careerStatus, y = proportion, fill = timepoint)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = ostColours2) +  # Ensure ostColours2 is defined
+  labs(
+    title = "Proportion of Participants by Career Status and Timepoint",
+    x = "Career Status",
+    y = "Proportion",
+    fill = "Timepoint"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: career-status-count-table
 #| tbl-cap: "Summary of responses to career status"
 #| output: asis
 
+# visMain |>
+#   select(careerStatus) |>
+#   mutate(careerStatus = forcats::fct_na_value_to_level(careerStatus, level = "(missing)")) |>
+#   tbl_summary() |>
+#   modify_header(label = "**Question**") |>
+#   as_flex_table() |>
+#   flextable::flextable_to_rmd()
+
 visMain |>
-  select(careerStatus) |>
-  mutate(careerStatus = forcats::fct_na_value_to_level(careerStatus, level = "(missing)")) |>
-  tbl_summary() |>
+  mutate(
+    careerStatus = forcats::fct_na_value_to_level(careerStatus, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) |>
+  select(timepoint, careerStatus) |>
+  tbl_summary(
+    by = timepoint,  # Stratify by timepoint
+    missing = "ifany"
+  ) |>
   modify_header(label = "**Question**") |>
   as_flex_table() |>
   flextable::flextable_to_rmd()
+
 
 ```
 
@@ -1251,57 +1909,133 @@ visMain |>
 
 ---
 
-#### interactions
+#### Interactions
 
-##### gender
+##### Gender
 
-###### figure
+###### Figure
 
 ```{r}
-#| label: career-status-by-gender-plot
-#| fig-alt: "Descending frequency barplot of the responses by gender to the following question: 'Roughly speaking, what is your career status?'"
+#| label: career-status-by-gender-t1-plot
+#| fig-alt: "Descending frequency barplot of the responses by gender to the following question: 'Roughly speaking, what is your career status?' (Timepoint 1)"
+# 
+# contingencyPlot(
+#   df = visMain,
+#   contingX = "careerStatus",
+#   contingGrp = "gender",
+#   colours = ostColours4na
+#   )
+# gdata::mv("p", "Cs_Gn") # p is sent to the global env. from the function
+# suppressWarnings(print(Cs_Gn))
+# Plot for Timepoint 1
 
-contingencyPlot(
-  df = visMain,
-  contingX = "careerStatus",
-  contingGrp = "gender",
-  colours = ostColours4na
+Cs_Gn_Time1 <- visMain |>
+  filter(timepoint == "Time 1") |>
+  contingencyPlot(
+    df = _,
+    contingX = "careerStatus",
+    contingGrp = "gender",
+    colours = ostColours4na
   )
-gdata::mv("p", "Cs_Gn") # p is sent to the global env. from the function
-suppressWarnings(print(Cs_Gn))
+gdata::mv("p", "Cs_Gn_Time1")
+suppressWarnings(print(Cs_Gn_Time1))
+```
+
+
+```{r}
+#| label: career-status-by-gender-t2-plot
+#| fig-alt: "Descending frequency barplot of the responses by gender to the following question: 'Roughly speaking, what is your career status?' (Timepoint 2)"
+# Plot for Timepoint 2
+
+Cs_Gn_Time2 <- visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyPlot(
+    df = _,
+    contingX = "careerStatus",
+    contingGrp = "gender",
+    colours = ostColours4na
+  )
+gdata::mv("p", "Cs_Gn_Time2")
+suppressWarnings(print(Cs_Gn_Time2))
 
 ```
 
-###### table
+###### Table
+
 
 ```{r}
-#| label: careerstatus-by-gender-stats-table
-#| tbl-cap: "Summary of responses to career status by gender."
+#| label: careerstatus-by-gender-t1-stats-table
+#| tbl-cap: "Summary of responses to career status by gender. (Timepoint 1)"
 #| output: asis
 
-visMain |>
+# visMain |>
+#   contingencyTable(
+#     contingX = "careerStatus", 
+#     contingGrp = "gender"
+#     )
+
+# Table for Timepoint 1
+
+table_Time1 <- visMain |>
+  filter(timepoint == "Time 1") |>
   contingencyTable(
-    contingX = "careerStatus", 
+    contingX = "careerStatus",
     contingGrp = "gender"
-    )
+  )
 
 ```
 
-##### other EDI dimensions
+
+```{r}
+#| label: careerstatus-by-gender-t2-stats-table
+#| tbl-cap: "Summary of responses to career status by gender. (Timepoint 2)"
+#| output: asis
+# Table for Timepoint 2
+
+table_Time2 <- visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyTable(
+    contingX = "careerStatus",
+    contingGrp = "gender"
+  )
+
+
+```
+
+##### Other EDI dimensions
 
 {{< include interactionNotes.qmd >}}
 
-###### figure
+###### Figure
+
 
 ```{r}
-#| label: career-status-by-other-edis-plot
-#| fig-alt: "Wrapped, stacked frequency barplots of the responses by EDI variables other than gender to the following question: 'Roughly speaking, what is your career status?'"
+#| label: career-status-by-other-edis-t1--plot
+#| fig-alt: "Wrapped, stacked frequency barplots of the responses by EDI variables other than gender to the following question: 'Roughly speaking, what is your career status?'  (Timepoint 1)"
+# 
+# careerStatusLabel <- get_label(longerDataSimple$careerStatus)
+# 
+# longerDataSimple |>
+#   #drop_na(response) |>
+#   #drop_na(careerStatus) |>
+#   wrappedStackedFreqPlot(
+#     xVar = careerStatus,
+#     fillVar = response,
+#     fillLabel = "Member of\nrespective\nEDI group",
+#     wrapVar = ediVar,
+#     ostColours = ostColours2rev,
+#     figCaption = NULL,
+#     figTitle = careerStatusLabel,
+#     titleAdjust = -202
+#   )
+# gdata::mv("p", "Cs_Id") # p is sent to the global env. from the function
+# suppressWarnings(print(Cs_Id))
 
 careerStatusLabel <- get_label(longerDataSimple$careerStatus)
 
+# For Timepoint 1
 longerDataSimple |>
-  #drop_na(response) |>
-  #drop_na(careerStatus) |>
+  filter(timepoint == "Time 1") |>
   wrappedStackedFreqPlot(
     xVar = careerStatus,
     fillVar = response,
@@ -1309,72 +2043,199 @@ longerDataSimple |>
     wrapVar = ediVar,
     ostColours = ostColours2rev,
     figCaption = NULL,
-    figTitle = careerStatusLabel,
+    figTitle = paste0(careerStatusLabel, " (Timepoint 1)"),
     titleAdjust = -202
   )
-gdata::mv("p", "Cs_Id") # p is sent to the global env. from the function
-suppressWarnings(print(Cs_Id))
-
+gdata::mv("p", "Cs_Id_T1") # save plot as Cs_Id_T1
+suppressWarnings(print(Cs_Id_T1))
 ```
-
-###### tables
 
 
 ```{r}
-#| label: careerstatus-by-sexuality-stats-table
-#| tbl-cap: "Summary of responses to career status by sexual orientation"
+#| label: career-status-by-other-edis-t2--plot
+#| fig-alt: "Wrapped, stacked frequency barplots of the responses by EDI variables other than gender to the following question: 'Roughly speaking, what is your career status?'  (Timepoint 2)"
+# For Timepoint 2
+longerDataSimple |>
+  filter(timepoint == "Time 2") |>
+  wrappedStackedFreqPlot(
+    xVar = careerStatus,
+    fillVar = response,
+    fillLabel = "Member of\nrespective\nEDI group",
+    wrapVar = ediVar,
+    ostColours = ostColours2rev,
+    figCaption = NULL,
+    figTitle = paste0(careerStatusLabel, " (Timepoint 2)"),
+    titleAdjust = -202
+  )
+gdata::mv("p", "Cs_Id_T2") # save plot as Cs_Id_T2
+suppressWarnings(print(Cs_Id_T2))
+
+```
+
+###### Tables
+
+
+```{r}
+#| label: careerstatus-by-sexuality-t1-stats-table
+#| tbl-cap: "Summary of responses to career status by sexual orientation (Table 1)"
 #| output: asis
 
-visMain |>
+# visMain |>
+#   contingencyTable(
+#     contingX = "careerStatus", 
+#     contingGrp = "nonHeteroCommunity"
+#     )
+
+
+# Table for Timepoint 1
+
+table_Time1 <- visMain |>
+  filter(timepoint == "Time 1") |>
   contingencyTable(
-    contingX = "careerStatus", 
+    contingX = "careerStatus",
     contingGrp = "nonHeteroCommunity"
-    )
+  )
+```
+
+
+```{r}
+#| label: careerstatus-by-sexuality-t2-stats-table
+#| tbl-cap: "Summary of responses to career status by sexual orientation (Table 2)"
+#| output: asis
+
+# Table for Timepoint 2
+
+table_Time2 <- visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyTable(
+    contingX = "careerStatus",
+    contingGrp = "nonHeteroCommunity"
+  )
 
 ```
 
 ---
 
+
 ```{r}
-#| label: careerstatus-by-race-stats-table
-#| tbl-cap: "Summary of responses to career status by race and/or culture"
+#| label: careerstatus-by-race-t1-stats-table
+#| tbl-cap: "Summary of responses to career status by race and/or culture (Timepoint 1)"
 #| output: asis
 
-visMain |>
+# visMain |>
+#   contingencyTable(
+#     contingX = "careerStatus", 
+#     contingGrp = "raceCulture"
+#     )
+
+# Table for Timepoint 1
+
+table_Time1 <- visMain |>
+  filter(timepoint == "Time 1") |>
   contingencyTable(
-    contingX = "careerStatus", 
+    contingX = "careerStatus",
     contingGrp = "raceCulture"
-    )
+  )
+```
 
+
+```{r}
+#| label: careerstatus-by-race-t2-stats-table
+#| tbl-cap: "Summary of responses to career status by race and/or culture (Timepoint 2)"
+#| output: asis
+
+# Table for Timepoint 2
+
+table_Time2 <- visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyTable(
+    contingX = "careerStatus",
+    contingGrp = "raceCulture"
+  )
+print(table_Time2)
 ```
 
 ---
 
+
 ```{r}
-#| label: careerstatus-by-disability-stats-table
-#| tbl-cap: "Summary of responses to career status by disability and/or neurodivergence"
+#| label: careerstatus-by-disability-t1-stats-table
+#| tbl-cap: "Summary of responses to career status by disability and/or neurodivergence (Timepoint 1)"
 #| output: asis
 
-visMain |>
+# visMain |>
+#   contingencyTable(
+#     contingX = "careerStatus", 
+#     contingGrp = "disability"
+#     )
+
+
+# Table for Timepoint 1
+
+table_Time1 <- visMain |>
+  filter(timepoint == "Time 1") |>
   contingencyTable(
-    contingX = "careerStatus", 
+    contingX = "careerStatus",
     contingGrp = "disability"
-    )
+  )
+```
+
+
+```{r}
+#| label: careerstatus-by-disability-t2-stats-table
+#| tbl-cap: "Summary of responses to career status by disability and/or neurodivergence (Timepoint 2)"
+#| output: asis
+
+# Table for Timepoint 2
+
+table_Time2 <- visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyTable(
+    contingX = "careerStatus",
+    contingGrp = "disability"
+  )
 
 ```
 
 ---
 
+
 ```{r}
-#| label: careerstatus-by-domlang-stats-table
-#| tbl-cap: "Summary of responses to career status by dominant written language"
+#| label: careerstatus-by-domlang-t1-stats-table
+#| tbl-cap: "Summary of responses to career status by dominant written language (Timepoint 1)"
 #| output: asis
 
-visMain |>
+# visMain |>
+#   contingencyTable(
+#     contingX = "careerStatus", 
+#     contingGrp = "domLangEnglish"
+#     )
+
+
+# Table for Timepoint 1
+
+table_Time1 <- visMain |>
+  filter(timepoint == "Time 1") |>
   contingencyTable(
-    contingX = "careerStatus", 
+    contingX = "careerStatus",
     contingGrp = "domLangEnglish"
-    )
+  )
+```
+
+
+```{r}
+#| label: careerstatus-by-domlang-t2-stats-table
+#| tbl-cap: "Summary of responses to career status by dominant written language (Timepoint 2)"
+#| output: asis
+
+# Table for Timepoint 2
+
+table_Time2 <- visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyTable(
+    contingX = "careerStatus",
+    contingGrp = "domLangEnglish"
+  )
 
 ```
 
@@ -1382,7 +2243,7 @@ visMain |>
 
 ---
 
-### type of engagement with *PsychoPy*<sup>&reg;</sup>
+### Type of engagement with *PsychoPy*<sup>&reg;</sup>
 
 This section summarises, both visually and verbally, the responses to the following prompt:
 
@@ -1396,39 +2257,70 @@ Participants had to choose from one of the following:
 - *Frequent contributor*\
 - *Senior developer*
 
-#### everyone
+#### Everyone
 
 The visualization below presents responses in descending order of frequency.
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: engagement-type-plot-everyone
 #| fig-alt: "Descending frequency barplot of everyone's responses to the following question: 'What best describes your role/usage of PsychoPy?'"
 
+# visMain |>
+#   select(engagement) |>
+#   mutate(engagement = forcats::fct_na_value_to_level(engagement, level = "(missing)")) |>
+#   freqPlot(
+#     ostColour = ostOrange, 
+#     sorting = "desc"
+#     )
+# gdata::mv("p", "EnTp") # p is sent to the global env. from the function
+# suppressWarnings(print(EnTp))
+
 visMain |>
-  select(engagement) |>
-  mutate(engagement = forcats::fct_na_value_to_level(engagement, level = "(missing)")) |>
-  freqPlot(
-    ostColour = ostOrange, 
-    sorting = "desc"
-    )
-gdata::mv("p", "EnTp") # p is sent to the global env. from the function
-suppressWarnings(print(EnTp))
+  mutate(
+    engagement = forcats::fct_na_value_to_level(engagement, level = "(missing)"),
+    timepoint = as.factor(timepoint)
+  ) |>
+  count(timepoint, engagement) |>
+  group_by(timepoint) |>
+  mutate(proportion = n / sum(n)) |>
+  ggplot(aes(x = engagement, y = proportion, fill = timepoint)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = percent_format()) +
+  scale_fill_manual(values = ostColours2) +   # Use your palette here
+  labs(
+    title = "Proportion of Participants Reporting Engagement by Timepoint",
+    x = "Engagement",
+    y = "Proportion",
+    fill = "Timepoint"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: engagement-count-table
 #| tbl-cap: "Summary of responses to engagement level"
 #| output: asis
 
+# visMain |>
+#   select(engagement) |>
+#   mutate(engagement = forcats::fct_na_value_to_level(engagement, level = "(missing)")) |>
+#   tbl_summary() |>
+#   modify_header(label = "**Question**") |>
+#   as_flex_table() |>
+#   flextable::flextable_to_rmd()
+
 visMain |>
-  select(engagement) |>
   mutate(engagement = forcats::fct_na_value_to_level(engagement, level = "(missing)")) |>
-  tbl_summary() |>
+  select(timepoint, engagement) |>
+  tbl_summary(
+    by = timepoint  # stratify by timepoint
+  ) |>
   modify_header(label = "**Question**") |>
   as_flex_table() |>
   flextable::flextable_to_rmd()
@@ -1438,58 +2330,135 @@ visMain |>
 
 <!-- {{< include notes/_engagement.md >}} -->
 
-#### interactions
+#### Interactions
 
-##### gender
+##### Gender
 
-###### figure
+###### Figure
 
 ```{r}
-#| label: engagement-type-plot-gender
-#| fig-alt: "Descending frequency barplot of responses by gender to the following question: 'What best describes your role/usage of PsychoPy?'"
+#| label: engagement-type-gender-t1-plot
+#| fig-alt: "Descending frequency barplot of responses by gender to the following question: 'What best describes your role/usage of PsychoPy?' (Timepoint 1)"
+# 
+# contingencyPlot(
+#   df = visMain,
+#   contingX = "engagement",
+#   contingGrp = "gender",
+#   colours = ostColours4na
+#   )
+# gdata::mv("p", "En_Gn") # p is sent to the global env. from the function
+# suppressWarnings(print(En_Gn))
 
-contingencyPlot(
-  df = visMain,
-  contingX = "engagement",
-  contingGrp = "gender",
-  colours = ostColours4na
+# Plot for Timepoint 1
+En_Gn_T1 <- visMain |>
+  filter(timepoint == "Time 1") |>
+  contingencyPlot(
+    df = _,
+    contingX = "engagement",
+    contingGrp = "gender",
+    colours = ostColours4na
   )
-gdata::mv("p", "En_Gn") # p is sent to the global env. from the function
-suppressWarnings(print(En_Gn))
+gdata::mv("p", "En_Gn_T1")
+suppressWarnings(print(En_Gn_T1))
 
 ```
 
-###### table
+```{r}
+#| label: engagement-type-gender-t2-plot
+#| fig-alt: "Descending frequency barplot of responses by gender to the following question: 'What best describes your role/usage of PsychoPy?' (Timepoint 2)"
+# 
+# contingencyPlot(
+#   df = visMain,
+#   contingX = "engagement",
+#   contingGrp = "gender",
+#   colours = ostColours4na
+#   )
+# gdata::mv("p", "En_Gn") # p is sent to the global env. from the function
+# suppressWarnings(print(En_Gn))
+
+# Plot for Timepoint 1
+# Plot for Timepoint 2
+En_Gn_T2 <- visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyPlot(
+    df = _,
+    contingX = "engagement",
+    contingGrp = "gender",
+    colours = ostColours4na
+  )
+gdata::mv("p", "En_Gn_T2")
+suppressWarnings(print(En_Gn_T2))
+
+```
+
+###### Table
 
 ```{r}
-#| label: engagement-by-gender-stats-table
-#| tbl-cap: "Summary of responses by gender to type of engagement"
+#| label: engagement-by-gender-t1-stats-table
+#| tbl-cap: "Summary of responses by gender to type of engagement (Timepoint 1)"
 #| output: asis
 
-visMain |>
+# visMain |>
+#   contingencyTable(
+#     contingX = "engagement", 
+#     contingGrp = "gender"
+#     )
+
+table_Engagement_T1 <- visMain |>
+  filter(timepoint == "Time 1") |>
   contingencyTable(
-    contingX = "engagement", 
+    contingX = "engagement",
     contingGrp = "gender"
-    )
+  )
+
+```
+
+```{r}
+#| label: engagement-by-gender-t2-stats-table
+#| tbl-cap: "Summary of responses by gender to type of engagement (Timepoint 2)"
+#| output: asis
+
+table_Engagement_T2 <- visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyTable(
+    contingX = "engagement",
+    contingGrp = "gender"
+  )
 
 ```
 
 ---
 
-##### other EDI variables
+##### Other EDI variables
 
 {{< include interactionNotes.qmd >}}
 
-###### figure
+###### Figure
 
 ```{r}
-#| label: figEngagementByOtherVars
+#| label: t1figEngagementByOtherVars
 
 engagementLabel <- paste0("What best describes your role/usage of PsychoPy?")
+# 
+# longerDataSimple |>
+#   #drop_na(response) |>
+#   #drop_na(engagement) |>
+#   wrappedStackedFreqPlot(
+#     xVar = engagement,
+#     fillVar = response,
+#     fillLabel = "Member of\nrespective\nEDI group",
+#     wrapVar = ediVar,
+#     ostColours = ostColours2rev,
+#     figCaption = NULL,
+#     figTitle = engagementLabel,
+#     titleAdjust = -202
+#   )
+# gdata::mv("p", "En_Id") # p is sent to the global env. from the function
+# suppressWarnings(print(En_Id))
 
-longerDataSimple |>
-  #drop_na(response) |>
-  #drop_na(engagement) |>
+# Plot for Timepoint 1
+En_Id_Time1 <- longerDataSimple |>
+  filter(timepoint == "Time 1") |>
   wrappedStackedFreqPlot(
     xVar = engagement,
     fillVar = response,
@@ -1497,74 +2466,180 @@ longerDataSimple |>
     wrapVar = ediVar,
     ostColours = ostColours2rev,
     figCaption = NULL,
-    figTitle = engagementLabel,
+    figTitle = paste0(engagementLabel, " (Timepoint 1)"),
     titleAdjust = -202
   )
-gdata::mv("p", "En_Id") # p is sent to the global env. from the function
-suppressWarnings(print(En_Id))
+gdata::mv("p", "En_Id_Time1")
+suppressWarnings(print(En_Id_Time1))
+
+```
+
+```{r}
+#| label: t2figEngagementByOtherVars
+# Plot for Timepoint 2
+En_Id_Time2 <- longerDataSimple |>
+  filter(timepoint == "Time 2") |>
+  wrappedStackedFreqPlot(
+    xVar = engagement,
+    fillVar = response,
+    fillLabel = "Member of\nrespective\nEDI group",
+    wrapVar = ediVar,
+    ostColours = ostColours2rev,
+    figCaption = NULL,
+    figTitle = paste0(engagementLabel, " (Timepoint 2)"),
+    titleAdjust = -202
+  )
+gdata::mv("p", "En_Id_Time2")
+suppressWarnings(print(En_Id_Time2))
 
 ```
 
 
-###### tables
+###### Tables
 
 ---
 
 ```{r}
-#| label: engagement-by-sexuality-stats-table
-#| tbl-cap: "Summary of responses by sexual orientation to type of engagement"
+#| label: engagement-by-sexuality-t1-stats-table
+#| tbl-cap: "Summary of responses by sexual orientation to type of engagement (Timepoint 1)"
 #| output: asis
 
-visMain |>
+# visMain |>
+#   contingencyTable(
+#     contingX = "engagement", 
+#     contingGrp = "nonHeteroCommunity"
+#     )
+
+table_Engagement_T1 <- visMain |>
+  filter(timepoint == "Time 1") |>
   contingencyTable(
-    contingX = "engagement", 
+    contingX = "engagement",
     contingGrp = "nonHeteroCommunity"
-    )
+  )
+
+```
+
+```{r}
+#| label: engagement-by-sexuality-t2-stats-table
+#| tbl-cap: "Summary of responses by sexual orientation to type of engagement (Timepoint 2)"
+#| output: asis
+
+table_Engagement_T2 <- visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyTable(
+    contingX = "engagement",
+    contingGrp = "nonHeteroCommunity"
+  )
 
 ```
 
 ---
 
 ```{r}
-#| label: engagement-by-race-stats-table
-#| tbl-cap: "Summary of responses by race and/or culture to type of engagement"
+#| label: engagement-by-race-t1-stats-table
+#| tbl-cap: "Summary of responses by race and/or culture to type of engagement (Timepoint 1)"
 #| output: asis
 
-visMain |>
+# visMain |>
+#   contingencyTable(
+#     contingX = "engagement", 
+#     contingGrp = "raceCulture"
+#     )
+
+table_Engagement_T1 <- visMain |>
+  filter(timepoint == "Time 1") |>
   contingencyTable(
-    contingX = "engagement", 
+    contingX = "engagement",
     contingGrp = "raceCulture"
-    )
+  )
+
+```
+
+```{r}
+#| label: engagement-by-race-t2-stats-table
+#| tbl-cap: "Summary of responses by race and/or culture to type of engagement (Timepoint 2)"
+#| output: asis
+
+table_Engagement_T2 <- visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyTable(
+    contingX = "engagement",
+    contingGrp = "raceCulture"
+  )
 
 ```
 
 ---
 
 ```{r}
-#| label: engagement-by-disability-stats-table
-#| tbl-cap: "Summary of responses by disability and/or neurodivergence to type of engagement"
+#| label: engagement-by-disability-t1-stats-table
+#| tbl-cap: "Summary of responses by disability and/or neurodivergence to type of engagement (Timepoint 1)"
 #| output: asis
 
-visMain |>
+# visMain |>
+#   contingencyTable(
+#     contingX = "engagement", 
+#     contingGrp = "disability"
+#     )
+
+table_Engagement_T1 <- visMain |>
+  filter(timepoint == "Time 1") |>
   contingencyTable(
-    contingX = "engagement", 
+    contingX = "engagement",
     contingGrp = "disability"
-    )
+  )
+
+```
+
+```{r}
+#| label: engagement-by-disability-t2-stats-table
+#| tbl-cap: "Summary of responses by disability and/or neurodivergence to type of engagement (Timepoint 2)"
+#| output: asis
+
+table_Engagement_T2 <- visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyTable(
+    contingX = "engagement",
+    contingGrp = "disability"
+  )
 
 ```
 
 ---
 
 ```{r}
-#| label: engagement-by-dominant-language-stats-table
-#| tbl-cap: "Summary of responses by dominant language to type of engagement"
+#| label: engagement-by-dominant-language-t1-stats-table
+#| tbl-cap: "Summary of responses by dominant language to type of engagement (Timepoint 1)"
 #| output: asis
 
-visMain |>
+# visMain |>
+#   contingencyTable(
+#     contingX = "engagement", 
+#     contingGrp = "domLangEnglish"
+#     )
+
+table_Engagement_T1 <- visMain |>
+  filter(timepoint == "Time 1") |>
   contingencyTable(
-    contingX = "engagement", 
+    contingX = "engagement",
     contingGrp = "domLangEnglish"
-    )
+  )
+
+
+```
+
+```{r}
+#| label: engagement-by-dominant-language-t2-stats-table
+#| tbl-cap: "Summary of responses by dominant language to type of engagement (Timepoint 2)"
+#| output: asis
+
+table_Engagement_T2 <- visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyTable(
+    contingX = "engagement",
+    contingGrp = "domLangEnglish"
+  )
+
 
 ```
 
@@ -1573,7 +2648,7 @@ visMain |>
 
 ---
 
-### ways of contributing
+### Ways of contributing
 
 This was a select-all-that-apply question, worded as follows:
 
@@ -1601,43 +2676,82 @@ contributeCaption <- "Notes:\n1. Respondents could select more than one contribu
 ```
 
 
-#### everyone
+#### Everyone
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: contribEveryone-plot
 #| fig-alt: "Frequency barplot of the selections made in response to the following question: 'In which way do you contribute most?'"
 
+# longerDataContributions |>
+#   #drop_na(selected) |>
+#   wrappedFreqPlot(
+#     xVar = choices,
+#     fillVar = choices,
+#     wrapVar = contributionType,
+#     ostColours = ostColours2rev
+#   )
+# gdata::mv("p", "CtWy") # p is sent to the global env. from the function
+# suppressWarnings(print(CtWy))
+
 longerDataContributions |>
-  #drop_na(selected) |>
+  # Optionally drop NAs if needed
+  # drop_na(selected) |>
+  mutate(
+    timepoint = as.factor(timepoint),
+    wrapCombo = paste(contributionType, timepoint, sep = " - ")
+  ) |>
   wrappedFreqPlot(
     xVar = choices,
     fillVar = choices,
-    wrapVar = contributionType,
+    wrapVar = wrapCombo,
     ostColours = ostColours2rev
-  )
-gdata::mv("p", "CtWy") # p is sent to the global env. from the function
+  ) -> CtWy
+gdata::mv("p", "CtWy")
 suppressWarnings(print(CtWy))
-
 ```
 
-##### table
+##### Table
 
 ```{r}
-#| label: contributions-stats-table
-#| tbl-cap: "Summary of responses to contribution type"
+#| label: contributions-t1-stats-table
+#| tbl-cap: "Summary of responses to contribution type (Timepoint 1)"
 #| output: asis
 
-longerDataContributions |>
+# longerDataContributions |>
+#   contingencyTable(
+#     contingX = "contributionType", 
+#     contingGrp = "choices"
+#     )
+
+# Table for Timepoint 1
+table_Time1 <- longerDataContributions |>
+  filter(timepoint == "Time 1") |>
   contingencyTable(
-    contingX = "contributionType", 
+    contingX = "contributionType",
     contingGrp = "choices"
-    )
+  )
+```
+
+```{r}
+#| label: contributions-t2-stats-table
+#| tbl-cap: "Summary of responses to contribution type (Timepoint 2)"
+#| output: asis
+
+
+# Table for Timepoint 2
+table_Time2 <- longerDataContributions |>
+  filter(timepoint == "Time 2") |>
+  contingencyTable(
+    contingX = "contributionType",
+    contingGrp = "choices"
+  )
+
 
 ```
 
-##### descriptions
+##### Descriptions
 
 The participants were given the option to describe those other contributions. These descriptions are listed in the table below.
 
@@ -1645,12 +2759,20 @@ The participants were given the option to describe those other contributions. Th
 #| label: other-contributions-table
 #| tbl-cap: "Descriptions of other contributions to PsychoPy/JS that some participants provided"
 
+# visMain |> 
+#   select(contribOtherDesc) |>
+#   drop_na() |>
+#   datatable(
+#     class = 'cell-border stripe',
+#     colnames = "[I] contribute in these other ways"
+#   )
+
 visMain |> 
-  select(contribOtherDesc) |>
-  drop_na() |>
+  select(timepoint, contribOtherDesc) |>
+  drop_na(contribOtherDesc) |>
   datatable(
     class = 'cell-border stripe',
-    colnames = "[I] contribute in these other ways"
+    colnames = c("Timepoint", "[I] contribute in these other ways")
   )
 
 ```
@@ -1660,44 +2782,77 @@ visMain |>
 
 ---
 
-#### interactions
+#### Interactions
 
 {{< include interactionNotes.qmd >}}
 
-##### gender
+##### Gender
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: contrib-by-gender-plot
 #| fig-alt: "Frequency barplot of the choices made by gender in response to the following question: 'In which way do you contribute most?'"
+# 
+# legendLabel = "Gender"
+# longerDataContributions |>
+#   #drop_na(gender) |>
+#   wrappedStackedFreqPlot(
+#     xVar = choices,
+#     fillVar = gender,
+#     fillLabel = legendLabel,
+#     wrapVar = contributionType,
+#     ostColours = ostColours3,
+#     figTitle = contributeLabel,
+#     figCaption = contributeCaption,
+#     titleAdjust = NULL
+#   )
+# gdata::mv("p", "Ct_Gn") # p is sent to the global env. from the function
+# suppressWarnings(print(Ct_Gn))
 
-legendLabel = "Gender"
+legendLabel <- "Gender"
+
 longerDataContributions |>
-  #drop_na(gender) |>
+  # drop_na(gender) |>
   wrappedStackedFreqPlot(
     xVar = choices,
     fillVar = gender,
     fillLabel = legendLabel,
-    wrapVar = contributionType,
+    wrapVar = interaction(contributionType, timepoint, sep = " • "),
     ostColours = ostColours3,
     figTitle = contributeLabel,
     figCaption = contributeCaption,
     titleAdjust = NULL
   )
-gdata::mv("p", "Ct_Gn") # p is sent to the global env. from the function
-suppressWarnings(print(Ct_Gn))
+gdata::mv("p", "Ct_Gn_TP")  # Save to global env
+suppressWarnings(print(Ct_Gn_TP))
 
 ```
 
-###### table
+###### Table
 
 ```{r}
-#| label: ways-of-contributing-by-gender-stats-table
-#| tbl-cap: "Summary of responses by gender to ways of contributing"
+#| label: ways-of-contributing-by-gender-t1-stats-table
+#| tbl-cap: "Summary of responses by gender to ways of contributing (Timepoint 1)"
 #| output: asis
 
 longerDataContributions |>
+  filter(timepoint == "Time 1")|>
+  select(gender, contributionType, choices) |>
+  stratifiedContingencyTable(
+    strataVar = "gender",
+    byVar = "choices"
+    )
+
+```
+
+```{r}
+#| label: ways-of-contributing-by-gender-t2-stats-table
+#| tbl-cap: "Summary of responses by gender to ways of contributing (Timepoint 2)"
+#| output: asis
+
+longerDataContributions |>
+  filter(timepoint == "Time 2")|>
   select(gender, contributionType, choices) |>
   stratifiedContingencyTable(
     strataVar = "gender",
@@ -1709,40 +2864,74 @@ longerDataContributions |>
 
 ---
 
-##### sexual orientation
+##### Sexual orientation
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: contrib-by-sexuality-plot
 #| fig-alt: "Frequency barplot of the selections made by sexual orientation in response to the following question: 'In which way do you contribute most?'"
+# 
+# legendLabel = "non-heterosexual\ncommunity"
+# longerDataContributions |>
+#   drop_na(nonHeteroCommunity) |>
+#   wrappedStackedFreqPlot(
+#     xVar = choices,
+#     fillVar = nonHeteroCommunity,
+#     wrapVar = contributionType,
+#     ostColours = ostColours2rev,
+#     titleAdjust = NULL,
+#     fillLabel = legendLabel,
+#     figTitle = contributeLabel,
+#     figCaption = contributeCaption
+#   )
+# gdata::mv("p", "Ct_Nh") # p is sent to the global env. from the function
+# suppressWarnings(print(Ct_Nh))
 
-legendLabel = "non-heterosexual\ncommunity"
+
+legendLabel <- "non-heterosexual\ncommunity"
+
 longerDataContributions |>
-  drop_na(nonHeteroCommunity) |>
+  # drop_na(gender) |>
   wrappedStackedFreqPlot(
     xVar = choices,
     fillVar = nonHeteroCommunity,
-    wrapVar = contributionType,
-    ostColours = ostColours2rev,
-    titleAdjust = NULL,
     fillLabel = legendLabel,
+    wrapVar = interaction(contributionType, timepoint, sep = " • "),
+    ostColours = ostColours3,
     figTitle = contributeLabel,
-    figCaption = contributeCaption
+    figCaption = contributeCaption,
+    titleAdjust = NULL
   )
-gdata::mv("p", "Ct_Nh") # p is sent to the global env. from the function
-suppressWarnings(print(Ct_Nh))
+gdata::mv("p", "Ct_Nh_TP")  # Save to global env
+suppressWarnings(print(Ct_Nh_TP))
 
 ```
 
-###### table
+###### Table
 
 ```{r}
-#| label: ways-of-contributing-by-sexuality-stats-table
-#| tbl-cap: "Summary of responses by sexual orientation to ways of contributing"
+#| label: ways-of-contributing-by-sexuality-t1-stats-table
+#| tbl-cap: "Summary of responses by sexual orientation to ways of contributing (Timepoint 1)"
 #| output: asis
 
 longerDataContributions |>
+  filter(timepoint == "Time 1")|>
+  select(nonHeteroCommunity, contributionType, choices) |>
+  stratifiedContingencyTable(
+    strataVar = "nonHeteroCommunity",
+    byVar = "choices"
+    )
+
+```
+
+```{r}
+#| label: ways-of-contributing-by-sexuality-t2-stats-table
+#| tbl-cap: "Summary of responses by sexual orientation to ways of contributing (Timepoint 2)"
+#| output: asis
+
+longerDataContributions |>
+  filter(timepoint == "Time 2")|>
   select(nonHeteroCommunity, contributionType, choices) |>
   stratifiedContingencyTable(
     strataVar = "nonHeteroCommunity",
@@ -1754,40 +2943,74 @@ longerDataContributions |>
 
 ---
 
-##### race and/or culture
+##### Race and/or culture
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: contrib-by-race-plot
 #| fig-alt: "Frequency barplot of the selections made by race and/or culture in response to the following question: 'In which way do you contribute most?'"
+# 
+# legendLabel = "Race and/or\nculture"
+# longerDataContributions |>
+#   drop_na(raceCulture) |>
+#   wrappedStackedFreqPlot(
+#     xVar = choices,
+#     fillVar = raceCulture,
+#     wrapVar = contributionType,
+#     ostColours = ostColours2rev,
+#     titleAdjust = NULL,
+#     fillLabel = legendLabel,
+#     figTitle = contributeLabel,
+#     figCaption = contributeCaption
+#   )
+# gdata::mv("p", "Ct_Rc") # p is sent to the global env. from the function
+# suppressWarnings(print(Ct_Rc))
 
-legendLabel = "Race and/or\nculture"
+
+legendLabel <- "Race and/or\nculture"
+
 longerDataContributions |>
-  drop_na(raceCulture) |>
+  # drop_na(gender) |>
   wrappedStackedFreqPlot(
     xVar = choices,
     fillVar = raceCulture,
-    wrapVar = contributionType,
-    ostColours = ostColours2rev,
-    titleAdjust = NULL,
     fillLabel = legendLabel,
+    wrapVar = interaction(contributionType, timepoint, sep = " • "),
+    ostColours = ostColours3,
     figTitle = contributeLabel,
-    figCaption = contributeCaption
+    figCaption = contributeCaption,
+    titleAdjust = NULL
   )
-gdata::mv("p", "Ct_Rc") # p is sent to the global env. from the function
-suppressWarnings(print(Ct_Rc))
+gdata::mv("p", "Ct_Rc_TP")  # Save to global env
+suppressWarnings(print(Ct_Rc_TP))
 
 ```
 
-###### table
+###### Table
 
 ```{r}
-#| label: ways-of-contributing-by-race-stats-table
-#| tbl-cap: "Summary of responses by race and/or culture to ways of contributing"
+#| label: ways-of-contributing-by-race-t1-stats-table
+#| tbl-cap: "Summary of responses by race and/or culture to ways of contributing (Timepoint 1)"
 #| output: asis
 
 longerDataContributions |>
+  filter(timepoint == "Time 1")|>
+  select(raceCulture, contributionType, choices) |>
+  stratifiedContingencyTable(
+    strataVar = "raceCulture",
+    byVar = "choices"
+    )
+
+```
+
+```{r}
+#| label: ways-of-contributing-by-race-t2-stats-table
+#| tbl-cap: "Summary of responses by race and/or culture to ways of contributing (Timepoint 2)"
+#| output: asis
+
+longerDataContributions |>
+  filter(timepoint == "Time 2")|>
   select(raceCulture, contributionType, choices) |>
   stratifiedContingencyTable(
     strataVar = "raceCulture",
@@ -1799,40 +3022,74 @@ longerDataContributions |>
 
 ---
 
-##### disability and/or neurodivergence
+##### Disability and/or neurodivergence
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: contrib-by-disability-plot
 #| fig-alt: "Frequency barplot of the selections made by disability and/or neurodivergence in response to the following question: 'In which way do you contribute most?'"
+# 
+# legendLabel = "Disability and/or\nneurodivergence"
+# longerDataContributions |>
+#   drop_na(disability) |>
+#   wrappedStackedFreqPlot(
+#     xVar = choices,
+#     fillVar = disability,
+#     wrapVar = contributionType,
+#     ostColours = ostColours2rev,
+#     titleAdjust = NULL,
+#     fillLabel = legendLabel,
+#     figTitle = contributeLabel,
+#     figCaption = contributeCaption
+#   )
+# gdata::mv("p", "Ct_Dn") # p is sent to the global env. from the function
+# suppressWarnings(print(Ct_Dn))
 
-legendLabel = "Disability and/or\nneurodivergence"
+
+legendLabel <- "Disability and/or\nneurodivergence"
+
 longerDataContributions |>
-  drop_na(disability) |>
+  # drop_na(gender) |>
   wrappedStackedFreqPlot(
     xVar = choices,
     fillVar = disability,
-    wrapVar = contributionType,
-    ostColours = ostColours2rev,
-    titleAdjust = NULL,
     fillLabel = legendLabel,
+    wrapVar = interaction(contributionType, timepoint, sep = " • "),
+    ostColours = ostColours3,
     figTitle = contributeLabel,
-    figCaption = contributeCaption
+    figCaption = contributeCaption,
+    titleAdjust = NULL
   )
-gdata::mv("p", "Ct_Dn") # p is sent to the global env. from the function
-suppressWarnings(print(Ct_Dn))
+gdata::mv("p", "Ct_Dn_TP")  # Save to global env
+suppressWarnings(print(Ct_Dn_TP))
 
 ```
 
-###### table
+###### Table
 
 ```{r}
-#| label: ways-of-contributing-by-disability-stats-table
-#| tbl-cap: "Summary of responses by disability and/or neurodivergence to ways of contributing"
+#| label: ways-of-contributing-by-disability-t1-stats-table
+#| tbl-cap: "Summary of responses by disability and/or neurodivergence to ways of contributing (Timepoint 1)"
 #| output: asis
 
 longerDataContributions |>
+  filter(timepoint == "Time 1")|>
+  select(disability, contributionType, choices) |>
+  stratifiedContingencyTable(
+    strataVar = "disability",
+    byVar = "choices"
+    )
+
+```
+
+```{r}
+#| label: ways-of-contributing-by-disability-t2-stats-table
+#| tbl-cap: "Summary of responses by disability and/or neurodivergence to ways of contributing (Timepoint 2)"
+#| output: asis
+
+longerDataContributions |>
+  filter(timepoint == "Time 2")|>
   select(disability, contributionType, choices) |>
   stratifiedContingencyTable(
     strataVar = "disability",
@@ -1846,38 +3103,72 @@ longerDataContributions |>
 
 ##### English as dominant language
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: contrib-by-dominant-language-plot
 #| fig-alt: "Frequency barplot of the selections made by whether one is dominant in written English in response to the following question: 'In which way do you contribute most?'"
+# 
+# legendLabel = "English as a\ndominant language"
+# longerDataContributions |>
+#   drop_na(domLangEnglish) |>
+#   wrappedStackedFreqPlot(
+#     xVar = choices,
+#     fillVar = domLangEnglish,
+#     wrapVar = contributionType,
+#     ostColours = ostColours2rev,
+#     titleAdjust = NULL,
+#     fillLabel = legendLabel,
+#     figTitle = contributeLabel,
+#     figCaption = contributeCaption
+#   )
+# gdata::mv("p", "Ct_Dl") # p is sent to the global env. from the function
+# suppressWarnings(print(Ct_Dl))
 
-legendLabel = "English as a\ndominant language"
+
+legendLabel <- "English as a\ndominant language"
+
 longerDataContributions |>
-  drop_na(domLangEnglish) |>
+  # drop_na(gender) |>
   wrappedStackedFreqPlot(
     xVar = choices,
     fillVar = domLangEnglish,
-    wrapVar = contributionType,
-    ostColours = ostColours2rev,
-    titleAdjust = NULL,
     fillLabel = legendLabel,
+    wrapVar = interaction(contributionType, timepoint, sep = " • "),
+    ostColours = ostColours3,
     figTitle = contributeLabel,
-    figCaption = contributeCaption
+    figCaption = contributeCaption,
+    titleAdjust = NULL
   )
-gdata::mv("p", "Ct_Dl") # p is sent to the global env. from the function
-suppressWarnings(print(Ct_Dl))
+gdata::mv("p", "Ct_Dl_TP")  # Save to global env
+suppressWarnings(print(Ct_Dl_TP))
 
 ```
 
-###### table
+###### Table
 
 ```{r}
-#| label: ways-of-contributing-by-language_dominance-stats-table
-#| tbl-cap: "Summary of responses by written-English dominance to ways of contributing"
+#| label: ways-of-contributing-by-language_dominance-t1-stats-table
+#| tbl-cap: "Summary of responses by written-English dominance to ways of contributing (Timepoint 1)"
 #| output: asis
 
 longerDataContributions |>
+  filter(timepoint == "Time 1")|>
+  select(domLangEnglish, contributionType, choices) |>
+  stratifiedContingencyTable(
+    strataVar = "domLangEnglish",
+    byVar = "choices"
+    )
+
+```
+
+```{r}
+#| label: ways-of-contributing-by-language_dominance-t2-stats-table
+#| tbl-cap: "Summary of responses by written-English dominance to ways of contributing (Timepoint 2)"
+#| output: asis
+
+longerDataContributions |>
+  filter(timepoint == "Time 2")|>
   select(domLangEnglish, contributionType, choices) |>
   stratifiedContingencyTable(
     strataVar = "domLangEnglish",
@@ -1890,7 +3181,7 @@ longerDataContributions |>
 ---
 
 
-### deterrents to contributing
+### Deterrents to contributing
 
 Participants were asked the following:
 
@@ -1915,19 +3206,36 @@ Note that on this `1`-`5` scale, the number `3` is directly in the middle of the
 Also, the barplots are sorted along descending frequency of agreement. That is, the topmost barplot is the one with highest number of agreements, whereas the bottom-most barplot is the one with the highest number of disagreements.
 :::
 
-#### everyone
+#### Everyone
 
-##### figure
+##### Figure
 
 ```{r}
-#| label: deterrents-plot
-#| fig-alt: "Stacked frequency barplots of the responses to: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?'"
+#| label: deterrents-t1-plot
+#| fig-alt: "Stacked frequency barplots of the responses to: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?' (Timepoint 1)"
 
 visMain |>
+  filter(timepoint == "Time 1") |>
   dplyr::select(starts_with("deterrents")) |>
   stackedFrequencies(
     colours = ostColours5,
-    figTitle = "Deterrents to contributing for everyone"
+    figTitle = "Deterrents to contributing for everyone (Timepoint 1)"
+    )
+gdata::mv("p", "DtCt") # p is sent to the global env. from the function
+suppressWarnings(print(DtCt))
+
+```
+
+```{r}
+#| label: deterrents-t2-plot
+#| fig-alt: "Stacked frequency barplots of the responses to: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?' (Timepoint 2)"
+
+visMain |>
+  filter(timepoint == "Time 2") |>
+  dplyr::select(starts_with("deterrents")) |>
+  stackedFrequencies(
+    colours = ostColours5,
+    figTitle = "Deterrents to contributing for everyone (Timepoint 2)"
     )
 gdata::mv("p", "DtCt") # p is sent to the global env. from the function
 suppressWarnings(print(DtCt))
@@ -1935,28 +3243,36 @@ suppressWarnings(print(DtCt))
 ```
 
 
-##### table
+##### Table
 
 ```{r}
 #| label: deterrents-stats-table
 #| tbl-cap: "Statistical summaries of responses to statements regarding deterrents to contributing."
 #| output: asis
 
+# visMain |>
+#   select(starts_with("deterrents"))  |>
+#   likertTable(
+#     lowerBound = "1 = not at all",
+#     upperBound = "5 = very much",
+#     byVar = NULL,
+#     spanVar <- NULL
+#   )
+
 visMain |>
-  select(starts_with("deterrents"))  |>
+  select(timepoint, starts_with("deterrents")) |>
   likertTable(
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
-    byVar = NULL,
-    spanVar <- NULL
+    byVar = "timepoint",
+    spanVar = NULL
   )
-
 ```
 
 
 <!-- {{< include notes/_deterrents.md >}} -->
 
-#### interactions
+#### Interactions
 
 ```{r}
 #| label: createDeterrentsLabel
@@ -1967,54 +3283,95 @@ deterrentsCaption <- "Notes: \n1. A response of 1 indicates 'not at all' \n2. A 
 ```
 
 
-##### gender
+##### Gender
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: deterrents-likert-plot-by-gender
 #| fig-alt: "Boxplots of responses by gender to the the following question: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?.'" 
-
+# 
+# 
+# legendLabel <- "Gender"
+# longerDataDeterrents |>
+#   select(gender, deterrent, response) |>
+#   #drop_na(gender) |>
+#   #drop_na(deterrent) |>
+#   #drop_na(response) |>
+#   interactionBoxplot(
+#     xVar = response,
+#     yVar = gender,
+#     wrapVar = deterrent,
+#     lowerBound = 1,
+#     upperBound = 5,
+#     ostColours = ostColours3,
+#     xLabel = NULL, #deterrentsLabel,
+#     fillLabel = legendLabel,
+#     figCaption = "1 = Strongly disagree; 5 = Strongly agree" #deterrentsCaption
+#     )
+# gdata::mv("p", "Dt_Gn") # p is sent to the global env. from the function
+# suppressWarnings(print(Dt_Gn))
 
 legendLabel <- "Gender"
+
 longerDataDeterrents |>
-  select(gender, deterrent, response) |>
-  #drop_na(gender) |>
-  #drop_na(deterrent) |>
-  #drop_na(response) |>
+  select(gender, deterrent, response, timepoint) |>
+  mutate(deterrent_time = paste0(deterrent, " (", timepoint, ")")) |>
   interactionBoxplot(
     xVar = response,
     yVar = gender,
-    wrapVar = deterrent,
+    wrapVar = deterrent_time,  # Combined var used for wrapping
     lowerBound = 1,
     upperBound = 5,
     ostColours = ostColours3,
-    xLabel = NULL, #deterrentsLabel,
+    xLabel = NULL,
     fillLabel = legendLabel,
-    figCaption = "1 = Strongly disagree; 5 = Strongly agree" #deterrentsCaption
-    )
-gdata::mv("p", "Dt_Gn") # p is sent to the global env. from the function
+    figCaption = "1 = Strongly disagree; 5 = Strongly agree"
+  )
+
+gdata::mv("p", "Dt_Gn")
 suppressWarnings(print(Dt_Gn))
 
 ```
 
-###### table
+###### Table
 
 ```{r}
-#| label: deterrents-by-gender-stats-table
-#| tbl-cap: "Statistical summaries by gender of responses to statements regarding deterrents to contributing."
+#| label: deterrents-by-gender-t1-stats-table
+#| tbl-cap: "Statistical summaries by gender of responses to statements regarding deterrents to contributing. (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$gender)
 
 visMain |>
+  filter(timepoint == "Time 1")|>
   select(starts_with("deterrents"), gender) |>
   mutate(gender = as.character(gender)) |>
   mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
   likertTable(
     lowerBound = "1 = not at all",
     upperBound = "5 = very much",
-    #byVar = "gender", # HAVING TROUBLE HERE
+    byVar = "gender",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r}
+#| label: deterrents-by-gender-t2-stats-table
+#| tbl-cap: "Statistical summaries by gender of responses to statements regarding deterrents to contributing. (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$gender)
+
+visMain |>
+  filter(timepoint == "Time 2")|>
+  select(starts_with("deterrents"), gender) |>
+  mutate(gender = as.character(gender)) |>
+  mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = not at all",
+    upperBound = "5 = very much",
     byVar = "gender",
     spanVar = textForSpan
   )
@@ -2023,46 +3380,91 @@ visMain |>
 
 ---
 
-##### sexual orientation
+##### Sexual orientation
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: deterrents-likert-plot-by-sexuality
 #| fig-alt: "Boxplots of responses by sexual orientation to the the following question: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?.'" 
+# 
+# legendLabel <- "Non-heterosexual\ncommunity"
+# longerDataDeterrents |>
+#   select(nonHeteroCommunity, deterrent, response) |>
+#   #drop_na(nonHeteroCommunity) |>
+#   # drop_na(deterrent) |>
+#   # drop_na(response) |>
+#   interactionBoxplot(
+#     xVar = response,
+#     yVar = nonHeteroCommunity,
+#     wrapVar = deterrent,
+#     lowerBound = 1,
+#     upperBound = 5,
+#     ostColours = ostColours2rev,
+#     xLabel = NULL, #deterrentsLabel,
+#     fillLabel = legendLabel,
+#     figCaption = "1 = Strongly disagree; 5 = Strongly agree" #deterrentsCaption
+# )
+# gdata::mv("p", "Dt_Nh") # p is sent to the global env. from the function
+# suppressWarnings(print(Dt_Nh))
+
+
 
 legendLabel <- "Non-heterosexual\ncommunity"
+
 longerDataDeterrents |>
-  select(nonHeteroCommunity, deterrent, response) |>
-  #drop_na(nonHeteroCommunity) |>
-  # drop_na(deterrent) |>
-  # drop_na(response) |>
+  select(nonHeteroCommunity, deterrent, response, timepoint) |>
+  mutate(deterrent_time = paste0(deterrent, " (", timepoint, ")")) |>
   interactionBoxplot(
     xVar = response,
     yVar = nonHeteroCommunity,
-    wrapVar = deterrent,
+    wrapVar = deterrent_time,  # Combined var used for wrapping
     lowerBound = 1,
     upperBound = 5,
     ostColours = ostColours2rev,
-    xLabel = NULL, #deterrentsLabel,
+    xLabel = NULL,
     fillLabel = legendLabel,
-    figCaption = "1 = Strongly disagree; 5 = Strongly agree" #deterrentsCaption
-)
-gdata::mv("p", "Dt_Nh") # p is sent to the global env. from the function
+    figCaption = "1 = Strongly disagree; 5 = Strongly agree"
+  )
+
+gdata::mv("p", "Dt_Nh")
 suppressWarnings(print(Dt_Nh))
 
 ```
 
-###### table
+###### Table
 
 ```{r}
-#| label: deterrents-by-sexuality-stats-table
-#| tbl-cap: "Statistical summaries by sexual orientation of responses to statements regarding deterrents to contributing."
+#| label: deterrents-by-sexuality-t1-stats-table
+#| tbl-cap: "Statistical summaries by sexual orientation of responses to statements regarding deterrents to contributing. (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$nonHeteroCommunity)
 
 visMain |>
+  filter(timepoint == "Time 1")|>
+  select(starts_with("deterrents"), nonHeteroCommunity)  |>
+  mutate(nonHeteroCommunity = as.character(nonHeteroCommunity)) |>
+  mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = not at all",
+    upperBound = "5 = very much",
+    byVar = "nonHeteroCommunity",
+    spanVar = textForSpan
+  )
+
+
+```
+
+```{r}
+#| label: deterrents-by-sexuality-t2-stats-table
+#| tbl-cap: "Statistical summaries by sexual orientation of responses to statements regarding deterrents to contributing. (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$nonHeteroCommunity)
+
+visMain |>
+  filter(timepoint == "Time 2")|>
   select(starts_with("deterrents"), nonHeteroCommunity)  |>
   mutate(nonHeteroCommunity = as.character(nonHeteroCommunity)) |>
   mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
@@ -2078,45 +3480,87 @@ visMain |>
 
 ---
 
-##### race and/or culture
+##### Race and/or culture
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: deterrents-likert-plot-by-race
 #| fig-alt: "Boxplots of responses by race and/or culture to the the following question: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?.'" 
+# 
+# legendLabel <- "Race and/or culture\nthat is potentially\ndiscriminated against"
+# longerDataDeterrents |>
+#   select(raceCulture, deterrent, response) |>
+#   # drop_na(raceCulture) |>
+#   # drop_na(deterrent) |>
+#   # drop_na(response) |>
+#   interactionBoxplot(
+#     xVar = response,
+#     yVar = raceCulture,
+#     wrapVar = deterrent,
+#     lowerBound = 1,
+#     upperBound = 5,
+#     ostColours = ostColours2rev,
+#     xLabel = deterrentsLabel,
+#     fillLabel = legendLabel,
+#     figCaption = deterrentsCaption
+# )
+# gdata::mv("p", "Dt_Rc") # p is sent to the global env. from the function
+# suppressWarnings(print(Dt_Rc))
+
 
 legendLabel <- "Race and/or culture\nthat is potentially\ndiscriminated against"
+
 longerDataDeterrents |>
-  select(raceCulture, deterrent, response) |>
-  # drop_na(raceCulture) |>
-  # drop_na(deterrent) |>
-  # drop_na(response) |>
+  select(raceCulture, deterrent, response, timepoint) |>
+  mutate(deterrent_time = paste0(deterrent, " (", timepoint, ")")) |>
   interactionBoxplot(
     xVar = response,
     yVar = raceCulture,
-    wrapVar = deterrent,
+    wrapVar = deterrent_time,  # Combined var used for wrapping
     lowerBound = 1,
     upperBound = 5,
     ostColours = ostColours2rev,
-    xLabel = deterrentsLabel,
+    xLabel = NULL,
     fillLabel = legendLabel,
-    figCaption = deterrentsCaption
-)
-gdata::mv("p", "Dt_Rc") # p is sent to the global env. from the function
+    figCaption = "1 = Strongly disagree; 5 = Strongly agree"
+  )
+
+gdata::mv("p", "Dt_Rc")
 suppressWarnings(print(Dt_Rc))
 
 ```
 
-###### table
+###### Table
 
 ```{r}
-#| label: deterrents-by-race-stats-table
-#| tbl-cap: "Statistical summaries by race and/or culture of responses to statements regarding deterrents to contributing."
+#| label: deterrents-by-race-t1-stats-table
+#| tbl-cap: "Statistical summaries by race and/or culture of responses to statements regarding deterrents to contributing. (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$raceCulture)
 visMain |>
+  filter(timepoint == "Time 1")|>
+  select(starts_with("deterrents"), raceCulture)  |>
+  mutate(raceCulture = as.character(raceCulture)) |>
+  mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = not at all",
+    upperBound = "5 = very much",
+    byVar = "raceCulture",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r}
+#| label: deterrents-by-race-t2-stats-table
+#| tbl-cap: "Statistical summaries by race and/or culture of responses to statements regarding deterrents to contributing. (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$raceCulture)
+visMain |>
+  filter(timepoint == "Time 2")|>
   select(starts_with("deterrents"), raceCulture)  |>
   mutate(raceCulture = as.character(raceCulture)) |>
   mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "NA")) |>
@@ -2131,46 +3575,69 @@ visMain |>
 
 ---
 
-##### disability and/or neurodivergence
+##### Disability and/or neurodivergence
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: deterrents-likert-plot-by-disability
 #| fig-alt: "Boxplots of responses by disability and/or neurodivergence to the the following question: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?.'" 
+# 
+# legendLabel <- "Disabled and/or\n neurodivergent"
+# longerDataDeterrents |>
+#   select(disability, deterrent, response) |>
+#   # drop_na(disability) |>
+#   # drop_na(deterrent) |>
+#   # drop_na(response) |>
+#   interactionBoxplot(
+#     xVar = response,
+#     yVar = disability,
+#     wrapVar = deterrent,
+#     lowerBound = 1,
+#     upperBound = 5,
+#     ostColours = ostColours2rev,
+#     xLabel = deterrentsLabel,
+#     fillLabel = legendLabel,
+#     figCaption = deterrentsCaption
+# )
+# gdata::mv("p", "Dt_Dn") # p is sent to the global env. from the function
+# suppressWarnings(print(Dt_Dn))
+
 
 legendLabel <- "Disabled and/or\n neurodivergent"
+
 longerDataDeterrents |>
-  select(disability, deterrent, response) |>
-  # drop_na(disability) |>
-  # drop_na(deterrent) |>
-  # drop_na(response) |>
+  select(disability, deterrent, response, timepoint) |>
+  mutate(deterrent_time = paste0(deterrent, " (", timepoint, ")")) |>
   interactionBoxplot(
     xVar = response,
     yVar = disability,
-    wrapVar = deterrent,
+    wrapVar = deterrent_time,  # Combined var used for wrapping
     lowerBound = 1,
     upperBound = 5,
     ostColours = ostColours2rev,
-    xLabel = deterrentsLabel,
+    xLabel = NULL,
     fillLabel = legendLabel,
-    figCaption = deterrentsCaption
-)
-gdata::mv("p", "Dt_Dn") # p is sent to the global env. from the function
+    figCaption = "1 = Strongly disagree; 5 = Strongly agree"
+  )
+
+gdata::mv("p", "Dt_Dn")
 suppressWarnings(print(Dt_Dn))
+
 
 ```
 
-###### table
+###### Table
 
 ```{r}
-#| label: deterrents-by-disability-stats-table
-#| tbl-cap: "Statistical summaries by disability and/or neurodivergence of responses to statements regarding deterrents to contributing."
+#| label: deterrents-by-disability-t1-stats-table
+#| tbl-cap: "Statistical summaries by disability and/or neurodivergence of responses to statements regarding deterrents to contributing. (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$disability)
 
 visMain |>
+  filter(timepoint == "Time 1") |>
   select(starts_with("deterrents"), disability)  |>
   mutate(disability = as.character(disability)) |>
   mutate(disability = forcats::fct_na_value_to_level(disability, level = "NA")) |>
@@ -2181,6 +3648,29 @@ visMain |>
     spanVar = textForSpan
   )
 
+
+```
+
+```{r}
+#| label: deterrents-by-disability-t2-stats-table
+#| tbl-cap: "Statistical summaries by disability and/or neurodivergence of responses to statements regarding deterrents to contributing. (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$disability)
+
+visMain |>
+  filter(timepoint == "Time 2") |>
+  select(starts_with("deterrents"), disability)  |>
+  mutate(disability = as.character(disability)) |>
+  mutate(disability = forcats::fct_na_value_to_level(disability, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = not at all",
+    upperBound = "5 = very much",
+    byVar = "disability",
+    spanVar = textForSpan
+  )
+
+
 ```
 
 
@@ -2188,43 +3678,87 @@ visMain |>
 
 ##### English as dominant language
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: deterrents-likert-plot-by-domlang
 #| fig-alt: "Boxplots of responses by whether English is the respondent's dominant written language to the the following question: 'To what extent do each of the following limit the amount you feel able to contribute to the PsychoPy project?.'" 
+# legendLabel <- "English is dominant\nwritten language"
+# longerDataDeterrents |>
+#   select(domLangEnglish, deterrent, response) |>
+#   # drop_na(domLangEnglish) |>
+#   # drop_na(deterrent) |>
+#   # drop_na(response) |>
+#   interactionBoxplot(
+#     xVar = response,
+#     yVar = domLangEnglish,
+#     wrapVar = deterrent,
+#     lowerBound = 1,
+#     upperBound = 5,
+#     ostColours = ostColours2rev,
+#     xLabel = deterrentsLabel,
+#     fillLabel = legendLabel,
+#     figCaption = deterrentsCaption
+# )
+# gdata::mv("p", "Dt_Dl") # p is sent to the global env. from the function
+# suppressWarnings(print(Dt_Dl))
+# 
+
+
 legendLabel <- "English is dominant\nwritten language"
+
 longerDataDeterrents |>
-  select(domLangEnglish, deterrent, response) |>
-  # drop_na(domLangEnglish) |>
-  # drop_na(deterrent) |>
-  # drop_na(response) |>
+  select(domLangEnglish, deterrent, response, timepoint) |>
+  mutate(deterrent_time = paste0(deterrent, " (", timepoint, ")")) |>
   interactionBoxplot(
     xVar = response,
     yVar = domLangEnglish,
-    wrapVar = deterrent,
+    wrapVar = deterrent_time,  # Combined var used for wrapping
     lowerBound = 1,
     upperBound = 5,
     ostColours = ostColours2rev,
-    xLabel = deterrentsLabel,
+    xLabel = NULL,
     fillLabel = legendLabel,
-    figCaption = deterrentsCaption
-)
-gdata::mv("p", "Dt_Dl") # p is sent to the global env. from the function
+    figCaption = "1 = Strongly disagree; 5 = Strongly agree"
+  )
+
+gdata::mv("p", "Dt_Dl")
 suppressWarnings(print(Dt_Dl))
 
 ```
 
-###### table
+###### Table
 
 ```{r}
-#| label: deterrents-by-domlang-stats-table
-#| tbl-cap: "Statistical summaries by whether the respondents' dominant written language is English of responses to statements regarding deterrents to contributing."
+#| label: deterrents-by-domlang-t1-stats-table
+#| tbl-cap: "Statistical summaries by whether the respondents' dominant written language is English of responses to statements regarding deterrents to contributing. (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$domLangEnglish)
 
 visMain |>
+  filter(timepoint == "Time 1") |>
+  select(starts_with("deterrents"), domLangEnglish)  |>
+  mutate(domLangEnglish = as.character(domLangEnglish)) |>
+  mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = not at all",
+    upperBound = "5 = very much",
+    byVar = "domLangEnglish",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r}
+#| label: deterrents-by-domlang-t2-stats-table
+#| tbl-cap: "Statistical summaries by whether the respondents' dominant written language is English of responses to statements regarding deterrents to contributing. (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$domLangEnglish)
+
+visMain |>
+  filter(timepoint == "Time 2") |>
   select(starts_with("deterrents"), domLangEnglish)  |>
   mutate(domLangEnglish = as.character(domLangEnglish)) |>
   mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "NA")) |>
@@ -2240,7 +3774,7 @@ visMain |>
 
 ---
 
-### workshops on contributing
+### Workshops on contributing
 
 This section summarises, both visually and verbally, the answer to the following question:
 
@@ -2248,9 +3782,9 @@ This section summarises, both visually and verbally, the answer to the following
 
 Participants provided answers on a `1`-`5` Likert scale, where `1` indicated *Strongly disagree* and a `5` indicated *Strongly agree*.
 
-#### everyone
+#### Everyone
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: workshopLabels
@@ -2264,32 +3798,62 @@ likertValues <- get_labels(longerDataSimple$workshopsOnContributing)
 ```{r}
 #| label: contrib-workshops-plot
 #| fig-alt: "Barplot of responses to the following statement: 'My engagement with the community would be helped if workshops were provided on how to contribute'"
-
+# 
+# longerDataSimple |> 
+#   select(workshopsOnContributing) |> 
+#   freqPlot(
+#     ostColour = ostYellow,
+#     sorting = "none"
+#   )
+# gdata::mv("p", "CtWk") # p is sent to the global env. from the function
+# suppressWarnings(print(CtWk))
 longerDataSimple |> 
-  select(workshopsOnContributing) |> 
-  freqPlot(
-    ostColour = ostYellow,
-    sorting = "none"
-  )
-gdata::mv("p", "CtWk") # p is sent to the global env. from the function
-suppressWarnings(print(CtWk))
-
+  select(timepoint, workshopsOnContributing) |> 
+  mutate(
+    timepoint = as.factor(timepoint),
+    workshopsOnContributing = as.factor(workshopsOnContributing),  # Convert numeric to factor
+    workshopsOnContributing = forcats::fct_na_value_to_level(workshopsOnContributing, level = "(missing)")
+  ) |> 
+  count(timepoint, workshopsOnContributing) |> 
+  group_by(timepoint) |> 
+  mutate(proportion = n / sum(n)) |> 
+  ggplot(aes(x = workshopsOnContributing, y = proportion, fill = timepoint)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = ostColours2) +
+  labs(
+    title = "Interest in Workshops on Contributing by Timepoint",
+    x = "Interest in Workshops",
+    y = "Proportion",
+    fill = "Timepoint"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 
-##### table
+##### Table
 
 ```{r}
 #| label: workshops-stats-table
 #| tbl-cap: "Statistical summaries of responses to statement regarding the potential helpfulness of contributor workshops."
 #| output: asis
+# 
+# visMain |>
+#   select(workshopsOnContributing)  |>
+#   likertTable(
+#     lowerBound = "1 = Strongly disagree",
+#     upperBound = "5 = Strongly agree",
+#     byVar = NULL,
+#     spanVar = NULL
+#   )
 
 visMain |>
-  select(workshopsOnContributing)  |>
+  select(timepoint, workshopsOnContributing) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "5 = Strongly agree",
-    byVar = NULL,
+    byVar = "timepoint",
     spanVar = NULL
   )
 
@@ -2297,27 +3861,53 @@ visMain |>
 
 <!-- {{< include notes/_workshops.md >}} -->
 
-#### interactions
+#### Interactions
 
-##### gender
+##### Gender
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: workshop-likert-plot-by-gender
 #| fig-alt: "Boxplots of responses by gender to the question regarding whether the participant felt their engagement would increase with contributor workshops." 
+# 
+# figCaptionText <- paste0(
+#   "Notes: \n1. A response of 1 indicates 'Strongly disagree' \n2. A response of 5 indicates 'Strongly agree'\n3. The mean is represented by the diamond."
+# )
+# legendLabel <- "Gender"
+# visMain |>
+#   select(gender, workshopsOnContributing) |>
+#   drop_na(gender) |>
+#   drop_na(workshopsOnContributing) |>
+#   interactionBoxplot(
+#     xVar = workshopsOnContributing,
+#     yVar = gender,
+#     lowerBound = 1,
+#     upperBound = 5,
+#     ostColours = ostColours3,
+#     xLabel = workshopLabel,
+#     fillLabel = legendLabel,
+#     tickLabels = likertValues,
+#     pointFill = "darkgrey",
+#     wrapVar = NULL,
+#     figCaption = figCaptionText
+#     )
+# gdata::mv("p", "Wk_Gn") # p is sent to the global env. from the function
+# suppressWarnings(print(Wk_Gn))
 
 figCaptionText <- paste0(
   "Notes: \n1. A response of 1 indicates 'Strongly disagree' \n2. A response of 5 indicates 'Strongly agree'\n3. The mean is represented by the diamond."
 )
+
 legendLabel <- "Gender"
+
 visMain |>
-  select(gender, workshopsOnContributing) |>
-  drop_na(gender) |>
-  drop_na(workshopsOnContributing) |>
+  select(timepoint, gender, workshopsOnContributing) |>
+  drop_na(timepoint, gender, workshopsOnContributing) |>
   interactionBoxplot(
     xVar = workshopsOnContributing,
     yVar = gender,
+    wrapVar = timepoint,  # <-- This is the key update
     lowerBound = 1,
     upperBound = 5,
     ostColours = ostColours3,
@@ -2325,23 +3915,43 @@ visMain |>
     fillLabel = legendLabel,
     tickLabels = likertValues,
     pointFill = "darkgrey",
-    wrapVar = NULL,
     figCaption = figCaptionText
-    )
-gdata::mv("p", "Wk_Gn") # p is sent to the global env. from the function
+  )
+
+gdata::mv("p", "Wk_Gn") 
 suppressWarnings(print(Wk_Gn))
 
 ```
 
-###### table
+###### Table
 
 ```{r}
-#| label: workshops-by-gender-stats-table
-#| tbl-cap: "Summary of responses to desire for workshops by gender."
+#| label: workshops-by-gender-t1-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by gender. (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$gender)
 visMain |>
+  filter(timepoint == "Time 1") |>
+  select(workshopsOnContributing, gender)  |>
+  mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "5 = Strongly agree",
+    byVar = "gender",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r}
+#| label: workshops-by-gender-t2-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by gender. (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$gender)
+visMain |>
+  filter(timepoint == "Time 2") |>
   select(workshopsOnContributing, gender)  |>
   mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
   likertTable(
@@ -2355,17 +3965,38 @@ visMain |>
 
 ---
 
-##### other EDI dimensions
+##### Other EDI dimensions
 
 {{< include interactionNotes.qmd >}}
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: workshop-likert-plot-by-other-edis
 #| fig-alt: "Boxplots of responses by EDI variables other than gender to the question regarding whether the participant felt their engagement would increase with contributor workshops." 
+# 
+# legendLabel <- "Member of\nrespective\nEDI group"
+# longerDataSimple |>
+#   drop_na(workshopsOnContributing) |>
+#   drop_na(response) |>
+#   interactionBoxplot(
+#     xVar = workshopsOnContributing,
+#     yVar = response,
+#     lowerBound = 1,
+#     upperBound = 5,
+#     ostColours = ostColours2rev,
+#     xLabel = workshopLabel,
+#     fillLabel = legendLabel,
+#     tickLabels = likertValues,
+#     pointFill = "#F7F11C",
+#     wrapVar = ediVar,
+#     figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 5 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
+#   )
+# gdata::mv("p", "Wk_Id") # p is sent to the global env. from the function
+# suppressWarnings(print(Wk_Id))
 
 legendLabel <- "Member of\nrespective\nEDI group"
+
 longerDataSimple |>
   drop_na(workshopsOnContributing) |>
   drop_na(response) |>
@@ -2379,25 +4010,48 @@ longerDataSimple |>
     fillLabel = legendLabel,
     tickLabels = likertValues,
     pointFill = "#F7F11C",
-    wrapVar = ediVar,
+    wrapVarRow = ediVar,       # row = question
+    wrapVarCol = timepoint,    # column = timepoint
     figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 5 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
   )
-gdata::mv("p", "Wk_Id") # p is sent to the global env. from the function
+
+gdata::mv("p", "Wk_Id") 
 suppressWarnings(print(Wk_Id))
 
 ```
 
-###### tables
+###### Tables
 
 ---
 
 ```{r}
-#| label: workshops-by-sexuality-stats-table
-#| tbl-cap: "Summary of responses to desire for workshops by sexual orientation."
+#| label: workshops-by-sexuality-t1-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by sexual orientation. (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$nonHeteroCommunity)
 visMain |>
+  filter(timepoint == "Time 1") |>
+  select(workshopsOnContributing, nonHeteroCommunity)  |>
+  mutate(nonHeteroCommunity = as.character(nonHeteroCommunity)) |>
+  mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "5 = Strongly agree",
+    byVar = "nonHeteroCommunity",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r}
+#| label: workshops-by-sexuality-t2-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by sexual orientation. (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$nonHeteroCommunity)
+visMain |>
+  filter(timepoint == "Time 2") |>
   select(workshopsOnContributing, nonHeteroCommunity)  |>
   mutate(nonHeteroCommunity = as.character(nonHeteroCommunity)) |>
   mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
@@ -2413,12 +4067,34 @@ visMain |>
 ---
 
 ```{r}
-#| label: workshops-by-race-stats-table
-#| tbl-cap: "Summary of responses to desire for workshops by race and/or culture."
+#| label: workshops-by-race-t1-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by race and/or culture. (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$raceCulture)
 visMain |>
+  filter(timepoint == "Time 1") |>
+  select(workshopsOnContributing, raceCulture)  |>
+  mutate(raceCulture = as.character(raceCulture)) |>
+  mutate(raceCulture = forcats::fct_recode(raceCulture, "yes" = "1", "no" = "0")) |>
+  mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "5 = Strongly agree",
+    byVar = "raceCulture",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r}
+#| label: workshops-by-race-t2-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by race and/or culture. (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$raceCulture)
+visMain |>
+  filter(timepoint == "Time 2") |>
   select(workshopsOnContributing, raceCulture)  |>
   mutate(raceCulture = as.character(raceCulture)) |>
   mutate(raceCulture = forcats::fct_recode(raceCulture, "yes" = "1", "no" = "0")) |>
@@ -2435,12 +4111,34 @@ visMain |>
 ---
 
 ```{r}
-#| label: workshops-by-disability-stats-table
-#| tbl-cap: "Summary of responses to desire for workshops by disability and/or neurodivergence."
+#| label: workshops-by-disability-t1-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by disability and/or neurodivergence. (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$disability)
 visMain |>
+  filter(timepoint == "Time 1") |>
+  select(workshopsOnContributing, disability)  |>
+  mutate(disability = as.character(disability)) |>
+  mutate(disability = forcats::fct_recode(disability, "yes" = "1", "no" = "0")) |>
+  mutate(disability = forcats::fct_na_value_to_level(disability, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "5 = Strongly agree",
+    byVar = "disability",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r}
+#| label: workshops-by-disability-t2-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by disability and/or neurodivergence. (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$disability)
+visMain |>
+  filter(timepoint == "Time 2") |>
   select(workshopsOnContributing, disability)  |>
   mutate(disability = as.character(disability)) |>
   mutate(disability = forcats::fct_recode(disability, "yes" = "1", "no" = "0")) |>
@@ -2457,12 +4155,34 @@ visMain |>
 ---
 
 ```{r}
-#| label: workshops-by-domlangenglish-stats-table
-#| tbl-cap: "Summary of responses to desire for workshops by written-English language dominance."
+#| label: workshops-by-domlangenglish-t1-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by written-English language dominance. (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$domLangEnglish)
 visMain |>
+  filter(timepoint == "Time 1") |>
+  select(workshopsOnContributing, domLangEnglish)  |>
+  mutate(domLangEnglish = as.character(domLangEnglish)) |>
+  mutate(domLangEnglish = forcats::fct_recode(domLangEnglish, "yes" = "1", "no" = "0")) |>
+  mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "5 = Strongly agree",
+    byVar = "domLangEnglish",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r}
+#| label: workshops-by-domlangenglish-t2-stats-table
+#| tbl-cap: "Summary of responses to desire for workshops by written-English language dominance. (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$domLangEnglish)
+visMain |>
+  filter(timepoint == "Time 2") |>
   select(workshopsOnContributing, domLangEnglish)  |>
   mutate(domLangEnglish = as.character(domLangEnglish)) |>
   mutate(domLangEnglish = forcats::fct_recode(domLangEnglish, "yes" = "1", "no" = "0")) |>
@@ -2478,7 +4198,7 @@ visMain |>
 
 ---
 
-## guidance
+## Guidance
 
 The third group of items on the survey collected information about documentation and the participants' awareness of and experience with the [Code of Conduct](https://github.com/psychopy/psychopy/blob/dev/code-of-conduct.md).
 
@@ -2497,37 +4217,72 @@ The sections directly below summarise, both visually and verbally, the answer to
 
 >`r get_label(visMain$awareOfCodeOfConduct)`
 
-#### everyone
+#### Everyone
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: codeofconduct-plot
 #| fig-alt: "Frequency barplot of responses to the following question: 'I am aware of the community Code of Conduct' If participants chose to respond, they could respond with either 'yes' or 'no.'"
+# 
+# visMain |> 
+#   select(awareOfCodeOfConduct) |> 
+#   mutate(awareOfCodeOfConduct = forcats::fct_na_value_to_level(awareOfCodeOfConduct, level = "NA")) |>
+#   freqPlot(
+#     ostColour = ostOrange,
+#     sorting = "none"
+#   )
+# gdata::mv("p", "CcAw") # p is sent to the global env. from the function
+# suppressWarnings(print(CcAw))
 
-visMain |> 
-  select(awareOfCodeOfConduct) |> 
-  mutate(awareOfCodeOfConduct = forcats::fct_na_value_to_level(awareOfCodeOfConduct, level = "NA")) |>
-  freqPlot(
-    ostColour = ostOrange,
-    sorting = "none"
-  )
-gdata::mv("p", "CcAw") # p is sent to the global env. from the function
-suppressWarnings(print(CcAw))
+visMain |>
+  select(timepoint, awareOfCodeOfConduct) |>
+  mutate(
+    timepoint = as.factor(timepoint),
+    awareOfCodeOfConduct = forcats::fct_na_value_to_level(awareOfCodeOfConduct, level = "NA")
+  ) |>
+  count(timepoint, awareOfCodeOfConduct) |>
+  group_by(timepoint) |>
+  mutate(proportion = n / sum(n)) |>
+  ggplot(aes(x = awareOfCodeOfConduct, y = proportion, fill = timepoint)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = ostColours2) +  # assumes ostColours2 is defined
+  labs(
+    title = "Awareness of Code of Conduct by Timepoint",
+    x = "Awareness of Code of Conduct",
+    y = "Proportion",
+    fill = "Timepoint"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: aware-code-of-conduct-count-table
 #| tbl-cap: "Summary of responses to awareness of Code of Conduct"
 #| output: asis
+# 
+# visMain |>
+#   select(awareOfCodeOfConduct) |>
+#   mutate(awareOfCodeOfConduct = forcats::fct_na_value_to_level(awareOfCodeOfConduct, level = "NA")) |>
+#   tbl_summary() |>
+#   modify_header(label = "**Question**") |>
+#   as_flex_table() |>
+#   flextable::flextable_to_rmd()
 
 visMain |>
-  select(awareOfCodeOfConduct) |>
-  mutate(awareOfCodeOfConduct = forcats::fct_na_value_to_level(awareOfCodeOfConduct, level = "NA")) |>
-  tbl_summary() |>
+  select(timepoint, awareOfCodeOfConduct) |>
+  mutate(
+    timepoint = as.factor(timepoint),
+    awareOfCodeOfConduct = forcats::fct_na_value_to_level(awareOfCodeOfConduct, level = "NA")
+  ) |>
+  tbl_summary(
+    by = timepoint  # Stratify table by timepoint
+  ) |>
   modify_header(label = "**Question**") |>
   as_flex_table() |>
   flextable::flextable_to_rmd()
@@ -2536,35 +4291,56 @@ visMain |>
 
 ---
 
-#### interactions
+#### Interactions
 
-##### gender
+##### Gender
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: codeofconduct-awareness-by-gender-plot
 #| fig-alt: "Contingency barplot of responses by gender to the following question: 'I am aware of the community Code of Conduct' If participants chose to respond, they could respond with either 'yes' or 'no.'"
+# 
+# contingencyPlot(
+#   df = visMain,
+#   contingX = "awareOfCodeOfConduct",
+#   contingGrp = "gender",
+#   colours = ostColours4na
+#   )
+# gdata::mv("p", "Cc_Gn") # p is sent to the global env. from the function
+# suppressWarnings(print(Cc_Gn))
 
+# Timepoint 1
 contingencyPlot(
-  df = visMain,
+  df = visMain |> filter(timepoint == "Time 1"),
   contingX = "awareOfCodeOfConduct",
   contingGrp = "gender",
   colours = ostColours4na
-  )
-gdata::mv("p", "Cc_Gn") # p is sent to the global env. from the function
-suppressWarnings(print(Cc_Gn))
+)
+gdata::mv("p", "Cc_Gn_T1")
+suppressWarnings(print(Cc_Gn_T1))
 
+
+# Timepoint 2
+contingencyPlot(
+  df = visMain |> filter(timepoint == "Time 2"),
+  contingX = "awareOfCodeOfConduct",
+  contingGrp = "gender",
+  colours = ostColours4na
+)
+gdata::mv("p", "Cc_Gn_T2")
+suppressWarnings(print(Cc_Gn_T2))
 ```
 
 ###### table
 
 ```{r}
-#| label: code-of-conduct-by-gender-stats-table
-#| tbl-cap: "Summary of responses by gender to awareness of the Code of Conduct"
+#| label: code-of-conduct-by-gender-t1-stats-table
+#| tbl-cap: "Summary of responses by gender to awareness of the Code of Conduct (Timepoint 1)"
 #| output: asis
 
 visMain |>
+  filter(timepoint == "Time 1") |>
   contingencyTable(
     contingX = "awareOfCodeOfConduct", 
     contingGrp = "gender"
@@ -2572,45 +4348,94 @@ visMain |>
 
 ```
 
-##### other EDI dimensions
+```{r}
+#| label: code-of-conduct-by-gender-t2-stats-table
+#| tbl-cap: "Summary of responses by gender to awareness of the Code of Conduct (Timepoint 2)"
+#| output: asis
+
+visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyTable(
+    contingX = "awareOfCodeOfConduct", 
+    contingGrp = "gender"
+    )
+
+```
+
+##### Other EDI dimensions
 
 {{< include interactionNotes.qmd >}}
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: codeofconduct-awareness-by-edivars-plot
 #| fig-alt: "Contingency barplot of responses by EDI variable (except gender) to the following question: 'I am aware of the community Code of Conduct' If participants chose to respond, they could respond with either 'yes' or 'no.'"
+# 
+# codeOfConductLabel <- get_label(longerDataSimple$awareOfCodeOfConduct)
+# 
+# longerDataSimple |>
+#   drop_na(response) |>
+#   drop_na(awareOfCodeOfConduct) |>
+#   wrappedStackedFreqPlot(
+#     xVar = awareOfCodeOfConduct,
+#     fillVar = response,
+#     fillLabel = "Member of\nrespective\nEDI group",
+#     wrapVar = ediVar,
+#     ostColours = ostColours2rev,
+#     figCaption = NULL,
+#     figTitle = codeOfConductLabel,
+#     titleAdjust = NULL
+#   )
+# gdata::mv("p", "Cc_Id") # p is sent to the global env. from the function
+# suppressWarnings(print(Cc_Id))
 
 codeOfConductLabel <- get_label(longerDataSimple$awareOfCodeOfConduct)
 
 longerDataSimple |>
   drop_na(response) |>
   drop_na(awareOfCodeOfConduct) |>
+  mutate(
+    wrapCombo = paste(ediVar, timepoint, sep = " | ")
+  ) |>
   wrappedStackedFreqPlot(
     xVar = awareOfCodeOfConduct,
     fillVar = response,
     fillLabel = "Member of\nrespective\nEDI group",
-    wrapVar = ediVar,
+    wrapVar = wrapCombo,
     ostColours = ostColours2rev,
     figCaption = NULL,
     figTitle = codeOfConductLabel,
     titleAdjust = NULL
   )
-gdata::mv("p", "Cc_Id") # p is sent to the global env. from the function
+gdata::mv("p", "Cc_Id")
 suppressWarnings(print(Cc_Id))
-
 ```
 
-###### tables
+###### Tables
 
 
 ```{r}
-#| label: code-of-conduct-by-sexuality-stats-table
-#| tbl-cap: "Summary of responses by sexual orientation to awareness of the Code of Conduct"
+#| label: code-of-conduct-by-sexuality-t1-stats-table
+#| tbl-cap: "Summary of responses by sexual orientation to awareness of the Code of Conduct (Timepoint 1)"
 #| output: asis
 
 visMain |>
+  filter(timepoint == "Time 1") |>
+  contingencyTable(
+    contingX = "awareOfCodeOfConduct", 
+    contingGrp = "nonHeteroCommunity"
+    )
+
+```
+
+```{r}
+#| label: code-of-conduct-by-sexuality-t2-stats-table
+#| tbl-cap: "Summary of responses by sexual orientation to awareness of the Code of Conduct (Timepoint 2)"
+#| output: asis
+
+visMain |>
+  filter(timepoint == "Time 2") |>
   contingencyTable(
     contingX = "awareOfCodeOfConduct", 
     contingGrp = "nonHeteroCommunity"
@@ -2621,11 +4446,26 @@ visMain |>
 ---
 
 ```{r}
-#| label: code-of-conduct-by-race-stats-table
-#| tbl-cap: "Summary of responses by race and/or culture to awareness of the Code of Conduct"
+#| label: code-of-conduct-by-race-t1-stats-table
+#| tbl-cap: "Summary of responses by race and/or culture to awareness of the Code of Conduct (Timepoint 1)"
 #| output: asis
 
 visMain |>
+  filter(timepoint == "Time 1") |>
+  contingencyTable(
+    contingX = "awareOfCodeOfConduct", 
+    contingGrp = "raceCulture"
+    )
+
+```
+
+```{r}
+#| label: code-of-conduct-by-race-t2-stats-table
+#| tbl-cap: "Summary of responses by race and/or culture to awareness of the Code of Conduct (Timepoint 2)"
+#| output: asis
+
+visMain |>
+  filter(timepoint == "Time 2") |>
   contingencyTable(
     contingX = "awareOfCodeOfConduct", 
     contingGrp = "raceCulture"
@@ -2636,11 +4476,26 @@ visMain |>
 ---
 
 ```{r}
-#| label: code-of-conduct-by-disability-stats-table
-#| tbl-cap: "Summary of responses by disability and/or neurodivergence to awareness of the Code of Conduct"
+#| label: code-of-conduct-by-disability-t1-stats-table
+#| tbl-cap: "Summary of responses by disability and/or neurodivergence to awareness of the Code of Conduct (Timepoint 1)"
 #| output: asis
 
 visMain |>
+  filter(timepoint == "Time 1") |>
+  contingencyTable(
+    contingX = "awareOfCodeOfConduct", 
+    contingGrp = "disability"
+    )
+
+```
+
+```{r}
+#| label: code-of-conduct-by-disability-t2-stats-table
+#| tbl-cap: "Summary of responses by disability and/or neurodivergence to awareness of the Code of Conduct (Timepoint 2)"
+#| output: asis
+
+visMain |>
+  filter(timepoint == "Time 2") |>
   contingencyTable(
     contingX = "awareOfCodeOfConduct", 
     contingGrp = "disability"
@@ -2651,11 +4506,26 @@ visMain |>
 ---
 
 ```{r}
-#| label: code-of-conduct-by-domlang-stats-table
-#| tbl-cap: "Summary of responses by written-English language dominance to awareness of the Code of Conduct"
+#| label: code-of-conduct-by-domlang-t1-stats-table
+#| tbl-cap: "Summary of responses by written-English language dominance to awareness of the Code of Conduct (Timepoint 1)"
 #| output: asis
 
 visMain |>
+  filter(timepoint == "Time 1") |>
+  contingencyTable(
+    contingX = "awareOfCodeOfConduct", 
+    contingGrp = "domLangEnglish"
+    )
+
+```
+
+```{r}
+#| label: code-of-conduct-by-domlang-t2-stats-table
+#| tbl-cap: "Summary of responses by written-English language dominance to awareness of the Code of Conduct (Timepoint 2)"
+#| output: asis
+
+visMain |>
+  filter(timepoint == "Time 2") |>
   contingencyTable(
     contingX = "awareOfCodeOfConduct", 
     contingGrp = "domLangEnglish"
@@ -2664,46 +4534,80 @@ visMain |>
 ```
 
 
-### findability, searchability, & accessibility
+### Findability, searchability, & accessibility
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
 >`r get_label(visMain$psychopyDocumentationEasy)`
 
-#### everyone
+#### Everyone
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: find-doceasy-plot
 #| warning: false
 #| fig-alt: "Barplot of agreement responses to the statement regarding findability, searchability, and accessibility of documentation."
-
+# 
+# visMain |>
+#   select(psychopyDocumentationEasy) |>
+#   freqPlot(
+#     ostColour = ostOrange,
+#     sorting = "none"
+#   )
+# gdata::mv("p", "DcEs") # p is sent to the global env. from the function
+# suppressWarnings(print(DcEs))
 visMain |>
-  select(psychopyDocumentationEasy) |>
-  freqPlot(
-    ostColour = ostOrange,
-    sorting = "none"
-  )
-gdata::mv("p", "DcEs") # p is sent to the global env. from the function
-suppressWarnings(print(DcEs))
+  select(timepoint, psychopyDocumentationEasy) |>
+  mutate(
+    timepoint = as.factor(timepoint),
+    psychopyDocumentationEasy = forcats::fct_na_value_to_level(
+      as.factor(psychopyDocumentationEasy),
+      level = "(missing)"
+    )
+  ) |>
+  count(timepoint, psychopyDocumentationEasy) |>
+  group_by(timepoint) |>
+  mutate(proportion = n / sum(n)) |>
+  ggplot(aes(x = psychopyDocumentationEasy, y = proportion, fill = timepoint)) +
+  geom_col(position = position_dodge(width = 0.8), color = "black") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = ostColours2) +
+  labs(
+    title = "Ease of PsychoPy Documentation by Timepoint",
+    x = "Ease of PsychoPy Documentation",
+    y = "Proportion",
+    fill = "Timepoint"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
 
-##### table
+##### Table
 
 ```{r}
 #| label: doceasy-stats-table
 #| tbl-cap: "Statistics for responses to statements regarding whether the documentation is findable, searchable, and accessible."
 #| output: asis
 
+# visMain |>
+#   select("psychopyDocumentationEasy") |> 
+#   likertTable(
+#     lowerBound = "1 = Strongly disagree",
+#     upperBound = "7 = Strongly agree",
+#     byVar = NULL,
+#     spanVar = NULL
+#   )
+
 visMain |>
-  select("psychopyDocumentationEasy") |> 
+  select(timepoint, psychopyDocumentationEasy) |>
+  mutate(timepoint = as.factor(timepoint)) |>
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
-    byVar = NULL,
+    byVar = "timepoint",   # stratify by timepoint
     spanVar = NULL
   )
 
@@ -2712,7 +4616,7 @@ visMain |>
 
 ---
   
-#### interactions
+#### Interactions
 
 ```{r}
 #| label: findabilityLabels
@@ -2722,16 +4626,17 @@ docEasyLabel <- get_label(visMain$psychopyDocumentationEasy)
 ```
 
 
-##### gender
+##### Gender
 
-###### figure
+###### Figure
 
 ```{r}
-#| label: doceasy-likert-plot-by-gender
-#| fig-alt: "Boxplots of responses by EDI variables by gender to the question regarding whether the participants felt the documentation for PsychoPy was easily findable, searchable, and accessible." 
+#| label: doceasy-likert-plot-t1-by-gender
+#| fig-alt: "Boxplots of responses by EDI variables by gender to the question regarding whether the participants felt the documentation for PsychoPy was easily findable, searchable, and accessible. (Timepoint 1)" 
 
 legendLabel <- "Gender"
 visMain |>
+  filter(timepoint == "Time 1") |>
   drop_na(gender) |>
   drop_na(psychopyDocumentationEasy) |>
   interactionBoxplot(
@@ -2752,15 +4657,43 @@ suppressWarnings(print(Dc_Gn))
 
 ```
 
-###### table
+```{r}
+#| label: doceasy-likert-plot-t2-by-gender
+#| fig-alt: "Boxplots of responses by EDI variables by gender to the question regarding whether the participants felt the documentation for PsychoPy was easily findable, searchable, and accessible. (Timepoint 2)" 
+
+legendLabel <- "Gender"
+visMain |>
+  filter(timepoint == "Time 2") |>
+  drop_na(gender) |>
+  drop_na(psychopyDocumentationEasy) |>
+  interactionBoxplot(
+    xVar = psychopyDocumentationEasy,
+    yVar = gender,
+    lowerBound = 1,
+    upperBound = 7,
+    ostColours = ostColours3,
+    xLabel = docEasyLabel,
+    fillLabel = legendLabel,
+    tickLabels = likertValues,
+    pointFill = "#F7F11C",
+    wrapVar = NULL,
+    figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
+  )
+gdata::mv("p", "Dc_Gn") # p is sent to the global env. from the function
+suppressWarnings(print(Dc_Gn))
+
+```
+
+###### Table
 
 ```{r}
-#| label: doceasy-by-gender-stats-table
-#| tbl-cap: "Summary of responses by gender to finding the documentation easily findable, searchable, and accessible"
+#| label: doceasy-by-gender-t1-stats-table
+#| tbl-cap: "Summary of responses by gender to finding the documentation easily findable, searchable, and accessible (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$gender)
 visMain |>
+  filter(timepoint == "Time 1") |>
   select(psychopyDocumentationEasy, gender)  |>
   mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
   likertTable(
@@ -2772,23 +4705,67 @@ visMain |>
 
 ```
 
-##### other EDI dimensions
+```{r}
+#| label: doceasy-by-gender-t2-stats-table
+#| tbl-cap: "Summary of responses by gender to finding the documentation easily findable, searchable, and accessible (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$gender)
+visMain |>
+  filter(timepoint == "Time 2") |>
+  select(psychopyDocumentationEasy, gender)  |>
+  mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "7 = Strongly agree",
+    byVar = "gender",
+    spanVar = textForSpan
+  )
+
+```
+
+##### Other EDI dimensions
 
 {{< include interactionNotes.qmd >}}
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: doceasy-likert-plot-by-other-edis
 #| fig-alt: "Boxplots of responses by EDI variables other than gender to the question regarding whether the participants felt the documentation for PsychoPy was easily findable, searchable, and accessible." 
+# 
+# legendLabel <- "Member of\nrespective\nEDI group"
+# longerDataSimple |>
+#   drop_na(psychopyDocumentationEasy) |>
+#   drop_na(response) |>
+#   interactionBoxplot(
+#     xVar = psychopyDocumentationEasy,
+#     yVar = response,
+#     lowerBound = 1,
+#     upperBound = 7,
+#     ostColours = ostColours2rev,
+#     xLabel = docEasyLabel,
+#     fillLabel = legendLabel,
+#     tickLabels = likertValues,
+#     pointFill = "#F7F11C",
+#     wrapVar = ediVar,
+#     figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
+#   )
+# gdata::mv("p", "Dc_Id") # p is sent to the global env. from the function
+# suppressWarnings(print(Dc_Id))
 
 legendLabel <- "Member of\nrespective\nEDI group"
+
 longerDataSimple |>
-  drop_na(psychopyDocumentationEasy) |>
-  drop_na(response) |>
+  drop_na(psychopyDocumentationEasy, response, timepoint) |>
+  mutate(
+    # Create combined wrap variable: question + timepoint
+    docEasy_time = paste0(docEasyLabel, " (", timepoint, ")")
+  ) |>
   interactionBoxplot(
     xVar = psychopyDocumentationEasy,
     yVar = response,
+    wrapVar = docEasy_time,  # Facet by this combined var
     lowerBound = 1,
     upperBound = 7,
     ostColours = ostColours2rev,
@@ -2796,43 +4773,83 @@ longerDataSimple |>
     fillLabel = legendLabel,
     tickLabels = likertValues,
     pointFill = "#F7F11C",
-    wrapVar = ediVar,
     figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
   )
-gdata::mv("p", "Dc_Id") # p is sent to the global env. from the function
+
+gdata::mv("p", "Dc_Id")
 suppressWarnings(print(Dc_Id))
 
 ```
 
-###### tables
+###### Tables
 
 ```{r}
-#| label: doceasy-by-sexuality-stats-table
-#| tbl-cap: "Summary of responses by sexual orientation to finding the documentation easily findable, searchable, and accessible"
+#| label: doceasy-by-sexuality-t1-stats-table
+#| tbl-cap: "Summary of responses by sexual orientation to finding the documentation easily findable, searchable, and accessible (Timepoint 1)"
 #| output: asis
+ 
+ textForSpan <- get_label(visMain$nonHeteroCommunity)
+ visMain |>
+   filter(timepoint == "Time 1") |>
+   select(psychopyDocumentationEasy, nonHeteroCommunity)  |>
+   mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
+   likertTable(
+     lowerBound = "1 = Strongly disagree",
+     upperBound = "7 = Strongly agree",
+     byVar = "nonHeteroCommunity",
+     spanVar = textForSpan
+   )
 
-textForSpan <- get_label(visMain$nonHeteroCommunity)
-visMain |>
-  select(psychopyDocumentationEasy, nonHeteroCommunity)  |>
-  mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
-  likertTable(
-    lowerBound = "1 = Strongly disagree",
-    upperBound = "7 = Strongly agree",
-    byVar = "nonHeteroCommunity",
-    spanVar = textForSpan
-  )
+```
+
+```{r}
+#| label: doceasy-by-sexuality-t2-stats-table
+#| tbl-cap: "Summary of responses by sexual orientation to finding the documentation easily findable, searchable, and accessible (Timepoint 2)"
+#| output: asis
+ 
+ textForSpan <- get_label(visMain$nonHeteroCommunity)
+ visMain |>
+   filter(timepoint == "Time 2") |>
+   select(psychopyDocumentationEasy, nonHeteroCommunity)  |>
+   mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
+   likertTable(
+     lowerBound = "1 = Strongly disagree",
+     upperBound = "7 = Strongly agree",
+     byVar = "nonHeteroCommunity",
+     spanVar = textForSpan
+   )
 
 ```
 
 ---
 
 ```{r}
-#| label: doceasy-by-race-stats-table
-#| tbl-cap: "Summary of responses by race and/or culture to finding the documentation easily findable, searchable, and accessible"
+#| label: doceasy-by-race-t1-stats-table
+#| tbl-cap: "Summary of responses by race and/or culture to finding the documentation easily findable, searchable, and accessible (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$raceCulture)
 visMain |>
+  filter(timepoint == "Time 1") |>
+  select(psychopyDocumentationEasy, raceCulture)  |>
+  mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "7 = Strongly agree",
+    byVar = "raceCulture",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r}
+#| label: doceasy-by-race-t2-stats-table
+#| tbl-cap: "Summary of responses by race and/or culture to finding the documentation easily findable, searchable, and accessible (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$raceCulture)
+visMain |>
+  filter(timepoint == "Time 2") |>
   select(psychopyDocumentationEasy, raceCulture)  |>
   mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "NA")) |>
   likertTable(
@@ -2847,12 +4864,32 @@ visMain |>
 ---
 
 ```{r}
-#| label: doceasy-by-disability-stats-table
-#| tbl-cap: "Summary of responses by disability and/or neurodivergence to finding the documentation easily findable, searchable, and accessible"
+#| label: doceasy-by-disability-t1-stats-table
+#| tbl-cap: "Summary of responses by disability and/or neurodivergence to finding the documentation easily findable, searchable, and accessible (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$disability)
 visMain |>
+  filter(timepoint == "Time 1") |>
+  select(psychopyDocumentationEasy, disability)  |>
+  mutate(disability = forcats::fct_na_value_to_level(disability, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "7 = Strongly agree",
+    byVar = "disability",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r}
+#| label: doceasy-by-disability-t2-stats-table
+#| tbl-cap: "Summary of responses by disability and/or neurodivergence to finding the documentation easily findable, searchable, and accessible (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$disability)
+visMain |>
+  filter(timepoint == "Time 2") |>
   select(psychopyDocumentationEasy, disability)  |>
   mutate(disability = forcats::fct_na_value_to_level(disability, level = "NA")) |>
   likertTable(
@@ -2867,12 +4904,13 @@ visMain |>
 ---
 
 ```{r}
-#| label: doceasy-by-language-dominance-stats-table
-#| tbl-cap: "Summary of responses by English-language dominance to finding the documentation easily findable, searchable, and accessible"
+#| label: doceasy-by-language-dominance-t1-stats-table
+#| tbl-cap: "Summary of responses by English-language dominance to finding the documentation easily findable, searchable, and accessible (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$domLangEnglish)
 visMain |>
+  filter(timepoint == "Time 1") |>
   select(psychopyDocumentationEasy, domLangEnglish)  |>
   mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "NA")) |>
   likertTable(
@@ -2882,48 +4920,105 @@ visMain |>
     spanVar = textForSpan
   )
 
+
 ```
 
 
-### trust in enforcement
+```{r}
+#| label: doceasy-by-language-dominance-t2-stats-table
+#| tbl-cap: "Summary of responses by English-language dominance to finding the documentation easily findable, searchable, and accessible (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$domLangEnglish)
+visMain |>
+  filter(timepoint == "Time 2") |>
+  select(psychopyDocumentationEasy, domLangEnglish)  |>
+  mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "7 = Strongly agree",
+    byVar = "domLangEnglish",
+    spanVar = textForSpan
+  )
+
+
+```
+
+
+### Trust in enforcement
 
 The sections directly below summarise, both visually and verbally, the answer to the following question:
 
 >`r get_label(visMain$trustCodeWillBeEnforced)`
 
-#### everyone
+#### Everyone
 
-##### figure
+##### Figure
 
 ```{r}
 #| label: trust-enforcement-plot
 #| warning: false
 #| fig-alt: "Barplot of agreement responses to the statement regarding trust in enforcement of the Code of Conduct."
 
-visMain |> 
-  select(trustCodeWillBeEnforced) |> 
-  freqPlot(
-    ostColour = ostYellow,
-    sorting = "none"
-  )
-gdata::mv("p", "TrEn") # p is sent to the global env. from the function
+# visMain |> 
+#   select(trustCodeWillBeEnforced) |> 
+#   freqPlot(
+#     ostColour = ostYellow,
+#     sorting = "none"
+#   )
+# gdata::mv("p", "TrEn") # p is sent to the global env. from the function
+# suppressWarnings(print(TrEn))
+p <- visMain |>
+  select(timepoint, trustCodeWillBeEnforced) |>
+  mutate(
+    timepoint = as.factor(timepoint),
+    trustCodeWillBeEnforced = forcats::fct_na_value_to_level(
+      as.factor(trustCodeWillBeEnforced),
+      level = "(missing)"
+    )
+  ) |>
+  count(timepoint, trustCodeWillBeEnforced) |>
+  group_by(timepoint) |>
+  mutate(proportion = n / sum(n)) |>
+  ggplot(aes(x = trustCodeWillBeEnforced, y = proportion, fill = timepoint)) +
+  geom_col(position = position_dodge(width = 0.8), color = "black") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = ostColours2) +  # Replace with ostYellow variants if needed
+  labs(
+    title = "Trust That the Code of Conduct Will Be Enforced by Timepoint",
+    x = "Trust That Code Will Be Enforced",
+    y = "Proportion",
+    fill = "Timepoint"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+gdata::mv("p", "TrEn")
 suppressWarnings(print(TrEn))
 
 ```
 
-##### table
+##### Table
 
 ```{r}
 #| label: codeofconduct-stats-table
 #| tbl-cap: "Statistics for responses to statements regarding trust in enforcement of the Code of Conduct"
 #| output: asis
 
+# visMain |>
+#   select(trustCodeWillBeEnforced) |> 
+#   likertTable(
+#     lowerBound = "1 = Strongly disagree",
+#     upperBound = "7 = Strongly agree",
+#     byVar = NULL,
+#     spanVar = NULL
+#   )
 visMain |>
-  select(trustCodeWillBeEnforced) |> 
+  select(timepoint, trustCodeWillBeEnforced) |> 
   likertTable(
     lowerBound = "1 = Strongly disagree",
     upperBound = "7 = Strongly agree",
-    byVar = NULL,
+    byVar = "timepoint",  # Group responses by Timepoint
     spanVar = NULL
   )
 
@@ -2931,7 +5026,7 @@ visMain |>
 
 <!-- {{< include notes/_trustCodeWillBeEnforced.md >}} -->
 
-#### interactions
+#### Interactions
 
 ```{r}
 #| label: trustCodeLabels
@@ -2941,15 +5036,36 @@ trustCodeLabel <- get_label(visMain$trustCodeWillBeEnforced)
 ```
 
 
-##### gender
+##### Gender
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: enforcementtrust-likert-plot-by-gender
 #| fig-alt: "Boxplots of responses by EDI dimensions by gender to trust that the Code of Conduct would be enforced." 
+# 
+# legendLabel <- "Gender"
+# visMain |>
+#   drop_na(gender) |>
+#   drop_na(trustCodeWillBeEnforced) |>
+#   interactionBoxplot(
+#     xVar = trustCodeWillBeEnforced,
+#     yVar = gender,
+#     lowerBound = 1,
+#     upperBound = 7,
+#     ostColours = ostColours3,
+#     xLabel = trustCodeLabel,
+#     fillLabel = legendLabel,
+#     tickLabels = likertValues,
+#     pointFill = "#F7F11C",
+#     wrapVar = NULL,
+#     figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
+#   )
+# gdata::mv("p", "Tr_Gn") # p is sent to the global env. from the function
+# suppressWarnings(print(Tr_Gn))
 
 legendLabel <- "Gender"
+
 visMain |>
   drop_na(gender) |>
   drop_na(trustCodeWillBeEnforced) |>
@@ -2963,23 +5079,43 @@ visMain |>
     fillLabel = legendLabel,
     tickLabels = likertValues,
     pointFill = "#F7F11C",
-    wrapVar = NULL,
+    wrapVar = timepoint,  # 👈 This facets the plot by Timepoint
     figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
   )
-gdata::mv("p", "Tr_Gn") # p is sent to the global env. from the function
-suppressWarnings(print(Tr_Gn))
 
+gdata::mv("p", "Tr_Gn")
+suppressWarnings(print(Tr_Gn))
 ```
 
-###### table
+###### Table
 
 ```{r}
-#| label: enforcementtrust-by-gender-stats-table
-#| tbl-cap: "Summary of responses by gender to trust that the Code of Conduct would be enforced"
+#| label: enforcementtrust-by-gender-t1-stats-table
+#| tbl-cap: "Summary of responses by gender to trust that the Code of Conduct would be enforced (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$gender)
 visMain |>
+  filter(timepoint == "Time 1") |>
+  select(trustCodeWillBeEnforced, gender)  |>
+  mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "7 = Strongly agree",
+    byVar = "gender",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r}
+#| label: enforcementtrust-by-gender-t2-stats-table
+#| tbl-cap: "Summary of responses by gender to trust that the Code of Conduct would be enforced (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$gender)
+visMain |>
+  filter(timepoint == "Time 2") |>
   select(trustCodeWillBeEnforced, gender)  |>
   mutate(gender = forcats::fct_na_value_to_level(gender, level = "NA")) |>
   likertTable(
@@ -2992,48 +5128,99 @@ visMain |>
 ```
 
 
-##### other EDI variables
+##### Other EDI variables
 
 {{< include interactionNotes.qmd >}}
 
-###### figure
+###### Figure
 
 ```{r}
 #| label: enforcementtrust-likert-plot-by-other-edis
 #| fig-alt: "Boxplots of responses by EDI dimensions other than gender to trust that the Code of Conduct would be enforced." 
+# 
+# legendLabel <- "Member of\nrespective\nEDI group"
+# longerDataSimple |>
+#   drop_na(trustCodeWillBeEnforced) |>
+#   drop_na(response) |>
+#   interactionBoxplot(
+#     xVar = trustCodeWillBeEnforced,
+#     yVar = response,
+#     lowerBound = 1,
+#     upperBound = 7,
+#     ostColours = ostColours2rev,
+#     xLabel = trustCodeLabel,
+#     fillLabel = legendLabel,
+#     tickLabels = likertValues,
+#     pointFill = "#F7F11C",
+#     wrapVar = ediVar,
+#     figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
+#   )
+# gdata::mv("p", "Tr_Id") # p is sent to the global env. from the function
+# suppressWarnings(print(Tr_Id))
 
 legendLabel <- "Member of\nrespective\nEDI group"
+
 longerDataSimple |>
-  drop_na(trustCodeWillBeEnforced) |>
-  drop_na(response) |>
+  drop_na(trustCodeWillBeEnforced, response, timepoint) |>
+  mutate(
+    # Create combined wrap variable: question + timepoint
+    trust_time = paste0("Trust Code Will Be Enforced", " (", timepoint, ")")
+  ) |>
   interactionBoxplot(
     xVar = trustCodeWillBeEnforced,
     yVar = response,
+    wrapVar = trust_time,  # Facet by combined question+timepoint
     lowerBound = 1,
     upperBound = 7,
     ostColours = ostColours2rev,
-    xLabel = trustCodeLabel,
+    xLabel = "Trust That the Code Will Be Enforced",
     fillLabel = legendLabel,
     tickLabels = likertValues,
     pointFill = "#F7F11C",
-    wrapVar = ediVar,
-    figCaption = "Notes:\n1. A response of 1 indicates 'Strongly disagree'\n2. A response of 7 indicates 'Strongly agree'\n3. The mean is represented by the diamond"
+    figCaption = paste(
+      "Notes:\n1. A response of 1 indicates 'Strongly disagree'",
+      "2. A response of 7 indicates 'Strongly agree'",
+      "3. The mean is represented by the diamond",
+      sep = "\n"
+    )
   )
-gdata::mv("p", "Tr_Id") # p is sent to the global env. from the function
-suppressWarnings(print(Tr_Id))
+
+gdata::mv("p", "Tr_Id_Time")
+suppressWarnings(print(Tr_Id_Time))
+
 
 ```
 
-###### tables
+###### Tables
 
 
 ```{r}
-#| label: enforcementtrust-by-sexuality-stats-table
-#| tbl-cap: "Summary of responses by sexual orientation to trust that the Code of Conduct would be enforced"
+#| label: enforcementtrust-by-sexuality-t1-stats-table
+#| tbl-cap: "Summary of responses by sexual orientation to trust that the Code of Conduct would be enforced (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$nonHeteroCommunity)
 visMain |>
+  filter(timepoint == "Time 1") |>
+  select(trustCodeWillBeEnforced, nonHeteroCommunity)  |>
+  mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "7 = Strongly agree",
+    byVar = "nonHeteroCommunity",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r}
+#| label: enforcementtrust-by-sexuality-t2-stats-table
+#| tbl-cap: "Summary of responses by sexual orientation to trust that the Code of Conduct would be enforced (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$nonHeteroCommunity)
+visMain |>
+  filter(timepoint == "Time 2") |>
   select(trustCodeWillBeEnforced, nonHeteroCommunity)  |>
   mutate(nonHeteroCommunity = forcats::fct_na_value_to_level(nonHeteroCommunity, level = "NA")) |>
   likertTable(
@@ -3048,12 +5235,32 @@ visMain |>
 ---
 
 ```{r}
-#| label: enforcementtrust-by-race-stats-table
-#| tbl-cap: "Summary of responses by race and/or culture to trust that the Code of Conduct would be enforced"
+#| label: enforcementtrust-by-race-t1-stats-table
+#| tbl-cap: "Summary of responses by race and/or culture to trust that the Code of Conduct would be enforced (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$raceCulture)
 visMain |>
+  filter(timepoint == "Time 1") |>
+  select(trustCodeWillBeEnforced, raceCulture)  |>
+  mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "7 = Strongly agree",
+    byVar = "raceCulture",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r}
+#| label: enforcementtrust-by-race-t2-stats-table
+#| tbl-cap: "Summary of responses by race and/or culture to trust that the Code of Conduct would be enforced (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$raceCulture)
+visMain |>
+  filter(timepoint == "Time 2") |>
   select(trustCodeWillBeEnforced, raceCulture)  |>
   mutate(raceCulture = forcats::fct_na_value_to_level(raceCulture, level = "NA")) |>
   likertTable(
@@ -3068,12 +5275,32 @@ visMain |>
 ---
 
 ```{r}
-#| label: enforcementtrust-by-disability-stats-table
-#| tbl-cap: "Summary of responses by disability and/or neurodivergence to trust that the Code of Conduct would be enforced"
+#| label: enforcementtrust-by-disability-t1-stats-table
+#| tbl-cap: "Summary of responses by disability and/or neurodivergence to trust that the Code of Conduct would be enforced (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$disability)
 visMain |>
+  filter(timepoint == "Time 1") |>
+  select(trustCodeWillBeEnforced, disability)  |>
+  mutate(disability = forcats::fct_na_value_to_level(disability, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "7 = Strongly agree",
+    byVar = "disability",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r}
+#| label: enforcementtrust-by-disability-t2-stats-table
+#| tbl-cap: "Summary of responses by disability and/or neurodivergence to trust that the Code of Conduct would be enforced (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$disability)
+visMain |>
+  filter(timepoint == "Time 2") |>
   select(trustCodeWillBeEnforced, disability)  |>
   mutate(disability = forcats::fct_na_value_to_level(disability, level = "NA")) |>
   likertTable(
@@ -3087,13 +5314,33 @@ visMain |>
 
 ---
 
-```{r}
-#| label: enforcementtrust-by-domlang-stats-table
-#| tbl-cap: "Summary of responses by language dominance in written English to trust that the Code of Conduct would be enforced"
+```{r , warning=FALSE, echo=FALSE}
+#| label: enforcementtrust-by-domlang-t1-stats-table
+#| tbl-cap: "Summary of responses by language dominance in written English to trust that the Code of Conduct would be enforced (Timepoint 1)"
 #| output: asis
 
 textForSpan <- get_label(visMain$domLangEnglish)
 visMain |>
+  filter(timepoint == "Time 1") |>
+  select(trustCodeWillBeEnforced, domLangEnglish)  |>
+  mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "NA")) |>
+  likertTable(
+    lowerBound = "1 = Strongly disagree",
+    upperBound = "7 = Strongly agree",
+    byVar = "domLangEnglish",
+    spanVar = textForSpan
+  )
+
+```
+
+```{r, warning=FALSE, echo=FALSE}
+#| label: enforcementtrust-by-domlang-t2-stats-table
+#| tbl-cap: "Summary of responses by language dominance in written English to trust that the Code of Conduct would be enforced (Timepoint 2)"
+#| output: asis
+
+textForSpan <- get_label(visMain$domLangEnglish)
+visMain |>
+  filter(timepoint == "Time 2") |>
   select(trustCodeWillBeEnforced, domLangEnglish)  |>
   mutate(domLangEnglish = forcats::fct_na_value_to_level(domLangEnglish, level = "NA")) |>
   likertTable(
