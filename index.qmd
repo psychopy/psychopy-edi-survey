@@ -1918,6 +1918,7 @@ visMain |>
 ```{r}
 #| label: career-status-by-gender-t1-plot
 #| fig-alt: "Descending frequency barplot of the responses by gender to the following question: 'Roughly speaking, what is your career status?' (Timepoint 1)"
+#| fig-cap: "Timepoint 1"
 # 
 # contingencyPlot(
 #   df = visMain,
@@ -1945,6 +1946,7 @@ suppressWarnings(print(Cs_Gn_Time1))
 ```{r}
 #| label: career-status-by-gender-t2-plot
 #| fig-alt: "Descending frequency barplot of the responses by gender to the following question: 'Roughly speaking, what is your career status?' (Timepoint 2)"
+#| fig-cap: "Timepoint 2"
 # Plot for Timepoint 2
 
 Cs_Gn_Time2 <- visMain |>
@@ -2426,7 +2428,72 @@ table_Engagement_T2 <- visMain |>
   )
 
 ```
+##### Career Status
 
+###### Figure
+
+```{r}
+#| label: engagement-type-careerstatus-t1-plot
+#| fig-alt: "Descending frequency barplot of responses by career status to the following question: 'What best describes your role/usage of PsychoPy?' (Timepoint 1)"
+
+# Plot for Timepoint 1
+En_Cs_T1 <- visMain |>
+  filter(timepoint == "Time 1") |>
+  contingencyPlot(
+    df = _,
+    contingX = "engagement",
+    contingGrp = "careerStatus",
+    colours = ostColours6
+  )
+gdata::mv("p", "En_Cs_T1")
+suppressWarnings(print(En_Cs_T1))
+
+```
+```{r}
+#| label: engagement-type-careerstatus-t2-plot
+#| fig-alt: "Descending frequency barplot of responses by career status to the following question: 'What best describes your role/usage of PsychoPy?' (Timepoint 2)"
+
+# Plot for Timepoint 2
+En_Gn_T2 <- visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyPlot(
+    df = _,
+    contingX = "engagement",
+    contingGrp = "careerStatus",
+    colours = ostColours6
+  )
+gdata::mv("p", "En_Cs_T2")
+suppressWarnings(print(En_Cs_T2))
+
+```
+###### Table
+
+```{r}
+#| label: engagement-by-careerstatus-t1-stats-table
+#| tbl-cap: "Summary of responses by career status to type of engagement (Timepoint 1)"
+#| output: asis
+
+table_Engagement_CareerStatus_T1 <- visMain |>
+  filter(timepoint == "Time 1") |>
+  contingencyTable(
+    contingX = "engagement",
+    contingGrp = "careerStatus"
+  )
+
+```
+```{r}
+#| label: engagement-by-careerstatus-t2-stats-table
+#| tbl-cap: "Summary of responses by career status to type of engagement (Timepoint 2)"
+#| output: asis
+
+table_Engagement_CareerStatus_T2 <- visMain |>
+  filter(timepoint == "Time 2") |>
+  contingencyTable(
+    contingX = "engagement",
+    contingGrp = "careerStatus"
+  )
+
+```
 ---
 
 ##### Other EDI variables
