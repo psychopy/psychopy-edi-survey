@@ -1,0 +1,360 @@
+PR Number,Title,Author,State,Created At,Closed At,Merged,Additions,Deletions,Changed Files,Total Lines Changed
+4867,BF: fixed long wait times causing windows to mark psychopy as unrespo…,maqadri,closed,2022-05-30T15:53:36Z,2022-07-13T11:52:23Z,FALSE,36,24,1,60
+4866,FF: Sync dialog is not translated,hsogo,closed,2022-05-30T12:01:45Z,2022-06-06T16:02:58Z,TRUE,331,312,3,643
+4865,BF: Fixes to Pavlovia sync to make it handle errors more elegantly,TEParsons,closed,2022-05-30T09:59:12Z,2022-06-06T14:56:53Z,TRUE,127,56,4,183
+4864,TEST: Add generic test for boilerplate minimum requirements,TEParsons,closed,2022-05-30T09:31:57Z,2022-06-08T15:46:06Z,TRUE,65,10,10,75
+4862,Fixing waitRelease=False behavior for ptb,lboel,closed,2022-05-27T19:04:44Z,2022-06-06T16:04:31Z,TRUE,9,1,2,10
+4861,Merge release again,peircej,closed,2022-05-27T15:48:06Z,2022-06-08T08:29:46Z,TRUE,18,3,3,21
+4860,FF: update quest.js url to use lib.pavlovia.org/vendors,peircej,closed,2022-05-27T13:20:16Z,2022-06-06T16:06:51Z,TRUE,65,18,6,83
+4859,Merge release into dev,TEParsons,closed,2022-05-27T12:59:40Z,2022-05-27T14:21:06Z,TRUE,910,187,41,1097
+4858,BF: Fixes to Movie boilerplate,TEParsons,closed,2022-05-27T10:27:25Z,2022-05-27T13:01:30Z,TRUE,6,1,1,7
+4857,NF: Audio recording with camera stream,mdcutone,closed,2022-05-27T04:30:43Z,2022-05-27T14:20:28Z,TRUE,217,83,2,300
+4856,Merge release into dev (second attempt),peircej,closed,2022-05-26T20:31:44Z,2022-05-27T14:06:35Z,FALSE,915,190,42,1105
+4855,Merge release fixes back into dev,peircej,closed,2022-05-26T16:06:19Z,2022-05-26T16:55:40Z,FALSE,834,187,39,1021
+4854,BF: Add ori and opacity to Slider JS boilerplate,TEParsons,closed,2022-05-26T15:17:38Z,2022-05-26T16:04:03Z,TRUE,2,2,1,4
+4853,Merge release into dev,peircej,closed,2022-05-26T15:05:14Z,2022-05-26T16:05:52Z,FALSE,834,187,39,1021
+4852,BF: JS keyword 'await' was not styled in Coder,TEParsons,closed,2022-05-25T10:16:37Z,2022-05-26T14:23:44Z,TRUE,1,1,1,2
+4851,Merge release branch fixes into dev,peircej,closed,2022-05-25T09:08:46Z,2022-05-26T14:43:12Z,FALSE,830,184,38,1014
+4849,NF: added support for automatically retrieving QUEST.js for multistair handler,peircej,closed,2022-05-24T16:09:15Z,2022-05-24T16:43:27Z,TRUE,33,10,2,43
+4848,DOCS: update version to 2022.1.4,peircej,closed,2022-05-23T15:50:44Z,2022-05-23T15:50:51Z,TRUE,39,2,2,41
+4847,TEST: Add local-only tests for Webcam class,TEParsons,closed,2022-05-23T10:28:16Z,2022-05-27T12:40:02Z,FALSE,3900,456,16,4356
+4846,BF: fix waitRelease=False behaviour for iohubKeyboard in hardware.keyboard,lboel,closed,2022-05-23T07:49:59Z,2022-05-27T14:26:06Z,TRUE,1052,326,74,1378
+4844,TEST: Add screenshot comparison to circle radius test,TEParsons,closed,2022-05-20T14:34:27Z,2022-05-25T10:17:12Z,FALSE,27,6,5,33
+4843,BF: Reinstate original getProject method,TEParsons,closed,2022-05-20T12:41:36Z,2022-05-24T11:23:24Z,TRUE,65,13,1,78
+4842,BF: Fix references to pavlovia buttons,TEParsons,closed,2022-05-20T09:39:04Z,2022-05-26T14:44:27Z,TRUE,12,10,2,22
+4841,ENH: Add required fonts to resources list when compiling to JS,TEParsons,closed,2022-05-18T13:30:05Z,2022-06-24T15:17:14Z,FALSE,130,1,4,131
+4840,FF: choice labels are not translated,hsogo,closed,2022-05-18T09:43:41Z,2022-05-19T10:52:11Z,TRUE,187,67,4,254
+4839,ENH: Save on click as Mouse default,TEParsons,closed,2022-05-17T08:59:02Z,2022-05-26T14:45:35Z,TRUE,1,1,1,2
+4838,RF: Rename Session.http to Session.session,TEParsons,closed,2022-05-13T14:57:09Z,2022-05-19T10:56:37Z,TRUE,8,8,1,16
+4837,NF: Interface for interfacing with PIP from within PsychoPy,TEParsons,closed,2022-05-12T16:30:59Z,2022-06-24T15:17:09Z,FALSE,79,0,4,79
+4836,"ENH: Add autoDraw to Textbox and text, fixes #1521",TEParsons,closed,2022-05-12T13:56:03Z,2022-05-13T14:15:19Z,TRUE,8,4,2,12
+4835,"TEST: Mark TestLoops tests as needing sound, fixes #1243",TEParsons,closed,2022-05-12T13:45:23Z,2022-05-26T14:47:41Z,FALSE,2,1,1,3
+4834,BF: Use Path.glob to search for readme as glob.glob can't handle some valid chars,TEParsons,closed,2022-05-12T11:09:59Z,2022-05-19T10:55:18Z,TRUE,6,7,1,13
+4833,BF: Add placeholder corr value for JoyButtons like Keyboard has,TEParsons,closed,2022-05-12T10:51:46Z,2022-05-13T14:26:27Z,TRUE,11,0,2,11
+4832,BF: Standalone routines were missing a copy method,TEParsons,closed,2022-05-11T15:47:36Z,2022-05-13T14:27:51Z,TRUE,8,0,1,8
+4830,Support for Minolta CS-100A photometer,davidhildebrand,closed,2022-05-10T18:43:36Z,2022-05-13T14:31:39Z,TRUE,265,2,3,267
+4827,NF: Camera component boilerplate,TEParsons,closed,2022-05-09T15:55:17Z,2022-05-27T14:19:59Z,TRUE,268,108,11,376
+4826,"BF: Handle more use cases when getting username in pavlovia interface, fixes #4818",TEParsons,closed,2022-05-09T11:39:37Z,2022-05-20T14:19:09Z,FALSE,16,12,1,28
+4825,"BF: After setting vertices, mark as needing update, fixes #4824",TEParsons,closed,2022-05-09T11:21:15Z,2022-05-20T15:18:44Z,TRUE,28,6,6,34
+4823,ENH: Generate a random participant id and supply it as default to expInfo participant field,TEParsons,closed,2022-05-06T15:21:06Z,2022-06-08T12:08:42Z,FALSE,572,234,55,806
+4822,"BF: When removing a static component, we need to remove references to it",TEParsons,closed,2022-05-06T13:35:29Z,2022-05-13T14:45:37Z,TRUE,9,0,1,9
+4821,BF: ShapeStim was not setting opacity when opacity is 0,TEParsons,closed,2022-05-06T12:54:47Z,2022-05-13T14:44:29Z,TRUE,1,1,1,2
+4820,"RF: Rather than wrapping serial, use it directly so users can learn from boilerplate",TEParsons,closed,2022-05-06T09:08:55Z,2022-05-06T10:45:32Z,TRUE,21,78,3,99
+4816,NF: Serial port component,TEParsons,closed,2022-05-05T11:28:23Z,2022-05-05T15:09:06Z,TRUE,253,3,22,256
+4815,RF: Make emotiv record a standalone routine,TEParsons,closed,2022-05-04T13:04:40Z,2022-06-08T12:08:29Z,FALSE,81,2,9,83
+4814,NF: Add prefs option to scale icons and text,TEParsons,closed,2022-05-03T14:54:02Z,2022-06-24T15:17:03Z,FALSE,262,69,15,331
+4991,BF: Fixed path appending in `getComponents`,mdcutone,closed,2022-06-29T20:08:00Z,2022-07-11T14:17:29Z,TRUE,203,21997,75,22200
+4990,BF: keyboard.Keyboard iohub backend getKeys bug,isolver,closed,2022-06-29T17:32:24Z,2022-06-29T19:31:41Z,TRUE,16,11,1,27
+4989,BF: iohub keyboard.Keyboard backend getKeys(waitReleasee=False),isolver,closed,2022-06-29T17:30:48Z,2022-06-29T17:31:12Z,FALSE,216,22006,75,22222
+4988,NF: PIP interface,mdcutone,closed,2022-06-29T17:22:54Z,2022-09-01T14:59:23Z,FALSE,95,0,4,95
+4987,BF: Only return key press events when `waitRelease=False`,mdcutone,closed,2022-06-29T15:54:56Z,2022-06-29T16:55:33Z,FALSE,21,14,1,35
+4986,PKG: version bump for 2022.2.1,peircej,closed,2022-06-29T11:19:57Z,2022-06-29T14:02:12Z,TRUE,23,5,4,28
+4985,DOCS: Fixes to styling (of the bullet lists),peircej,closed,2022-06-28T14:08:21Z,2022-06-28T16:28:01Z,TRUE,73,21959,62,22032
+4984,"NF: Allow image size to be set as (x, None) or (None, y) to maintain aspect ratio",TEParsons,closed,2022-06-28T13:25:11Z,2022-07-11T14:39:31Z,TRUE,106,2,7,108
+4983,TEST: Add test that use version is writing correctly,TEParsons,closed,2022-06-28T10:25:02Z,2022-07-11T14:40:26Z,TRUE,56,1,1,57
+4982,FF/NF: Seeking support for `MovieStim`,mdcutone,closed,2022-06-27T21:02:07Z,2022-07-25T09:54:44Z,TRUE,279,98,3,377
+4981,DOCS: Added missing serial port component images,kimDundas,closed,2022-06-27T15:36:24Z,2022-06-28T08:31:27Z,TRUE,60,0,6,60
+4980,BF/ENH: Add button to Pavlovia project dlg to update info,TEParsons,closed,2022-06-27T12:09:34Z,2022-06-27T15:12:38Z,TRUE,47,12,1,59
+4979,BF: Recreate components on copy rather than pickle,TEParsons,closed,2022-06-27T11:50:47Z,2022-06-27T15:09:39Z,TRUE,37,9,2,46
+4976,BF: Set markerPos AFTER rating when resetting slider,TEParsons,closed,2022-06-24T15:02:06Z,2022-06-27T10:19:18Z,TRUE,1,1,1,2
+4975,BF: Fix tab traversal on param controls,TEParsons,closed,2022-06-24T12:53:34Z,2022-06-27T15:04:07Z,TRUE,1,1,1,2
+4974,Merge packaging of 2022.2.0,peircej,closed,2022-06-24T11:23:53Z,2022-06-24T13:19:32Z,TRUE,2,8,3,10
+4973,Merge 2022.2 dev stream into release,peircej,closed,2022-06-24T11:23:19Z,2022-06-24T13:19:47Z,TRUE,13570,4417,443,17987
+4972,FF: Fix performance drop with growing text buffer size in Coder shell,mdcutone,closed,2022-06-23T17:29:50Z,2022-06-27T15:19:49Z,TRUE,41,29,1,70
+4971,BF: Fixes to 3D rendering,mdcutone,closed,2022-06-23T15:47:15Z,2022-07-25T09:54:58Z,TRUE,700,224,5,924
+4970,DOCS: include docs on shelf,RebeccaHirst,closed,2022-06-23T10:32:44Z,2022-06-23T10:50:52Z,TRUE,170,10,4,180
+4969,FF: Various UI bugs,mdcutone,closed,2022-06-22T19:17:29Z,2022-06-23T10:49:43Z,TRUE,45,27,3,72
+4968,build(deps): removed redundant version constraints,ErikBjare,closed,2022-06-22T18:04:39Z,2022-06-23T11:33:31Z,TRUE,5,6,1,11
+4967,BF: Allow project to be identified via local root in knownProjects,TEParsons,closed,2022-06-22T14:41:14Z,2022-06-23T10:58:23Z,TRUE,6,0,1,6
+4966,BF: Detect & handle bare remote when creating project,TEParsons,closed,2022-06-22T10:56:37Z,2022-06-23T11:04:40Z,TRUE,15,2,1,17
+4965,Merge release/dev/packaging,peircej,closed,2022-06-22T10:15:16Z,2022-06-23T11:38:14Z,TRUE,4,4,4,8
+4964,Dev camera status,TEParsons,closed,2022-06-22T10:13:21Z,2022-06-23T10:12:48Z,FALSE,420,113,4,533
+4963,FF/NF: Multi-threaded camera for realtime video recording,mdcutone,closed,2022-06-22T01:21:01Z,2022-06-23T10:57:12Z,TRUE,477,93,4,570
+4962,FF: Make `MovieStim` stream reader threads daemonic,mdcutone,closed,2022-06-21T16:54:07Z,2022-06-23T10:48:58Z,TRUE,45,29,1,74
+4961,"NF: Add ""live choice"" ctrl and use it to control frame rate & resolution ",TEParsons,closed,2022-06-21T14:26:20Z,2022-06-24T15:17:26Z,FALSE,286,19,3,305
+4960,BF: Apply flip before anchor,TEParsons,closed,2022-06-21T12:15:40Z,2022-06-21T15:58:44Z,TRUE,29,2,4,31
+4959,"DOCS: Updated hardware index, added serial port component images, added serial port to components docs, added link to fNIRS instructions to hardware index.",kimDundas,closed,2022-06-21T11:47:44Z,2022-06-21T15:59:34Z,TRUE,53,6,2,59
+4958,"NF: Add ""live choice"" ctrl and use it to control frame rate & resolution",TEParsons,closed,2022-06-21T10:25:57Z,2022-06-21T14:25:43Z,FALSE,276,20,4,296
+4957,Fix setting color has no effect,jakobchwastek,closed,2022-06-20T22:19:07Z,2022-10-14T14:00:18Z,TRUE,4,0,1,4
+4954,FF: Improve camera performance and support,mdcutone,closed,2022-06-19T17:49:35Z,2022-06-21T15:59:09Z,TRUE,1029,399,6,1428
+4953,Small fixes for release,peircej,closed,2022-06-18T11:36:39Z,2022-06-18T12:18:23Z,TRUE,50,4,5,54
+4952,FF: a trialClock.reset() was accidentally removed from JS code instead of Py,peircej,closed,2022-06-17T15:21:06Z,2022-06-17T15:28:26Z,TRUE,1,0,1,1
+4951,"BF: Importing moviepy.editor breaks Mouse, so import required classes directly",TEParsons,closed,2022-06-17T13:13:39Z,2022-06-17T13:18:24Z,TRUE,5,1,1,6
+4950,BF: Make resolution and framerate settable locally,TEParsons,closed,2022-06-17T11:45:21Z,2022-06-20T12:44:03Z,FALSE,15,14,1,29
+4949,"BF: Delete temp dir if is *does* exist, not if it *doesn't*",TEParsons,closed,2022-06-17T10:00:59Z,2022-06-17T10:26:22Z,TRUE,1,1,1,2
+4948,"BF: If frameRate and frameSize are None, substitute some reasonable values",TEParsons,closed,2022-06-17T09:29:25Z,2022-06-17T09:59:15Z,TRUE,21,2,1,23
+4947,Create camera docs,suelynnmah,closed,2022-06-17T09:10:49Z,2022-09-01T14:58:45Z,TRUE,1,0,1,1
+4946,chore: Set permissions for GitHub actions,neilnaveen,closed,2022-06-17T01:11:05Z,2022-06-27T15:20:57Z,TRUE,3,0,1,3
+4945,"FF: Set default sample rate for microphone to 48kHz, atexit for threads",mdcutone,closed,2022-06-16T22:42:03Z,2022-06-17T08:35:53Z,TRUE,11,1,2,12
+4944,created camera documentation,suelynnmah,closed,2022-06-16T20:41:38Z,2022-06-17T08:36:51Z,TRUE,53,7,2,60
+4943,BF: Skip modern init code for MovieStim if using a legacy backend,TEParsons,closed,2022-06-16T18:36:24Z,2022-06-17T08:47:51Z,TRUE,8,6,2,14
+4942,FF: `Camera` and `MovieStim` fixes,mdcutone,closed,2022-06-16T18:14:56Z,2022-06-17T08:48:25Z,TRUE,160,160,7,320
+4941,ENH: Add color params to Form JS boilerplate,TEParsons,closed,2022-06-16T16:21:02Z,2022-06-17T10:33:02Z,FALSE,3,0,1,3
+4940,BF: Mark Static as STARTED manually,TEParsons,closed,2022-06-16T15:07:15Z,2022-06-16T15:07:58Z,TRUE,1,0,1,1
+4939,BF: Fixes to Serial component,TEParsons,closed,2022-06-16T15:03:17Z,2022-06-16T15:07:14Z,TRUE,8,14,1,22
+4938,BF: Fix saving for Camera component and update demo,TEParsons,closed,2022-06-16T12:30:01Z,2022-06-16T13:24:33Z,TRUE,7,7,3,14
+4937,BF: Fixes to MovieStim boilerplate,TEParsons,closed,2022-06-16T12:14:06Z,2022-06-16T12:27:06Z,TRUE,71,2,1,73
+4936,packaging default.mp4 demo movie,peircej,closed,2022-06-16T11:37:36Z,2022-06-16T11:39:10Z,TRUE,3,2,3,5
+4935,BF in Py-JS transpiler: f string formatting now uses toFixed instead of toPrecision,apitiot,closed,2022-06-16T11:26:09Z,2022-06-16T12:22:57Z,TRUE,1,1,1,2
+4934,BF: Alias None and Default with 0 for Camera device,TEParsons,closed,2022-06-16T10:49:57Z,2022-06-16T11:38:53Z,TRUE,11,2,3,13
+4933,BF: non-slip timing applied to all Component times rather than the Routine endpoint,peircej,closed,2022-06-16T10:41:23Z,2022-06-16T11:24:30Z,TRUE,25,17,3,42
+4932,FF: `MovieStim` fixes and performance improvements,mdcutone,closed,2022-06-15T21:38:34Z,2022-06-16T09:05:37Z,TRUE,270,183,3,453
+4931,"BF: Hide mouse on request, but disable option when windowed",TEParsons,closed,2022-06-15T16:53:11Z,2022-06-16T10:42:55Z,TRUE,23,4,2,27
+4930,startValue added to boilerplate for slider;,lightest,closed,2022-06-15T15:52:26Z,2022-06-15T16:56:40Z,TRUE,1,0,1,1
+4929,BF: Specify data type when setting status/keywords on Pavlovia project,TEParsons,closed,2022-06-15T15:41:21Z,2022-06-16T09:04:43Z,TRUE,8,6,1,14
+4928,"BF: At routine end, make sure that camera is stopped",TEParsons,closed,2022-06-15T13:57:24Z,2022-06-15T15:06:05Z,TRUE,7,0,1,7
+4927,BF: Encode data for users when using Serial component,TEParsons,closed,2022-06-15T13:55:23Z,2022-06-15T15:05:44Z,TRUE,11,9,1,20
+4926,DOCS: Cleanup psychopy > online index,RebeccaHirst,closed,2022-06-15T13:08:54Z,2022-06-15T13:09:11Z,TRUE,17,10,2,27
+4925,BF: Fixes to Camera required for boilerplate,TEParsons,closed,2022-06-15T12:34:00Z,2022-06-15T13:34:06Z,TRUE,5,1,2,6
+4924,BF: mouse on retina display was not scaling correctly (again),peircej,closed,2022-06-15T11:49:10Z,2022-06-15T12:31:03Z,TRUE,1,1,1,2
+4923,BF: Fix serial port boilerplate,TEParsons,closed,2022-06-15T10:41:12Z,2022-06-15T11:47:59Z,TRUE,11,1,1,12
+4922,BF: ensure we get (correct) timestamps at end of Routine,peircej,closed,2022-06-14T19:49:58Z,2022-06-15T12:30:41Z,TRUE,49,18,2,67
+4921,FF: Fixed `MovieStim` stalling on `stop()` when `status != FINISHED`,mdcutone,closed,2022-06-14T18:52:43Z,2022-06-15T09:13:48Z,TRUE,143,91,4,234
+4920,NF: Added `systemtools` with `systemProfilerMacOS`,mdcutone,closed,2022-06-14T16:25:39Z,2022-06-15T11:52:56Z,TRUE,117,0,1,117
+4919,BF: State visibility explicitly when sending query to Pavlovia API,TEParsons,closed,2022-06-14T15:08:00Z,2022-06-14T15:43:31Z,TRUE,4,0,1,4
+4918,fixed consent form template from crashing by changing name of mouse a…,suelynnmah,closed,2022-06-14T15:06:15Z,2022-06-14T15:44:11Z,TRUE,5,5,1,10
+4917,BF: Compare Camera frameRate and frameSize as np.array,TEParsons,closed,2022-06-14T14:17:55Z,2022-06-15T09:14:35Z,TRUE,3,2,1,5
+4916,BF: Builder JS boilerplate now honors the loop.isTrials setting,peircej,closed,2022-06-14T12:32:01Z,2022-06-14T13:26:28Z,TRUE,58,44,2,102
+4915,BF: Show asterisk on Code component if EITHER code has contents,TEParsons,closed,2022-06-14T09:29:01Z,2022-06-14T15:42:24Z,TRUE,108,7,2,115
+4914,Docs merge flow fixes,peircej,closed,2022-06-14T08:37:25Z,2022-06-14T08:38:08Z,TRUE,0,0,0,0
+4913,DOCS: fixing merge conflict with dev in the flow.rst,peircej,closed,2022-06-14T08:28:12Z,2022-06-14T08:38:10Z,TRUE,5,5,1,10
+4912,BF: Fixed transformation of mouse coordinates on Retina displays,mdcutone,closed,2022-06-13T23:38:57Z,2022-06-15T11:52:44Z,FALSE,9,6,2,15
+4910,BF: Errors in functions to find projects,TEParsons,closed,2022-06-13T15:16:16Z,2022-06-13T15:59:03Z,TRUE,6,2,2,8
+4909,"ENH: Alias device ""Default"" for 0 in Camera",TEParsons,closed,2022-06-13T14:50:56Z,2022-06-13T15:59:26Z,TRUE,4,1,2,5
+4908,BF: Paste component at end of routine rather than index -1,TEParsons,closed,2022-06-13T14:50:40Z,2022-06-13T16:00:25Z,TRUE,5,2,1,7
+4907,ENH: Add switch user button for Pavlovia,TEParsons,closed,2022-06-13T12:24:06Z,2022-06-13T15:59:43Z,TRUE,39,2,1,41
+4906,BF: orphaned early routines,peircej,closed,2022-06-13T10:41:10Z,2022-06-13T11:33:02Z,TRUE,16,7,8,23
+4905,BF: Normalise field size before refreshing dot stim vertices,TEParsons,closed,2022-06-13T10:24:33Z,2022-06-13T13:17:06Z,TRUE,121,3,2,124
+4904,Packaging/merging work for 2022.2,peircej,closed,2022-06-13T09:34:26Z,2022-06-13T10:41:29Z,TRUE,6,3,4,9
+4903,NF: ImageStim support for the Camera class,mdcutone,closed,2022-06-13T06:20:31Z,2022-06-13T09:32:57Z,TRUE,103,39,5,142
+4901,"removed wx, qt, tables and pyo",JasperVanDenBosch,closed,2022-06-11T13:18:04Z,2022-06-11T13:18:28Z,FALSE,122,161,4,283
+4898,BF: Only open and close serial port at start and end of experiment,TEParsons,closed,2022-06-10T14:39:00Z,2022-06-13T09:33:24Z,TRUE,5,8,1,13
+4897,BF: Fixes to serial port component,TEParsons,closed,2022-06-10T09:55:30Z,2022-06-10T12:38:29Z,TRUE,8,5,1,13
+4895,BF: update current loop to include loops that ended in JS,peircej,closed,2022-06-09T16:31:34Z,2022-06-10T12:38:46Z,TRUE,8633,27,48,8660
+4894,DOCS: Removed underscore from fmri,kimDundas,closed,2022-06-09T14:31:00Z,2022-06-09T14:32:08Z,TRUE,1,1,1,2
+4892,ENH updated Py-JS transpiler: f string formatting uses PsychoJS util.pad,apitiot,closed,2022-06-09T07:56:07Z,2022-06-09T14:03:43Z,TRUE,3,17,1,20
+4891,ENH updated transpiler: f string formatting now uses the new PsychoJS util.pad,apitiot,closed,2022-06-09T07:25:59Z,2022-06-09T07:38:00Z,FALSE,3,17,1,20
+4890,NF: MovieStim and Camera improvements,mdcutone,closed,2022-06-08T17:45:34Z,2022-06-10T14:33:40Z,TRUE,9800,405,53,10205
+4889,BF: when working out psychojs version ignore additional suffixes,peircej,closed,2022-06-08T15:51:37Z,2022-06-08T15:51:44Z,TRUE,1,1,1,2
+4888,ENH: Alias default.mp4 in MovieStim,TEParsons,closed,2022-06-08T15:48:47Z,2022-06-09T14:57:58Z,TRUE,6,4,2,10
+4887,Fixed missing images in parallel port docs,kimDundas,closed,2022-06-08T15:00:03Z,2022-06-08T15:46:47Z,TRUE,4,3,2,7
+4886,BF: handle eyelink recording when calibration called,isolver,closed,2022-06-08T14:05:37Z,2022-06-08T14:59:00Z,TRUE,5,0,1,5
+4885,Hardware docs added ,kimDundas,closed,2022-06-08T13:44:12Z,2022-06-08T13:59:52Z,TRUE,596,2,38,598
+4884,languageStyle added to TextStim and TextBox components boilerplates,lightest,closed,2022-06-08T13:42:33Z,2022-06-10T10:16:14Z,TRUE,3,0,2,3
+4883,Display the eyelink setup options menu after calibration.,isolver,closed,2022-06-08T13:20:10Z,2022-06-08T14:59:43Z,TRUE,4,2,1,6
+4882,BF: Give serial a starting status,TEParsons,closed,2022-06-08T13:18:10Z,2022-06-08T15:06:32Z,TRUE,1,0,1,1
+4881,"BF: If not logged in when getting project, attempt login",TEParsons,closed,2022-06-08T12:38:58Z,2022-06-08T15:06:46Z,TRUE,15,0,1,15
+4880,NF: Add Builder demo for Camera component,TEParsons,closed,2022-06-08T10:55:47Z,2022-06-08T15:07:33Z,TRUE,224,0,3,224
+4879,ENH: New Pavlovia globe icons and debug button in Builder,TEParsons,closed,2022-06-07T13:40:21Z,2022-06-08T10:21:25Z,TRUE,20,0,214,20
+4878,Packaging 2022.2,peircej,closed,2022-06-06T16:44:28Z,2022-06-08T08:29:43Z,TRUE,371,317,11,688
+4877,ENH: Add mic param to Camera component,TEParsons,closed,2022-06-06T15:55:40Z,2022-06-08T12:02:01Z,TRUE,21,8,1,29
+4876,DOCS: add mic transcription video to docs,RebeccaHirst,closed,2022-06-06T13:50:01Z,2022-06-06T13:50:09Z,TRUE,5,0,1,5
+4875,TEST: Add test mixin for checking depth values in script,TEParsons,closed,2022-06-06T12:09:16Z,2022-06-06T16:04:50Z,TRUE,99,1,2,100
+4873,BF: iohub now uses screen index 0 if provided index does not exist,isolver,closed,2022-06-02T15:06:41Z,2022-06-06T14:50:49Z,TRUE,7,1,1,8
+4871,Feature phidgets,maqadri,closed,2022-06-01T15:45:14Z,2022-12-21T14:58:18Z,FALSE,1128,30,10,1158
+4870,ENH: Default value for participant to be code which generates random 6-digit number,TEParsons,closed,2022-06-01T14:36:00Z,2022-06-06T14:55:53Z,TRUE,1,1,1,2
+4869,BF: expInfo dict mistook function calls as list as they contain a comma,TEParsons,closed,2022-06-01T10:04:48Z,2022-06-06T14:50:18Z,TRUE,53,3,2,56
+5054,DOCS: Updated fNIRS link,kimDundas,closed,2022-07-29T14:01:55Z,2022-08-08T10:09:55Z,FALSE,2509,778,68,3287
+5053,NF: Add Settings param to control PsychoJS thank you message,TEParsons,closed,2022-07-27T13:50:56Z,2022-09-08T14:52:49Z,TRUE,7,3,2,10
+5052,ENH: Use standard wx StdDialogButtonSizer for message dialogs ,TEParsons,closed,2022-07-27T12:36:41Z,2022-08-08T10:01:17Z,TRUE,6,38,1,44
+5051,ENH/RF: Handle start/stop time of None within start/stop tests,TEParsons,closed,2022-07-27T12:08:50Z,2022-09-01T14:21:51Z,TRUE,238,65,4,303
+5050,DOCS: Updated fNIRS link in hardware index,kimDundas,closed,2022-07-27T11:17:59Z,2022-08-04T15:49:19Z,TRUE,1,1,1,2
+5049,BF: Only write stop test code for Microphone if there is a stop time/condition (fixes #4758),TEParsons,closed,2022-07-27T10:50:53Z,2022-08-04T15:48:20Z,TRUE,9,8,1,17
+5048,BF: Setting autodraw on Brush should set autodraw on constituent shapes,TEParsons,closed,2022-07-27T09:33:38Z,2022-08-17T11:52:49Z,TRUE,10,0,1,10
+5047,NF: Scrollable textbox,TEParsons,closed,2022-07-26T16:08:38Z,2022-09-05T14:15:15Z,TRUE,87,5,3,92
+5046,BF: Fixes to Arabic reshaping,TEParsons,closed,2022-07-26T16:06:13Z,2022-08-04T14:28:04Z,TRUE,3,3,1,6
+5045,"BF: Alias ""square"" with ""rect"" and ""rectangle"" for Aperture shape",TEParsons,closed,2022-07-26T13:57:52Z,2022-09-01T13:53:55Z,FALSE,1,1,1,2
+5044,BF: Only set textbox line spacing if we have a glFont,TEParsons,closed,2022-07-26T11:14:20Z,2022-09-08T14:50:49Z,TRUE,4,2,1,6
+5043,ENH: Translations: Updated Chinese simplified language,shun2wang,closed,2022-07-26T04:50:49Z,2022-09-09T14:09:55Z,TRUE,330,311,2,641
+5042,NF: Light-weight tools for getting peripheral information,mdcutone,closed,2022-07-25T21:06:44Z,2022-09-14T09:17:32Z,TRUE,722,2,2,724
+5041,BF: Refresh HoverButton on setting theme,TEParsons,closed,2022-07-25T09:56:27Z,2022-07-25T10:05:34Z,TRUE,2,1,1,3
+5040,SYS: Merge release into dev,TEParsons,closed,2022-07-25T09:30:35Z,2022-07-25T09:53:39Z,TRUE,41,15,7,56
+5038,"RF: import linebreak only for ""aux14""",alexander-pastukhov,closed,2022-07-22T17:02:23Z,2022-07-25T09:52:02Z,TRUE,2,2,1,4
+5037,TESTS: more complete fetching of xcb libs for ubuntu GitHub VMs,peircej,closed,2022-07-22T15:30:23Z,2022-07-25T09:56:45Z,TRUE,2,2,1,4
+5036,ENH: Add dollar signs to start/stop ctrl,TEParsons,closed,2022-07-22T15:03:57Z,2022-07-25T09:53:17Z,TRUE,9,5,1,14
+5035,ENH: Cache colors on render,TEParsons,closed,2022-07-22T14:54:54Z,2022-09-01T14:29:51Z,TRUE,40,13,1,53
+5034,ENH: Allow animated project avatars in Builder,TEParsons,closed,2022-07-22T13:19:12Z,2022-07-22T14:53:37Z,TRUE,68,23,2,91
+5033,BF: Initialise arabic reshaper with params to preserve harakats,TEParsons,closed,2022-07-22T11:31:34Z,2022-07-22T14:22:27Z,TRUE,7,2,1,9
+5032,ENH: Fix granularity as 1 for radio slider,TEParsons,closed,2022-07-22T09:16:04Z,2022-07-22T14:25:00Z,TRUE,17,1,2,18
+5031,BF: Enable Coder save button via EnableTool rather than Enable,TEParsons,closed,2022-07-22T08:52:11Z,2022-07-22T14:26:37Z,TRUE,19,7,1,26
+5030,Merge release into dev,peircej,closed,2022-07-21T15:54:34Z,2022-07-22T14:26:55Z,TRUE,1452,1017,20,2469
+5029,BF: Dark mode was missing goto button,TEParsons,closed,2022-07-21T15:53:02Z,2022-07-22T14:28:12Z,TRUE,2,2,3,4
+5028,ENH: Use up to date logos for Coder icons,TEParsons,closed,2022-07-21T10:18:27Z,2022-07-22T14:27:52Z,TRUE,4,3,19,7
+5027,ENH: Improve `Color.render` performance for the case when contrast is 1,lkeegan,closed,2022-07-21T08:47:52Z,2022-07-21T15:37:53Z,TRUE,2,0,1,2
+5026,BF: Use wx.Button for buttons in Flow as platebtn is buggy,TEParsons,closed,2022-07-20T11:42:56Z,2022-07-22T14:29:16Z,TRUE,102,112,3,214
+5025,ENH: Give designer control over when keypresses register,TEParsons,closed,2022-07-20T09:55:42Z,2022-10-14T12:34:37Z,TRUE,20,5,1,25
+5024,Hotfix linebreak class,alexander-pastukhov,closed,2022-07-20T09:31:17Z,2022-07-22T16:50:10Z,FALSE,333251,1,2,333252
+5023,FF: Warn when trying to change sample rate with `pyo` backend,mdcutone,closed,2022-07-19T20:06:53Z,2022-07-25T09:45:04Z,TRUE,10,1,1,11
+5022,NF: Add a drop down control,TEParsons,closed,2022-07-19T15:35:56Z,2022-09-01T15:03:31Z,TRUE,199,1,3,200
+5021,FF: Explicit type conversion to `int` for wxPython calls for Python 3.10+ compatibility,mdcutone,closed,2022-07-18T19:48:53Z,2022-07-22T14:55:32Z,TRUE,162,78,1,240
+5020,"NF: Add CheckBoxStim, will allow bool ctrls in Form",TEParsons,closed,2022-07-18T13:42:29Z,2022-09-01T15:00:32Z,TRUE,129,1,2,130
+5019,DOCS: update download for 2022.2.2,peircej,closed,2022-07-18T13:05:13Z,2022-07-18T13:05:24Z,TRUE,18,3,3,21
+5018,BF: Handle stop time of None for Camera,TEParsons,closed,2022-07-18T12:38:26Z,2022-07-18T14:14:23Z,TRUE,19,7,1,26
+5017,BF: pip install error for conda envs,davidmwatson,closed,2022-07-18T09:51:50Z,2022-07-18T14:13:15Z,TRUE,1,1,1,2
+5014,BF: setSize was throwing error when size image size uses None,TEParsons,closed,2022-07-14T12:12:52Z,2022-07-22T15:03:15Z,TRUE,11,1,2,12
+5013,"NF: Add ""arrow"" to named shapes in ShapeStim",TEParsons,closed,2022-07-14T10:10:47Z,2022-07-22T15:04:49Z,TRUE,15,2,2,17
+5012,BF: Fixed word list error for pocketsphinx transcription,mdcutone,closed,2022-07-13T20:51:07Z,2022-07-21T15:31:42Z,TRUE,2,1,1,3
+5011,BF: Polygon component JS boilerplate was missing colorSpace,TEParsons,closed,2022-07-13T13:31:58Z,2022-07-22T15:05:07Z,TRUE,4,1,1,5
+5010,BF: ROI status wasn't being set to STARTED as intended,TEParsons,closed,2022-07-13T13:18:29Z,2022-07-22T15:05:35Z,TRUE,9,3,1,12
+5009,BF: choice labels are not translated,hsogo,closed,2022-07-13T07:16:27Z,2022-07-13T11:49:54Z,TRUE,1207,987,4,2194
+5008,RF: Improved `clock.wait()` routine with periodic event dispatching ,mdcutone,closed,2022-07-12T18:36:34Z,2022-07-13T11:50:28Z,TRUE,60,29,1,89
+5007,NF: Add FrameAnimation class for animating images,TEParsons,closed,2022-07-12T10:28:25Z,2022-11-04T14:38:02Z,FALSE,307,0,9,307
+5006,TEST: Create local-only test for attribute setter vs property/setter,TEParsons,closed,2022-07-12T09:52:00Z,2022-07-25T09:55:16Z,TRUE,227,0,1,227
+5005,BF: remove requirement for pocketsphinx - it often fails to install,peircej,closed,2022-07-11T14:24:17Z,2022-07-11T15:15:53Z,TRUE,1,3,2,4
+5004,"BF: If routine force ended, reset clock rather than subtracting expected dur",TEParsons,closed,2022-07-11T11:20:35Z,2022-07-11T15:15:39Z,TRUE,16,8,2,24
+5003,BF: Routines shouldn't be marked non-slip safe if a component can end routine,TEParsons,closed,2022-07-11T09:17:19Z,2022-07-11T11:20:00Z,FALSE,12,1,1,13
+5001,ENH: Add support for user defined iohub calibration target graphic,isolver,closed,2022-07-06T13:31:32Z,2022-07-22T15:06:03Z,TRUE,600,163,14,763
+4999,TEST: Test for speed of setting image (enabling frame animations),TEParsons,closed,2022-07-04T10:29:51Z,2022-07-05T11:54:32Z,TRUE,112,1,1,113
+4998,TEST: Test that reserved names in code snippets are caught,TEParsons,closed,2022-07-04T10:00:12Z,2022-07-05T11:54:04Z,TRUE,1,0,1,1
+4997,BF: Log color attribs on setting,TEParsons,closed,2022-07-04T09:17:29Z,2022-07-11T14:15:40Z,TRUE,7,0,1,7
+5100,BF: Stability and bug fixes for `MovieStim`,mdcutone,closed,2022-08-26T20:30:05Z,2022-09-09T14:26:15Z,TRUE,157,236,3,393
+5099,BF: Code translation was redefining experiment-level variables ,TEParsons,closed,2022-08-26T14:40:20Z,2022-09-09T14:24:38Z,TRUE,139,11,4,150
+5098,TEST: Update circle test artefacts,TEParsons,closed,2022-08-26T11:20:13Z,2022-08-26T14:07:30Z,TRUE,0,0,20,0
+5096,ENH: Add help button to standalone routines,TEParsons,closed,2022-08-24T13:13:27Z,2022-10-14T12:36:45Z,TRUE,15,2,4,17
+5095,NF: Panorama component,TEParsons,closed,2022-08-23T15:15:58Z,2022-09-09T14:22:46Z,TRUE,688,3,13,691
+5094,NF: Helper tools for animating stimuli,TEParsons,closed,2022-08-23T12:56:59Z,2022-09-09T14:25:16Z,FALSE,0,0,0,0
+5093,BF: default for mic should be transcription=False,peircej,closed,2022-08-18T10:27:20Z,2022-08-18T11:36:36Z,TRUE,1,1,1,2
+5092,BF: Param validator wasn't getting updates correctly,TEParsons,closed,2022-08-18T10:01:51Z,2022-08-18T12:47:18Z,TRUE,5,3,2,8
+5090,BF: Text validation was 1 character behind due to wx EVT_CHAR,TEParsons,closed,2022-08-17T10:34:39Z,2022-08-17T11:46:39Z,TRUE,1,1,1,2
+5089,Merge release to dev,peircej,closed,2022-08-16T08:48:52Z,2022-08-18T10:32:29Z,TRUE,46,18,23,64
+5087,FF: Fixed package version for wxPython on Darwin,mdcutone,closed,2022-08-15T15:22:48Z,2022-08-16T11:09:18Z,TRUE,3,1,1,4
+5085,"BF: If JS has syntax error, return expression unchanged",TEParsons,closed,2022-08-15T11:26:36Z,2022-08-17T11:51:13Z,TRUE,1,1,1,2
+5084,TEST: Apply test suite fixes in Dev to Release,TEParsons,closed,2022-08-15T09:26:47Z,2022-08-15T15:16:37Z,TRUE,0,0,20,0
+5083,"ENH: Allow timestamps to include timezone (if requested), fixes #5075",TEParsons,closed,2022-08-12T13:38:40Z,2022-09-08T14:42:46Z,TRUE,4,1,1,5
+5082,BF: Code translation was redefining experiment-level variables,TEParsons,closed,2022-08-12T11:39:30Z,2022-08-26T14:40:05Z,FALSE,166,15,11,181
+5081,NF: Panorama component,TEParsons,closed,2022-08-12T08:01:42Z,2022-09-01T14:23:29Z,FALSE,246,3,12,249
+5080,BF: Fix allowedLabels ,TEParsons,closed,2022-08-12T07:53:14Z,2022-08-17T11:52:00Z,TRUE,1,1,1,2
+5079,BF: Fixed test suite stalling on single instance error,mdcutone,closed,2022-08-11T18:09:54Z,2022-08-12T14:31:09Z,TRUE,9,7,1,16
+5078,TextBox2 Color Support,ollie-d,closed,2022-08-11T18:04:01Z,2022-10-14T12:35:29Z,TRUE,175,48,4,223
+5077,FF: Added requirement for `attrdict`,mdcutone,closed,2022-08-11T17:11:24Z,2022-08-11T20:31:35Z,FALSE,1,0,1,1
+5076,FF: `MovieStim` playback and cleanup bugs ,mdcutone,closed,2022-08-09T17:52:22Z,2022-08-12T14:57:00Z,TRUE,135,69,3,204
+5074,BF: Update size on image set even if not None,TEParsons,closed,2022-08-09T10:02:16Z,2022-08-18T12:52:27Z,TRUE,3,12,2,15
+5073,NF: Background image attribute for Window,TEParsons,closed,2022-08-09T09:52:20Z,2022-08-12T15:06:18Z,TRUE,194,3,18,197
+5072,BF: Fix crash in Builder/Runner when using Camera within an experiment,mdcutone,closed,2022-08-08T17:27:58Z,2022-08-12T14:57:14Z,TRUE,3,2,2,5
+5071,BF: Enable Pavlovia buttons again if sync errors,TEParsons,closed,2022-08-08T13:37:17Z,2022-08-10T10:54:25Z,TRUE,10,3,2,13
+5070,BF: Handle when value in DictCtrl has a syntax error,TEParsons,closed,2022-08-08T10:38:34Z,2022-08-08T14:21:47Z,TRUE,3,1,1,4
+5069,ENH: Rework FileListCtrl to give more control over values,TEParsons,closed,2022-08-08T10:21:22Z,2022-12-21T18:55:21Z,FALSE,430,69,18,499
+5068,Fixed MacOS blocking mic access on Standalone bundle,peircej,closed,2022-08-08T09:32:00Z,2022-08-08T14:23:15Z,TRUE,26,5,6,31
+5067,"BF: When slider is categorical, snap to nearest tick",TEParsons,closed,2022-08-04T15:42:18Z,2022-08-08T10:08:42Z,TRUE,36,11,2,47
+5066,BF: Fix test suite,TEParsons,closed,2022-08-04T14:25:20Z,2022-08-09T11:01:37Z,TRUE,19,13,27,32
+5065,ENH: Spaces on Flow buttons no longer needed,TEParsons,closed,2022-08-04T13:48:38Z,2022-08-04T14:18:47Z,TRUE,3,3,2,6
+5064,TEST: Update TestTarget artefacts to reflect changes made in #5001,TEParsons,closed,2022-08-04T11:19:51Z,2022-08-04T14:15:47Z,TRUE,0,0,20,0
+5063,"ENH: When drawing a circle, work out how many edges are needed for a smooth circle",TEParsons,closed,2022-08-04T11:17:45Z,2022-08-08T14:22:25Z,TRUE,37,3,3,40
+5062,RF: Replace file browser toolbar with a panel and context tools,TEParsons,closed,2022-08-03T12:20:49Z,2022-08-08T14:27:11Z,TRUE,74,81,14,155
+5061,ENH: Don't supply a granularity argument if Slider is radio (JS and Py),TEParsons,closed,2022-08-03T12:18:21Z,2022-08-04T14:29:05Z,TRUE,34,17,1,51
+5060,BF: Text and file list controls need to grow with dialog,TEParsons,closed,2022-08-02T16:00:27Z,2022-08-04T14:25:45Z,TRUE,3,0,1,3
+5059,ENH: Adds support for user defined target graphics in GazePoint and Tobii calibration. ,isolver,closed,2022-08-02T14:41:49Z,2022-08-09T15:30:45Z,TRUE,405,1259,18,1664
+5058,"ENH: Alias units ""from exp settings"" for ""win.units"" at the base level",TEParsons,closed,2022-08-02T12:30:55Z,2022-08-08T14:29:57Z,TRUE,9,1,1,10
+5057,BF: include ~/Library/Fonts for font searching in TextBox2,peircej,closed,2022-08-02T10:58:36Z,2022-08-04T14:16:16Z,TRUE,1,0,1,1
+5056,NF: Add params to Mouse to check for correct answer,TEParsons,closed,2022-08-01T15:47:20Z,2022-09-09T14:51:57Z,TRUE,126,17,3,143
+5055,BF: Only write ROI stop code if has a stop value,TEParsons,closed,2022-08-01T09:50:40Z,2022-08-04T14:17:38Z,TRUE,7,6,1,13
+5157,updated shelf counterbalancing docs,suelynnmah,closed,2022-09-29T12:53:26Z,2022-11-09T14:08:48Z,TRUE,15,4,4,19
+5156,BF: Only write ROI stop code if has a stop value,TEParsons,closed,2022-09-29T12:38:56Z,2022-09-29T16:45:07Z,TRUE,7,6,1,13
+5155,BF/TEST: Ensure panorama works as docs describe,TEParsons,closed,2022-09-29T12:07:57Z,2022-09-29T20:56:57Z,TRUE,58,13,14,71
+5154,DOCS: Update cedrusResponseBox.rst,RebeccaHirst,closed,2022-09-28T13:34:32Z,2022-11-03T14:34:05Z,TRUE,45,2,1,47
+5153,"BF: Make sure depth is supplied, used and functions as intended",TEParsons,closed,2022-09-28T12:19:18Z,2022-12-22T10:34:14Z,TRUE,136,33,15,169
+5152,BF: CodeCtrl wasn't getting and setting its value correctly,TEParsons,closed,2022-09-27T15:41:47Z,2022-12-08T14:49:29Z,TRUE,22,1,2,23
+5151,"BF: Alias Slider ""choice"" style as Radio in JS for now",TEParsons,closed,2022-09-27T15:29:23Z,2022-12-21T15:47:39Z,TRUE,2,1,1,3
+5150,BF: Label for background fit param was wrong,TEParsons,closed,2022-09-27T09:53:06Z,2022-09-27T10:57:21Z,TRUE,1,1,1,2
+5148,PKG: version 2022.3.0dev6,peircej,closed,2022-09-26T10:00:40Z,2022-12-08T14:45:13Z,TRUE,2,2,2,4
+5147,NF: Pavlvoia Survey component,TEParsons,closed,2022-09-23T14:07:10Z,2022-11-30T14:14:30Z,TRUE,821,26,23,847
+5146,ENH: Add new ParamCtrl for multiline code (as in ButtonStim callback),TEParsons,closed,2022-09-22T10:04:27Z,2022-09-22T14:52:30Z,TRUE,37,5,2,42
+5145,"ENH: Add ""toggle"" function to MovieStim",TEParsons,closed,2022-09-22T09:16:25Z,2022-11-14T09:57:55Z,TRUE,16,0,1,16
+5144,RF/BF: Button stim was unindenting without indenting under certain conditons,TEParsons,closed,2022-09-21T13:58:26Z,2022-11-21T12:40:40Z,FALSE,81,62,2,143
+5143,updated shelf counterbalancing record documentation,suelynnmah,closed,2022-09-21T11:43:04Z,2022-09-22T12:54:53Z,FALSE,8,4,2,12
+5142,BF: Fix `Window.resetViewport()` method ,mdcutone,closed,2022-09-21T00:09:02Z,2022-09-21T17:28:51Z,TRUE,32,1,2,33
+5140,BF: Fix init val placeholder for Panorama component,TEParsons,closed,2022-09-20T09:32:22Z,2022-09-23T14:22:22Z,TRUE,32,19,4,51
+5139,Tests multichannel asio,peircej,closed,2022-09-16T15:00:17Z,2022-09-22T14:21:31Z,TRUE,8,15,4,23
+5138,"Anchor property boilerplate code for image, movie, grating and polygon stims",lightest,closed,2022-09-16T14:58:30Z,2022-09-26T13:41:31Z,TRUE,6,0,4,6
+5137,BF: Add Panorama to experiment schema,TEParsons,closed,2022-09-16T13:36:25Z,2022-09-22T14:12:34Z,TRUE,1,0,1,1
+5136,BF: Allow Slider to accept values each repeat,TEParsons,closed,2022-09-16T12:19:19Z,2022-12-21T20:49:02Z,TRUE,16,4,2,20
+5134,Panorama component documentation and builder demo,suelynnmah,closed,2022-09-15T14:55:23Z,2022-09-26T10:01:04Z,TRUE,163,0,3,163
+5133,ENH: Helper function to get components and standalone routines,TEParsons,closed,2022-09-15T11:12:09Z,2022-10-27T13:31:58Z,TRUE,10,0,1,10
+5131,PKG: updated conda environment yml to use Py3.8,peircej,closed,2022-09-15T08:56:49Z,2022-09-15T08:57:28Z,TRUE,1,1,1,2
+5130,Release,peircej,closed,2022-09-14T09:35:26Z,2022-09-22T14:46:27Z,TRUE,1,0,1,1
+5129,NF: Markdown editor,TEParsons,closed,2022-09-13T15:16:10Z,2022-10-14T12:53:04Z,TRUE,380,28,32,408
+5128,"NF: Add ""placeholder"" text to TextBox",TEParsons,closed,2022-09-13T11:10:11Z,2022-10-31T10:21:32Z,TRUE,90,17,3,107
+5127,DOCS: docs/download was failing to identify macOS correctly,peircej,closed,2022-09-13T10:56:21Z,2022-09-13T11:54:37Z,TRUE,1,1,1,2
+5126,DOCS: download page incorrect macOS version labels,peircej,closed,2022-09-12T15:09:30Z,2022-09-12T15:10:00Z,TRUE,3,4,1,7
+5125,BF: Allow no FBO in window settings,TEParsons,closed,2022-09-12T14:31:16Z,2022-09-13T11:55:30Z,TRUE,5,2,1,7
+5124,BF: Mistakes in textbox palette attributes,TEParsons,closed,2022-09-12T10:46:27Z,2022-09-12T14:28:52Z,TRUE,10,22,1,32
+5123,TEST: Decrease sensitivity on test comparisons for testCircle,TEParsons,closed,2022-09-09T15:15:02Z,2022-09-13T12:27:47Z,TRUE,1,1,1,2
+5122,Docs: add Shun Wang to translators,peircej,closed,2022-09-09T14:48:57Z,2022-09-13T12:19:34Z,TRUE,2,1,1,3
+5121,BF: Make `Microphone.stop()` idempotent,mdcutone,closed,2022-09-09T14:28:44Z,2022-09-13T12:23:30Z,TRUE,44,17,1,61
+5120,BF: Make `Microphone.stop()` idempotent,mdcutone,closed,2022-09-09T14:17:20Z,2022-09-09T14:21:33Z,FALSE,40,13,1,53
+5119,TEST: Missed commented line in textbox tests,TEParsons,closed,2022-09-09T13:26:10Z,2022-09-09T14:18:43Z,TRUE,2,2,1,4
+5118,BF: Handle when Pavlovia avatar is too big,TEParsons,closed,2022-09-09T12:13:59Z,2022-09-09T14:18:08Z,TRUE,50,19,6,69
+5117,"BF: Handle when we have a user object but it has no username, fixes #5108",TEParsons,closed,2022-09-09T11:30:02Z,2022-09-09T14:08:01Z,TRUE,1,1,1,2
+5116,DOC: Update changelog,TEParsons,closed,2022-09-08T15:53:30Z,2022-09-09T14:08:29Z,TRUE,2,0,1,2
+5115,precise value setter for sound;,lightest,closed,2022-09-08T14:45:10Z,2022-09-22T09:04:55Z,TRUE,1,7,1,8
+5114,Dev merge release,peircej,closed,2022-09-08T14:32:57Z,2022-10-14T12:43:15Z,TRUE,109,83,9,192
+5113,ENH: Split words longer than entire line in textbox,TEParsons,closed,2022-09-08T12:14:15Z,2022-10-14T12:41:48Z,TRUE,73,3,22,76
+5112,BF: Fix stall when running test suite due to multiple instantiations of the app,mdcutone,closed,2022-09-07T22:34:14Z,2022-09-08T14:29:43Z,TRUE,75,75,1,150
+5111,BF: Get Pavlovia session via Builder and Coder on access so it's always the current session,TEParsons,closed,2022-09-07T16:17:57Z,2022-09-08T14:33:41Z,TRUE,15,3,3,18
+5110,BF: Refresh project object to get info when known project is found,TEParsons,closed,2022-09-07T15:09:44Z,2022-09-08T14:44:16Z,TRUE,1,0,1,1
+5109,BF: Wrong syntax when checking frame duration in pavlovia avatar,TEParsons,closed,2022-09-06T11:43:22Z,2022-09-08T14:33:49Z,TRUE,1,1,1,2
+5107,ENH: Add ALT+... tags to menu items,TEParsons,closed,2022-09-05T14:39:34Z,2022-09-08T14:45:06Z,TRUE,25,24,5,49
+5105,DOC: Update changelog,TEParsons,closed,2022-09-01T15:50:24Z,2022-09-02T15:10:31Z,TRUE,17,0,1,17
+5104,BF: Handle `ImportError` too for pocketsphinx,mdcutone,closed,2022-09-01T14:44:31Z,2022-09-08T14:36:03Z,TRUE,1,1,1,2
+5103,"NF: Add ""targets"" param to Aperture for hiding only some components",TEParsons,closed,2022-09-01T13:48:26Z,2022-09-01T14:38:39Z,FALSE,83,49,4,132
+5102,BF: Fix to animated project avatars,TEParsons,closed,2022-09-01T11:19:50Z,2022-09-01T14:44:28Z,TRUE,2,1,1,3
+5188,BF: Triangle slider marker wasn't rotated correctly,TEParsons,closed,2022-10-28T12:53:12Z,2022-11-16T21:04:57Z,TRUE,43,9,6,52
+5187,ENH: Panorama should be in beta,TEParsons,closed,2022-10-28T08:28:29Z,2022-10-31T15:15:04Z,TRUE,1,0,1,1
+5186,BF: Default shape colors by class,TEParsons,closed,2022-10-27T15:10:10Z,2022-12-22T10:34:35Z,TRUE,72,42,6,114
+5185,ENH: better loading of UAX14 linebreak table,peircej,closed,2022-10-27T14:10:32Z,2022-11-03T14:22:23Z,TRUE,3626,333248,3,336874
+5184,ENH: Enhancements to plugins dialog,TEParsons,closed,2022-10-27T13:30:11Z,2022-11-03T14:32:09Z,TRUE,815,335,5,1150
+5183,ENH: Make Runner panels resizable,TEParsons,closed,2022-10-27T11:06:08Z,2022-11-03T14:31:06Z,TRUE,149,113,2,262
+5181,NF: Add param so that Sound components can play over multiple routines,TEParsons,closed,2022-10-26T12:16:42Z,2022-12-21T14:49:21Z,FALSE,45,15,4,60
+5180,BF: Add __init__.py to pupil_labs,isolver,closed,2022-10-25T14:01:03Z,2022-10-27T13:26:33Z,TRUE,4,0,1,4
+5179,RF/BF: Always substitute PsychoJS names,TEParsons,closed,2022-10-24T09:01:39Z,2022-12-08T14:19:27Z,TRUE,18,23,2,41
+5178,RF: Refactor `psychopy.hardware.camera` subpackage,mdcutone,closed,2022-10-20T23:06:48Z,2022-12-08T14:46:23Z,FALSE,926,837,4,1763
+5177,BF: Fixed `pause` being undone by `draw()` command in `MovieStim`,mdcutone,closed,2022-10-17T16:18:38Z,2022-10-26T13:24:15Z,TRUE,2,2,1,4
+5176,ENH: Style filter dlg in dark mode,TEParsons,closed,2022-10-14T09:32:18Z,2022-12-16T10:16:49Z,TRUE,4,0,1,4
+5175,ENH: Allow icons to have theme explicitly requested,TEParsons,closed,2022-10-14T09:11:37Z,2022-10-14T13:19:28Z,TRUE,46,36,6,82
+5174,BF: Fix size change on setting `tex` attribute for `GratingStim`,mdcutone,closed,2022-10-13T20:40:44Z,2022-12-21T14:59:06Z,TRUE,171,70,2,241
+5173,"BF: Load fonts on access, not on module def",TEParsons,closed,2022-10-13T15:51:49Z,2022-10-27T13:37:38Z,TRUE,62,35,1,97
+5172,TEST: Add test that params settable each frame/repeat have associated setter methods,TEParsons,closed,2022-10-13T12:30:52Z,2023-01-06T11:11:30Z,TRUE,74,10,6,84
+5171,BF: Fix order of dataFileName and addInfoFromUrl (#4831),shabkr,closed,2022-10-12T18:39:07Z,2022-10-14T13:47:13Z,TRUE,5,1,1,6
+5170,"BF: Create one serial object per device, not per component",TEParsons,closed,2022-10-12T14:19:54Z,2022-12-19T11:56:43Z,FALSE,39,16,1,55
+5167,FF: Remove redundant calls to `_createTexture` during `GratingStim` init,mdcutone,closed,2022-10-11T16:15:08Z,2022-10-15T15:50:55Z,FALSE,4,2,1,6
+5166,BF: Added addTime() to class CountdownTimer,Catyre,closed,2022-10-11T00:35:47Z,2022-10-14T14:04:10Z,TRUE,15,2,1,17
+5165,NF: Plugin/Packages dialog,TEParsons,closed,2022-10-10T14:16:55Z,2022-10-14T13:19:26Z,TRUE,1341,40,37,1381
+5163,"BF: If multiple components use the same mic, only setup device once",TEParsons,closed,2022-10-06T14:09:57Z,2022-10-12T13:18:44Z,TRUE,229,30,5,259
+5162,ENH: Tool to make a valid variable name from a string,TEParsons,closed,2022-10-06T12:54:25Z,2022-10-12T13:18:47Z,TRUE,140,1,2,141
+5161,BF: Non-string values weren't correctly linked to labels in ChoiceCtrl,TEParsons,closed,2022-10-06T12:52:34Z,2022-10-12T13:18:47Z,TRUE,12,3,2,15
+5158,NF: Preliminary work on plugin system,mdcutone,closed,2022-10-02T16:26:34Z,2022-10-27T13:31:56Z,TRUE,400,176,6,576
+5230,images for shelf docs,suelynnmah,closed,2022-11-25T10:57:17Z,2022-11-25T12:10:49Z,TRUE,2,2,3,4
+5229,BF: Reset aperture before drawing Form,TEParsons,closed,2022-11-25T10:19:29Z,2022-12-08T14:23:39Z,TRUE,2,2,1,4
+5228,BF: Cache frame rate after first get,TEParsons,closed,2022-11-25T10:17:17Z,2022-12-08T14:31:26Z,FALSE,1,0,1,1
+5227,BF: Fixed audio backends piling up audio when `play()` is called multiple times,mdcutone,closed,2022-11-24T23:49:04Z,2022-11-30T14:19:02Z,TRUE,149,89,6,238
+5226,BF: Add questplus back into list of loop types,TEParsons,closed,2022-11-24T15:32:02Z,2022-11-30T14:19:03Z,TRUE,1,1,1,2
+5224,NF: Param/attribute to give a textbox a tail (like a speech bubble),TEParsons,closed,2022-11-23T11:32:08Z,2022-12-08T14:34:11Z,TRUE,129,2,5,131
+5223,RF: Add stub for GLFW,mdcutone,closed,2022-11-23T00:11:39Z,2022-11-30T14:16:10Z,TRUE,30,3,2,33
+5221,BF: Cherrypick changes from dev to fix pavlovia syncing,TEParsons,closed,2022-11-21T14:51:22Z,2022-11-30T14:13:46Z,TRUE,127,67,2,194
+5220,RF: Fix indentation and logic on Button boilerplate,TEParsons,closed,2022-11-21T13:32:01Z,2022-12-08T14:39:06Z,TRUE,73,74,1,147
+5219,BF: Don't show readme frame if there is no readme file,TEParsons,closed,2022-11-21T11:48:16Z,2022-12-08T14:44:43Z,TRUE,6,1,1,7
+5218,RF: Remove window type from prefs and add it to experiment settings,TEParsons,closed,2022-11-21T11:37:12Z,2023-01-05T13:09:50Z,TRUE,40,16,11,56
+5214,BF: Add default.??? to resources,TEParsons,closed,2022-11-18T13:59:22Z,2022-12-21T21:11:41Z,TRUE,106,27,12,133
+5213,BF: Cleanup and improvements to plugin/packages dlg,TEParsons,closed,2022-11-16T11:14:17Z,2022-11-16T14:30:07Z,TRUE,112,21,5,133
+5211,FF: Moved `activatePlugins()` to be called earlier in Builder output scripts,mdcutone,closed,2022-11-14T17:27:36Z,2022-11-14T18:31:06Z,TRUE,1,3,2,4
+5210,BF: Register when routine is force ended even if frame loop never starts,TEParsons,closed,2022-11-14T15:24:39Z,2022-11-16T14:09:37Z,TRUE,7,1,1,8
+5209,ENH: Alias some setter functions in TextBox2,TEParsons,closed,2022-11-14T13:35:57Z,2022-11-16T14:10:46Z,TRUE,25,1,1,26
+5208,"ENH: If no JS file for local debug, make one",TEParsons,closed,2022-11-14T11:24:37Z,2022-11-16T14:11:20Z,TRUE,5,4,1,9
+5207,RF: Create `psychopy.hardware.photometer` sub-package,mdcutone,closed,2022-11-11T21:50:41Z,2022-11-30T18:09:36Z,TRUE,1610,7477,18,9087
+5206,BF: Allow projects to sync from purely local information,TEParsons,closed,2022-11-10T17:06:29Z,2022-11-16T14:14:49Z,TRUE,139,82,2,221
+5205,DOCS: fixed link to Builder docs on ticker tape,peircej,closed,2022-11-10T15:27:29Z,2022-11-16T14:56:04Z,TRUE,1,1,1,2
+5204,BF/ENH: Cleanup plugins/packages ui and fix on Mac,TEParsons,closed,2022-11-09T16:36:42Z,2022-11-09T21:33:46Z,TRUE,58,74,9,132
+5203,Fix builder-defined gaze confidence not being applied to Pupil Labs eye tracking,papr,closed,2022-11-09T15:36:21Z,2022-11-14T09:42:34Z,TRUE,1,1,1,2
+5202,BF: Use namespace/name id rather than numeric for knownProjects,TEParsons,closed,2022-11-09T11:29:17Z,2022-11-10T15:27:52Z,TRUE,2,2,1,4
+5201,ENH: Window icons with variable proportions,TEParsons,closed,2022-11-08T15:04:32Z,2022-11-16T14:46:34Z,TRUE,0,0,3,0
+5200,"NF/RF: Allow subprocesses to load plugins, support for `winType` plugins, remove GLFW",mdcutone,closed,2022-11-07T22:26:29Z,2022-11-09T14:07:58Z,TRUE,96,937,8,1033
+5199,BUGFIX: Add imports back to into crs/shaders.py,schofiaj,closed,2022-11-07T17:15:05Z,2022-11-07T18:26:11Z,TRUE,3,0,1,3
+5198,TEST: Fixed tests for UI,mdcutone,closed,2022-11-04T17:02:54Z,2022-11-04T18:02:57Z,TRUE,40,28,6,68
+5197,FF: Pin pyglet to version 1.5.27,mdcutone,closed,2022-11-04T15:27:56Z,2022-11-04T15:28:03Z,TRUE,2,2,1,4
+5196,BF: Call new button.reset method at routine start,TEParsons,closed,2022-11-04T13:59:11Z,2022-11-14T09:49:49Z,TRUE,26,5,2,31
+5195,ENH: Handle when component comes from unrecognised plugin,TEParsons,closed,2022-11-04T10:43:53Z,2022-11-16T21:04:01Z,TRUE,118,2,13,120
+5194,linked to pavlovia surveys doc and launch video,suelynnmah,closed,2022-11-03T16:57:10Z,2022-11-03T16:58:52Z,TRUE,2,0,1,2
+5193,FF: Fixed single instance checking on Windows,mdcutone,closed,2022-11-03T15:30:43Z,2022-11-04T14:05:32Z,TRUE,6,76,1,82
+5192,BF: Ensure the app always has an attribute for Builder,TEParsons,closed,2022-11-03T13:35:56Z,2022-11-16T14:43:58Z,TRUE,1,0,1,1
+5191,ENH: Add alert for when column in conditions file clashes with namespace,TEParsons,closed,2022-11-02T12:36:40Z,2022-11-16T14:55:48Z,TRUE,60,0,4,60
+5190,BF: Take note if routine starts with button pressed,TEParsons,closed,2022-11-02T08:51:38Z,2022-11-03T14:21:46Z,TRUE,17,1,2,18

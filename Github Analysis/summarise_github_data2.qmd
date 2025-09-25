@@ -1,0 +1,249 @@
+---
+title: "Github Data Summary"
+format: html
+---
+
+## Introduction
+
+To parallel our survey, we wanted to also observe if any changes were observed in the GitHub data itself. We therefore assessed pull request activity (number of PRs opened, merged, and closed), the nature of pull requests (including size (number of lines changed) and type, labeled as follows: BF – Bug Fix, FF – Feature Fix, RF – Refactor, NF – New Feature, ENH – Enhancement to existing code, DOC – Documentation, TEST – Adding or modifying tests, or unlabeled), contributor engagement (number of active contributors, new vs returning contributors, and PRs per contributor), and PR dynamics (time to merge and number of comments), disaggregated by contributor type (staff vs external). We chose two windows to analyse these factors: Window 1: 28 May 2022 – 27 Nov 2022, Window 2: 28 May 2024 – 27 Nov 2024, thus each window was sampled 6 months prior to the dissemination of each survey. These windows were selected to give equal length at each timepoint, whilst also allowing a wide enough window to capture meaningful activity and avoiding seasonal mismatches between sampling points.
+
+## Analysis and Results
+
+Data were pulled from the PsychoPy github repository https://github.com/psychopy/psychopy from two time windows Window 1: 28 May 2022 – 27 Nov 2022, Window 2: 28 May 2024 – 27 Nov 2024. We identified github author names known to be internal staff to Open Science Tools (the social enterprise maintaining PsychoPy), so that we could seperately analyse External and Staff contributions.
+
+```{r setup-libraries, include=FALSE}
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(readr)
+library(tidyr)
+library(stringr)   # make sure this is loaded
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library("readxl")
+library(glue)
+
+
+dir.create("github_plots", showWarnings = FALSE)
+```
+
+```{r load-and-prepare-data, include=FALSE}
+# Load staff list
+staff_authors <- c("suelynnmah", "TEParsons", "mdcutone", "peircej", 
+                   "isolver", "RebeccaHirst", "lightest", "kimDundas")  
+
+# Load CSVs for both windows
+pr_window1 <- read_csv("data/psychopy_pull_requests_2022-05-28_to_2022-11-27_combined.csv")
+pr_window2 <- read_csv("data/psychopy_pull_requests_2024-05-28_to_2024-11-27_combined.csv")
+
+# Load manual label files
+manual_2022 <- read_excel("data/manual_pr_labels_2022.xlsx")
+manual_2024 <- read_excel("data/manual_pr_labels_2024.xlsx")
+
+# Define the categories
+categories <- c("BF", "FF", "RF", "NF", "ENH", "DOC", "TEST")
+
+# Function to add Contribution Type column
+add_contribution_type <- function(main_data, manual_data) {
+  main_data %>%
+    # First detect category from Title
+    mutate(Category_from_title = str_extract(Title, paste0("^(", paste(categories, collapse="|"), ")")),
+           # Merge manual labels based on PR Number
+           PR_Number = as.character(`PR Number`)) %>%
+    left_join(manual_data %>% mutate(PR_Number = as.character(`PR Number`)),
+              by = "PR_Number") %>%
+    # Decide final contribution type
+    mutate(`Contribution_Type` = ifelse(!is.na(Category_from_title),
+                                        Category_from_title,
+                                        Label)) %>%
+    select(-Category_from_title)
+}
+
+# Apply function to both datasets
+pr_window1 <- add_contribution_type(pr_window1, manual_2022)
+pr_window2 <- add_contribution_type(pr_window2, manual_2024)
+
+# Add a window identifier
+pr_window1 <- pr_window1 %>% mutate(Window = "Window 1")
+pr_window2 <- pr_window2 %>% mutate(Window = "Window 2")
+
+# Combine into one dataframe
+pr_all <- bind_rows(pr_window1, pr_window2)
+
+# Contributor type assignment
+pr_all <- pr_all %>%
+  mutate(Contributor_Type = ifelse(Author %in% staff_authors, "Staff", "External"))
+
+```
+
+### Pull Request Activity and Nature
+
+We assessed Pull Request (PR) activity in each Time Window by Contributor Type (Staff vs. External). We also separated this by Merge status (Merged or Not Merged) and Contribution Type (BF – Bug Fix, FF – Feature Fix, RF – Refactor, NF – New Feature, ENH – Enhancement to existing code, DOC – Documentation, TEST – Adding or modifying tests, or unlabeled). The results are shown in Figure XXX, and exact figures shown in Supplementary Table S1. We also examined the size of Pull Requests (Full table Supplementary S2). 
+
+At Time Window 2 there were more pull requests made by External contributors compared with Time Window 1. The nature of these PRs descriptively changed between time windows. At Time Window 1 most PRs from External contributors were Bug Fixes (BF), and no contributions were to changes in documentation (DOC). At Time Window 2, most PRs from External contributors were still Bug Fixes, but this was followed by 27 PRs that were documentation changes. Notably, many of these changes were to add translations to the software (in particular to Arabic, Spanish and Portuguese) - likely reflecting an impact of translator workshops hosted between time windows.   
+Across the two time windows, Pull Request (PR) sizes were generally small, particularly for those that were merged. At Time Window 1, the median size of merged PRs was slightly smaller for External contributors (median = 10.5 lines, mean = 284.3, SD = 566.9) than for Staff contributors (median = 20.5 lines, mean = 1559.3, SD = 19,755.9), whereas non-merged PRs were larger for External contributors (median = 283 lines, mean = 66,954.6, SD = 148,865.5) than for Staff (median = 113 lines, mean = 1007.7, SD = 3,552.4). Notably, the high degree of variability in non merged PRs reflect the presence of large outlier changes. At Time Window 2, median PR sizes were more similar between contributor types (External = 17 lines, mean = 397.0, SD = 1,692.5; Staff = 21 lines, mean = 313.0, SD = 1,502.0), both for merged and non-merged PRs. The variability of PR size also reduced between time windows. Overall, these results suggest that between time windows the size of PR’s accepted to the repository from External and Staff contributors became more similar between time windows. This might also reflect the impact of events between time windows, such as workshops, which may have influenced the stylistic choice of external contributors in their PR activity. 
+
+
+```{r pr-contributor-contribution-merge-plot, message=FALSE, warning=FALSE, echo=FALSE, fig.cap="Figure 1. Number of Pull Requests (PRs) made in Time Window 1 and 2. Results are shown for Merged and Non Merged PRs and seperated by Staff and External contributors. Stacked plots indicate contribution type. BF – Bug Fix, FF – Feature Fix, RF – Refactor, NF – New Feature, ENH – Enhancement to existing code, DOC – Documentation, TEST – Adding or modifying tests, NA - unlabeled"}
+library(dplyr)
+library(ggplot2)
+
+# -----------------------
+# Prepare data for plotting
+# -----------------------
+pr_activity_plot_data <- pr_all %>%
+  group_by(Window, Contributor_Type, Contribution_Type, Merged) %>%
+  summarise(PR_Count = n(), .groups = "drop") %>%
+  mutate(Merged = factor(Merged,
+                         levels = c(FALSE, TRUE),
+                         labels = c("Not Merged", "Merged")))  # relabel factor
+
+# -----------------------
+# Plot PR activity with facets for Merged and Window
+# -----------------------
+pr_activity_plot <- ggplot(pr_activity_plot_data,
+                           aes(x = Contributor_Type, y = PR_Count, fill = Contribution_Type)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(Merged ~ Window) +  # Rows = Merged, Columns = Windows
+  scale_fill_brewer(palette = "Set2", na.value = "lightgray") +  # Color for NA
+  theme_minimal() +
+  labs(title = "PR Activity by Merge Status, Contributor Type, Contribution Type, and Window",
+       y = "Number of PRs",
+       x = "Contributor Type",
+       fill = "Contribution Type") +
+  scale_x_discrete(labels = c("Staff" = "Staff", "External" = "External"))
+
+# Print plot
+pr_activity_plot
+
+# Save as PNG
+ggsave(filename = "github_plots/pr_activity.png", plot = pr_activity_plot,
+       width = 10, height = 6, dpi = 300)
+```
+```{r r pr-contributor-contribution-merge-table, message=FALSE, warning=FALSE, echo=FALSE}
+library(dplyr)
+library(knitr)
+
+# -----------------------
+# Summarize PR counts for table
+# -----------------------
+pr_activity_table <- pr_all %>%
+  group_by(Window, Merged, Contributor_Type, Contribution_Type) %>%
+  summarise(PR_Count = n(), .groups = "drop") %>%
+  mutate(Merged = factor(Merged,
+                         levels = c(FALSE, TRUE),
+                         labels = c("Not Merged", "Merged")))
+
+# -----------------------
+# Print table in Quarto-friendly format
+# -----------------------
+kable(pr_activity_table, 
+      caption = "Table: PR counts by Merge Status, Contributor Type, Contribution Type, and Window",
+      col.names = c("Window", "Merge Status", "Contributor Type", "Contribution Type", "Number of PRs"))
+```
+
+
+### Contributor Engagement
+
+We explored if the number of new External contributors increased. In Window 1, there were 8 Staff and 18 External contributors. In Window 2, there were 6 Staff, 2 External (returning from Time Window 1), and 20 new External contributors. The number of contributors were therefore roughly similar between timepoints, but a large proportion of external contributors at Time Window 2 were new.
+
+```{r contributor-engagement-plot, message=FALSE, warning=FALSE, echo=FALSE, fig.cap="Figure 2. Number of Staff and External contributors at Time window 1 and 2. For Time window 2 new contributors are also indicated with darker turquoise. Results show Merged and Not Merged contributions."}
+
+# -----------------------
+# Contributor engagement (for summary tables)
+# -----------------------
+contributor_engagement <- pr_all %>%
+  group_by(Window, Contributor_Type) %>%
+  summarise(
+    Active_Contributors = n_distinct(Author),
+    PRs_per_Contributor = n() / n_distinct(Author),
+    New_Contributors = sum(!Author %in% pr_all$Author[pr_all$Window != Window])
+  )
+
+# 2) Active Contributors with External New highlighted in Window 2
+# -----------------------
+# Identify authors in Window 1
+authors_w1 <- pr_all %>% filter(Window == "Window 1") %>% pull(Author) %>% unique()
+
+# Label contributors for plotting
+pr_all_plot <- pr_all %>%
+  group_by(Window, Author) %>%
+  summarise(.groups = "drop") %>%
+  mutate(Plot_Type = case_when(
+    Author %in% staff_authors ~ "Staff",
+    Window == "Window 1" & !(Author %in% staff_authors) ~ "External",
+    Window == "Window 2" & !(Author %in% staff_authors) & !(Author %in% authors_w1) ~ "External New",
+    Window == "Window 2" & !(Author %in% staff_authors) & Author %in% authors_w1 ~ "External"
+  ))
+
+# Summarize counts for plotting
+contrib_summary_plot <- pr_all_plot %>%
+  group_by(Window, Plot_Type) %>%
+  summarise(Active_Contributors = n(), .groups = "drop")
+
+  
+# Plot stacked bar
+# Plot stacked bar
+contributors_plot <- ggplot(contrib_summary_plot, aes(x = Window, y = Active_Contributors, fill = Plot_Type)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  scale_fill_manual(values = c("Staff" = "#f3a57f", 
+                               "External" = "#d4f8fc", 
+                               "External New" = "#7deaf6")) +
+  labs(
+    title = "Active Contributors by Window (Staff / External / External New)",
+    y = "Active Contributors",        # Change Y axis label
+    fill = "Contributor Type"         # Change legend title
+  )
+
+# Save and display
+ggsave(filename = "github_plots/active_contributors.png", plot = contributors_plot, width = 6, height = 5, dpi = 300)
+contributors_plot
+
+# Summarize number of active contributors per window and type
+contrib_summary_text <- contrib_summary_plot %>%
+  group_by(Window, Plot_Type) %>%
+  summarise(Count = sum(Active_Contributors), .groups = "drop") %>%
+  tidyr::pivot_wider(names_from = Plot_Type, values_from = Count)
+
+# Build a sentence using glue
+summary_sentence <- glue(
+  "In Window 1, there were {contrib_summary_text$Staff[contrib_summary_text$Window=='Window 1']} Staff and {contrib_summary_text$External[contrib_summary_text$Window=='Window 1']} External contributors. ",
+  "In Window 2, there were {contrib_summary_text$Staff[contrib_summary_text$Window=='Window 2']} Staff, {contrib_summary_text$External[contrib_summary_text$Window=='Window 2']} External, ",
+  "and {contrib_summary_text$`External New`[contrib_summary_text$Window=='Window 2']} new External contributors. The number of contributors were therefor roughly similar between timepoints, but a large proportion of external contributors at timepoint 2 were new."
+)
+```
+
+`r summary_sentence`
+
+## Supplementary Material 
+
+To better understand the nature of engagement, we examined total lines changed per pull request.
+
+
+```{r total-line-change-table, message=FALSE, warning=FALSE, echo=FALSE}
+library(dplyr)
+library(knitr)
+
+# Summarise descriptives
+summary_table <- pr_all %>%
+  group_by(Window, Contributor_Type, Merged) %>%
+  summarise(
+    Count = n(),
+    Mean = mean(`Total Lines Changed`, na.rm = TRUE),
+    Median = median(`Total Lines Changed`, na.rm = TRUE),
+    SD = sd(`Total Lines Changed`, na.rm = TRUE),
+    Min = min(`Total Lines Changed`, na.rm = TRUE),
+    Q1 = quantile(`Total Lines Changed`, 0.25, na.rm = TRUE),
+    Q3 = quantile(`Total Lines Changed`, 0.75, na.rm = TRUE),
+    Max = max(`Total Lines Changed`, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(Window, Contributor_Type, Merged)
+
+# Print nicely
+kable(summary_table, digits = 2, caption = "Descriptive statistics of Total Lines Changed by Window, Contributor Type, and Merge Status")
+
+```
+
