@@ -414,7 +414,7 @@ ggsave(
 
 ```
 
-![](overall_pie_plot.png){fig-alt="Pie chart of responses by dimension and timepoint" width=100%}
+![](overall_pie_plot.png){fig-alt="Pie chart of responses by dimension and timepoint" width="100%"}
 
 ### Gender
 
@@ -2449,6 +2449,147 @@ visMain |>
 ```
 
 <!-- {{< include notes/_engagement.md >}} -->
+
+The pie charts below show how people reported contributing to PsychoPy at Time 1 and Time 2. Here, each slice represents the proportion of respondents who made at least one selection at that timepoint and chose that specific contribution type (e.g., improving documentation, fixing bugs, adding features).
+
+```{r}
+#| label: contributions-pies
+#| fig-cap: "Ways of contributing to PsychoPy by timepoint (share of respondents who made at least one selection)"
+#| fig-width: 12
+#| fig-height: 6
+#| dpi: 300
+#| out-width: "100%"
+#| warning: false
+#| message: false
+
+library(dplyr)
+library(ggplot2)
+library(forcats)
+library(stringr)
+library(scales)
+
+df0 <- longerDataContributions
+
+# --- Standardise timepoint labels ---
+tp_col <- c("timepoint","Timepoint","tp","TP")
+tp_col <- tp_col[tp_col %in% names(df0)][1]
+if (is.na(tp_col)) stop("Could not find a timepoint column (expected one of: timepoint/Timepoint/tp/TP).")
+df0 <- df0 %>%
+  mutate(
+    timepoint = ifelse(str_detect(as.character(.data[[tp_col]]), "timepoint"),
+                       as.character(.data[[tp_col]]),
+                       paste0("timepoint ", as.character(.data[[tp_col]])))
+  )
+
+# --- Keep only 'Selected' rows (your selection flag is `choices`) ---
+if (!"choices" %in% names(df0)) stop("Expected a `choices` column with 'Selected'/'Unselected'.")
+df0 <- df0 %>% filter(choices %in% c("Selected","selected","Yes", TRUE, "TRUE", 1, "1"))
+
+# --- Build a surrogate respondent ID (per timepoint) if no true ID is present ---
+id_candidates <- intersect(names(df0),
+                           c("ResponseId","responseId","respondent_id","ID","id",
+                             "participantId","participant_id","pid","uid","uuid","submission_id"))
+if (length(id_candidates)) {
+  id_col <- id_candidates[1]
+  df0 <- df0 %>% mutate(resp_id__ = .data[[id_col]])
+} else {
+  stable_pref <- c("gender","nonHeteroCommunity","raceCulture","disability",
+                   "domLangEnglish","careerStatus","country","region","age","education")
+  stable_cols <- intersect(names(df0), stable_pref)
+  exclude_cols <- c("contributionType","choices", tp_col, "timepoint")
+  stable_cols <- setdiff(stable_cols, exclude_cols)
+  if (!length(stable_cols)) {
+    df0 <- df0 %>% group_by(timepoint) %>% mutate(resp_id__ = row_number()) %>% ungroup()
+  } else {
+    df0 <- df0 %>% group_by(timepoint, across(all_of(stable_cols))) %>%
+      mutate(resp_id__ = cur_group_id()) %>% ungroup()
+  }
+}
+
+# --- Ensure contribution text exists and clean labels ---
+if (!"contributionType" %in% names(df0)) stop("Expected a `contributionType` column with choice text.")
+
+df <- df0 %>%
+  transmute(
+    respondent = resp_id__,
+    timepoint  = timepoint,
+    contribution = str_squish(as.character(contributionType))
+  ) %>%
+  mutate(
+    contribution = str_remove_all(contribution, "\\[.*?\\]\\s*"),
+    contribution = str_remove(contribution, "^(?i)contribute\\s*(by|in)?\\s*"),
+    contribution = case_when(
+      str_detect(contribution, "(?i)improv(ing)?\\s+doc") ~ "Improve documentation",
+      str_detect(contribution, "(?i)support(ing)?\\s+others|forum|help") ~ "Support others (forum/help)",
+      str_detect(contribution, "(?i)fix(ing)?\\s+bugs?") ~ "Fix bugs",
+      str_detect(contribution, "(?i)add(ing)?\\s+new\\s+features?") ~ "Add features",
+      str_detect(contribution, "(?i)translat(ion|e|ing)") ~ "Provide translations",
+      str_detect(contribution, "(?i)other") ~ "Other",
+      TRUE ~ contribution
+    )
+  )
+
+# --- Denominator: only people who made at least one selection (per timepoint) ---
+denoms <- df %>%
+  distinct(timepoint, respondent) %>%
+  count(timepoint, name = "n_people_with_any")
+
+# --- Numerator: distinct people selecting each option ---
+pie_df <- df %>%
+  distinct(timepoint, respondent, contribution) %>%
+  count(timepoint, contribution, name = "n_people_sel") %>%
+  left_join(denoms, by = "timepoint") %>%
+  mutate(prop = n_people_sel / n_people_with_any)
+
+# --- Exact closure: ensure each timepoint sums to 1 precisely ---
+pie_df <- pie_df %>%
+  group_by(timepoint) %>%
+  mutate(prop = prop / sum(prop)) %>%
+  ungroup()
+
+# --- Nicer facet labels: "Time 1" / "Time 2" ---
+pie_df <- pie_df %>%
+  mutate(timepoint = factor(
+    paste0("Time ", stringr::str_extract(as.character(timepoint), "\\d+")),
+    levels = c("Time 1", "Time 2")
+  )) %>%
+  group_by(timepoint) %>%
+  mutate(contribution = fct_reorder(contribution, prop, .desc = TRUE)) %>%
+  ungroup()
+
+# --- Fixed colours to match your style ---
+contrib_colors <- c(
+  "Improve documentation"        = "#EB692A",
+  "Support others (forum/help)"  = "#F7F11C",
+  "Fix bugs"                     = "#fbe1d4",
+  "Add features"                 = "#7deaf6",
+  "Provide translations"         = "#f3a57f",
+  "Other"                        = "darkgrey"
+)
+contrib_colors <- contrib_colors[levels(pie_df$contribution)]
+
+# --- Plot: thin borders + tiny start offset to hide seam ---
+p <- ggplot(pie_df, aes(x = 1, y = prop, fill = contribution)) +
+  geom_col(width = 1, colour = "white", linewidth = 0.3) +  # thinner outlines
+  coord_polar(theta = "y", start = 0.001) +                 # move seam inside a slice
+  facet_wrap(~ timepoint, nrow = 1) +
+  scale_fill_manual(values = contrib_colors) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  guides(fill = guide_legend(title = "Contribution type", ncol = 1)) +
+  labs(x = NULL, y = NULL) +
+  theme_void(base_size = 12) +
+  theme(
+    strip.text = element_text(size = 16, face = "bold"),
+    legend.title = element_blank(),
+    legend.text = element_text(size = 12),
+    legend.position = "right"
+  )
+
+p
+
+# (optional) save a PNG with sensible sizing and crisp text
+# ggsave("contributions_pies.png", p, width = 10, height = 5, dpi = 300, bg = "white")
+```
 
 #### Interactions
 
