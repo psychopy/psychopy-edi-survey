@@ -2450,11 +2450,11 @@ visMain |>
 
 <!-- {{< include notes/_engagement.md >}} -->
 
-The pie charts below show how people reported contributing to PsychoPy at Time 1 and Time 2. Here, each slice represents the proportion of respondents who made at least one selection at that timepoint and chose that specific contribution type (e.g., improving documentation, fixing bugs, adding features).
+The pie charts below show how people reported contributing to PsychoPy at Time 1 and Time 2. Here, each slice represents the proportion of respondents who reported that they were either frequent or occasional contributors to PsychoPy and chose that specific contribution type (e.g., improving documentation, fixing bugs, adding features).
 
 ```{r}
-#| label: contributions-pies
-#| fig-cap: "Ways of contributing to PsychoPy by timepoint (share of respondents who made at least one selection)"
+#| label: contributions-bars
+#| fig-cap: "Ways of contributing to PsychoPy (share of contributors selecting each method, by timepoint)"
 #| fig-width: 12
 #| fig-height: 6
 #| dpi: 300
@@ -2463,132 +2463,153 @@ The pie charts below show how people reported contributing to PsychoPy at Time 1
 #| message: false
 
 library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(forcats)
-library(stringr)
 library(scales)
 
-df0 <- longerDataContributions
-
-# --- Standardise timepoint labels ---
-tp_col <- c("timepoint","Timepoint","tp","TP")
-tp_col <- tp_col[tp_col %in% names(df0)][1]
-if (is.na(tp_col)) stop("Could not find a timepoint column (expected one of: timepoint/Timepoint/tp/TP).")
-df0 <- df0 %>%
-  mutate(
-    timepoint = ifelse(str_detect(as.character(.data[[tp_col]]), "timepoint"),
-                       as.character(.data[[tp_col]]),
-                       paste0("timepoint ", as.character(.data[[tp_col]])))
+## 1. Keep only contributors (denominator group)
+## Now includes: Frequent contributor, Occasional contributor, Senior developer
+vis_contrib <- visMain %>%
+  filter(engagement %in% c(
+    "Frequent contributor",
+    "Occasional contributor",
+    "Senior developer"
+  )) %>%
+  select(
+    timepoint,
+    contribImprvDoc,
+    contribSuppOthers,
+    contribFixBugs,
+    contribAddFeatures,
+    contribProvTransl,
+    contribOther
   )
 
-# --- Keep only 'Selected' rows (your selection flag is `choices`) ---
-if (!"choices" %in% names(df0)) stop("Expected a `choices` column with 'Selected'/'Unselected'.")
-df0 <- df0 %>% filter(choices %in% c("Selected","selected","Yes", TRUE, "TRUE", 1, "1"))
+## 2. Long format (stack the contrib* columns)
+vis_long <- vis_contrib %>%
+  pivot_longer(
+    cols = starts_with("contrib"),
+    names_to = "contribution_raw",
+    values_to = "selected"
+  )
 
-# --- Build a surrogate respondent ID (per timepoint) if no true ID is present ---
-id_candidates <- intersect(names(df0),
-                           c("ResponseId","responseId","respondent_id","ID","id",
-                             "participantId","participant_id","pid","uid","uuid","submission_id"))
-if (length(id_candidates)) {
-  id_col <- id_candidates[1]
-  df0 <- df0 %>% mutate(resp_id__ = .data[[id_col]])
-} else {
-  stable_pref <- c("gender","nonHeteroCommunity","raceCulture","disability",
-                   "domLangEnglish","careerStatus","country","region","age","education")
-  stable_cols <- intersect(names(df0), stable_pref)
-  exclude_cols <- c("contributionType","choices", tp_col, "timepoint")
-  stable_cols <- setdiff(stable_cols, exclude_cols)
-  if (!length(stable_cols)) {
-    df0 <- df0 %>% group_by(timepoint) %>% mutate(resp_id__ = row_number()) %>% ungroup()
-  } else {
-    df0 <- df0 %>% group_by(timepoint, across(all_of(stable_cols))) %>%
-      mutate(resp_id__ = cur_group_id()) %>% ungroup()
-  }
-}
+## 3. Clean labels and convert Selected / Unselected -> TRUE / FALSE
+vis_long <- vis_long %>%
+  mutate(
+    contribution = case_when(
+      contribution_raw == "contribImprvDoc"      ~ "Improve documentation",
+      contribution_raw == "contribSuppOthers"    ~ "Support others (forum/help)",
+      contribution_raw == "contribFixBugs"       ~ "Fix bugs",
+      contribution_raw == "contribAddFeatures"   ~ "Add features",
+      contribution_raw == "contribProvTransl"    ~ "Provide translations",
+      contribution_raw == "contribOther"         ~ "Other",
+      TRUE ~ contribution_raw
+    ),
+    selected_yes = tolower(selected) == "selected"
+  )
 
-# --- Ensure contribution text exists and clean labels ---
-if (!"contributionType" %in% names(df0)) stop("Expected a `contributionType` column with choice text.")
+## 4. Denominator per timepoint
+## Everyone in vis_contrib is in-scope for at least one contribution method.
+denoms <- vis_contrib %>%
+  count(timepoint, name = "n_contrib_total")
 
-df <- df0 %>%
-  transmute(
-    respondent = resp_id__,
-    timepoint  = timepoint,
-    contribution = str_squish(as.character(contributionType))
+## 5. Numerator per timepoint × contribution type
+## Count how many of those contributors said "Selected" for each method.
+nums <- vis_long %>%
+  group_by(timepoint, contribution) %>%
+  summarise(
+    n_people_sel = sum(selected_yes, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+## 6. Combine + proportion
+bar_df <- nums %>%
+  left_join(denoms, by = "timepoint") %>%
+  mutate(
+    prop = n_people_sel / n_contrib_total
+  )
+
+## 7. Order x-axis by Time 1 proportion, put "Other" last
+order_levels <- bar_df %>%
+  group_by(contribution) %>%
+  summarise(
+    prop_time1 = prop[timepoint == "Time 1"][1],
+    max_prop   = max(prop, na.rm = TRUE),
+    .groups = "drop"
   ) %>%
   mutate(
-    contribution = str_remove_all(contribution, "\\[.*?\\]\\s*"),
-    contribution = str_remove(contribution, "^(?i)contribute\\s*(by|in)?\\s*"),
-    contribution = case_when(
-      str_detect(contribution, "(?i)improv(ing)?\\s+doc") ~ "Improve documentation",
-      str_detect(contribution, "(?i)support(ing)?\\s+others|forum|help") ~ "Support others (forum/help)",
-      str_detect(contribution, "(?i)fix(ing)?\\s+bugs?") ~ "Fix bugs",
-      str_detect(contribution, "(?i)add(ing)?\\s+new\\s+features?") ~ "Add features",
-      str_detect(contribution, "(?i)translat(ion|e|ing)") ~ "Provide translations",
-      str_detect(contribution, "(?i)other") ~ "Other",
-      TRUE ~ contribution
+    order_val = ifelse(!is.na(prop_time1), prop_time1, max_prop)
+  ) %>%
+  arrange(desc(order_val)) %>%
+  pull(contribution)
+
+# move "Other" to the end
+order_levels <- c(setdiff(order_levels, "Other"), "Other")
+
+bar_df <- bar_df %>%
+  mutate(
+    contribution = factor(contribution, levels = order_levels),
+    timepoint    = factor(timepoint, levels = c("Time 1", "Time 2"))
+  )
+
+## 8. Plot grouped bars
+p_bar <- ggplot(
+    bar_df,
+    aes(
+      x = contribution,
+      y = prop,
+      fill = timepoint
     )
-  )
-
-# --- Denominator: only people who made at least one selection (per timepoint) ---
-denoms <- df %>%
-  distinct(timepoint, respondent) %>%
-  count(timepoint, name = "n_people_with_any")
-
-# --- Numerator: distinct people selecting each option ---
-pie_df <- df %>%
-  distinct(timepoint, respondent, contribution) %>%
-  count(timepoint, contribution, name = "n_people_sel") %>%
-  left_join(denoms, by = "timepoint") %>%
-  mutate(prop = n_people_sel / n_people_with_any)
-
-# --- Exact closure: ensure each timepoint sums to 1 precisely ---
-pie_df <- pie_df %>%
-  group_by(timepoint) %>%
-  mutate(prop = prop / sum(prop)) %>%
-  ungroup()
-
-# --- Nicer facet labels: "Time 1" / "Time 2" ---
-pie_df <- pie_df %>%
-  mutate(timepoint = factor(
-    paste0("Time ", stringr::str_extract(as.character(timepoint), "\\d+")),
-    levels = c("Time 1", "Time 2")
-  )) %>%
-  group_by(timepoint) %>%
-  mutate(contribution = fct_reorder(contribution, prop, .desc = TRUE)) %>%
-  ungroup()
-
-# --- Fixed colours to match your style ---
-contrib_colors <- c(
-  "Improve documentation"        = "#EB692A",
-  "Support others (forum/help)"  = "#F7F11C",
-  "Fix bugs"                     = "#fbe1d4",
-  "Add features"                 = "#7deaf6",
-  "Provide translations"         = "#f3a57f",
-  "Other"                        = "darkgrey"
-)
-contrib_colors <- contrib_colors[levels(pie_df$contribution)]
-
-# --- Plot: thin borders + tiny start offset to hide seam ---
-p <- ggplot(pie_df, aes(x = 1, y = prop, fill = contribution)) +
-  geom_col(width = 1, colour = "white", linewidth = 0.3) +  # thinner outlines
-  coord_polar(theta = "y", start = 0.001) +                 # move seam inside a slice
-  facet_wrap(~ timepoint, nrow = 1) +
-  scale_fill_manual(values = contrib_colors) +
-  scale_y_continuous(labels = percent_format(accuracy = 1)) +
-  guides(fill = guide_legend(title = "Contribution type", ncol = 1)) +
-  labs(x = NULL, y = NULL) +
-  theme_void(base_size = 12) +
+  ) +
+  geom_col(
+    position = position_dodge(width = 0.8),
+    width = 0.7,
+    colour = "white",
+    linewidth = 0.3
+  ) +
+  scale_fill_manual(
+    values = c("Time 1" = "#7deaf6", "Time 2" = "#EB692A"),
+    name = NULL
+  ) +
+  scale_y_continuous(
+    labels = percent_format(accuracy = 1),
+    expand = expansion(mult = c(0, 0.05)),
+    limits = c(0, 1)
+  ) +
+  labs(
+    x = NULL,
+    y = "Share of contributors selecting this method",
+    caption = "Base per timepoint = respondents who identified as Frequent contributor, Occasional contributor, or Senior developer"
+  ) +
+  theme_minimal(base_size = 12) +
   theme(
-    strip.text = element_text(size = 16, face = "bold"),
-    legend.title = element_blank(),
-    legend.text = element_text(size = 12),
-    legend.position = "right"
+    axis.text.x        = element_text(size = 11, angle = 30, hjust = 1),
+    axis.text.y        = element_text(size = 11),
+    axis.title.y       = element_text(size = 12, face = "bold"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank(),
+    legend.position    = "top",
+    legend.text        = element_text(size = 12, face = "bold")
   )
 
-p
+p_bar
 
-# (optional) save a PNG with sensible sizing and crisp text
-# ggsave("contributions_pies.png", p, width = 10, height = 5, dpi = 300, bg = "white")
+## 9. Print underlying numbers (for reporting / appendix / caption detail)
+bar_table <- bar_df %>%
+  mutate(
+    Percent = round(prop * 100, 1)
+  ) %>%
+  arrange(contribution, timepoint) %>%
+  select(
+    Contribution = contribution,
+    Timepoint    = timepoint,
+    Selected     = n_people_sel,
+    Total        = n_contrib_total,
+    Percent
+  )
+
+bar_table
 ```
 
 #### Interactions
@@ -2995,6 +3016,10 @@ The possible selections were as follows:
 -   *Other (describe)*
 
 It is important to keep in mind that participants may be counted as *yes* or *no* independently in any of the possible responses, which were converted to individual Boolean variables below. If they selected the response, we assigned the value *selected*; if they did not, we assigned the value *not selected*.
+
+::: {.callout-note}
+Due to a technical error at Timepoint 2, this question was only displayed to participants who had identified themselves in the preceding item as *occasional contributors*. As a result, responses from *frequent contributors* and *senior developers* are not represented in the Timepoint 2 dataset. The data are included below for completeness, but they should not be interpreted or used as a comparison to Timepoint 1.
+:::
 
 ```{r importContributionsLong}
 
